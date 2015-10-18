@@ -10,7 +10,7 @@ import os, os.path
 from glob import glob
 import numpy as np
 from os import listdir
-os.chdir('C:\\Users\\eardo\\Desktop\\farmscripts\\')
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pylab

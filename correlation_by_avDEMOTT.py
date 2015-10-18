@@ -18,6 +18,14 @@ from matplotlib import rc
 from myfuncs import degree_sign, num2words
 import  seaborn as sns
 
+################In paper one it's (-25, -10, 5) to produce bar chart
+################In paper two it's (-25, -10, 1) to produce DeMott and Meyers comparisoin
+################
+min_T=-25
+max_T=-10
+step =5
+RH=85 #RH for all plots
+################
 
 chi=1.2
 rho0=1
@@ -51,18 +59,15 @@ cols = ['Log10 INPs',
  'log aps',
  'demott',
  'meyers']
+#DeMott params
 a= float(0.0000594)
 b=float(3.33)
 c=float(0.0264)
 d=float(0.0033)
 
-min_T=-25
-max_T=-14
-
 outdata=pd.DataFrame()
-step =1
 
-RH=100 #RH for all plots
+
 
 indir = farmdirs['pickels']
 indir2 = farmdirs['home']
@@ -73,8 +78,8 @@ levels = range(min_T,max_T+step,step)
 CS3 = plt.contourf(Z, levels, cmap= 'jet')
 plt.clf()
 
-fig, (ax, ax1) =plt.subplots(1,2, sharey=True, figsize =(5,2.5))
-fig1, (ax2, ax3) =plt.subplots(1,2, figsize =(5,2.5), sharey=True, sharex=True)
+fig, (ax, ax1) =plt.subplots(1,2, sharey=True, figsize =(10,5))
+fig1, (ax2, ax3) =plt.subplots(1,2, figsize =(10,5), sharey=True, sharex=True)
 
 def meyers(Tcelcius):
     A=-0.639
@@ -235,16 +240,16 @@ r_double=[0.005, 50]
 
 
 
-ax1.plot(q,r)
+ax1.plot(q,r, color = 'b')
 ax1.plot(q_half,r_half, color = 'b', linestyle = 'dashed')
 ax1.plot(q_double,r_double, color = 'b', linestyle = 'dashed')
-ax1.text(0.025, 40, '(b) Meyers et al. \'92', fontsize=10)
+ax1.text(0.025, 50, '(b) Meyers et al. \'92', fontsize=10)
 
 
 ax.plot(q,r, color = 'b')
 ax.plot(q_half,r_half, color = 'b', linestyle = 'dashed')
 ax.plot(q_double,r_double, color = 'b', linestyle = 'dashed')
-ax.text(0.025, 40, '(a) DeMott et al. \'10', fontsize=10)
+ax.text(0.025, 50, '(a) DeMott et al. \'10', fontsize=10)
 
 
 T_list=[]
@@ -549,9 +554,16 @@ minus15.drop([' Max Gust Ctime', 'Max gust direction'], axis =0, inplace =True)
 minus20.drop([' Max Gust Ctime','Max gust direction'], axis =0, inplace =True)
 minus25.drop([' Max Gust Ctime','Max gust direction'], axis =0, inplace =True)
 
-x = np.square(minus15.loc['Wind speed':,['Log10 INPs']].values)
-y = np.square(minus20.loc['Wind speed':,['Log10 INPs']].values)
-z = np.square(minus25.loc['Wind speed':,['Log10 INPs']].values)
+
+#the lists produced by numpy here need to be flattened out for bar charting
+
+
+x = np.square(minus15.loc['Wind speed':,['Log10 INPs']].values).tolist()
+x = [item for sublist in x for item in sublist]
+y = np.square(minus20.loc['Wind speed':,['Log10 INPs']].values).tolist()
+y = [item for sublist in y for item in sublist]
+z = np.square(minus25.loc['Wind speed':,['Log10 INPs']].values).tolist()
+z = [item for sublist in z for item in sublist]
 
 
 fig2, ax2 = plt.subplots(figsize=(6, 5))
