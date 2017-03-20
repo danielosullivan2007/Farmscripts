@@ -18,7 +18,16 @@ os.chdir(indir)
 '''DATA MUST BE IN LOG BINS BY INP NUMBER'''
 
 degree_sign= u'\N{DEGREE SIGN}'
+indata= np.genfromtxt('all data.csv', delimiter = ',')
+
+binx= np.linspace(-28.4, -4, 50)
+biny  = np.linspace(0.015, 61.48, 20 )
 data1=np.genfromtxt('freqtable.csv',  delimiter=',')
+Tz=indata[:,0]
+INPz=indata[:,1]
+#freqz = ((25 <indata[] ) & (a < 100)).sum()
+
+
 T=data1[1:,0]
 logINP=data1[0,1:]
 INP=logINP
@@ -28,13 +37,13 @@ z=data1[1:,1:]
 z=np.transpose(z)
 
 #Smoothing step
-z = ndimage.gaussian_filter(z, sigma=1, order=0)
+z = ndimage.gaussian_filter(z, sigma=0.2, order=0)
 data2=np.genfromtxt('all data.csv',  delimiter=',')
 #Change Figure size
 fig=plt.figure(figsize= (8,4))
 
 #set levels for contour plot
-levels = np.linspace(0.001, 0.55, 9)
+levels = np.linspace(0, 0.55, 9)
 ##################################################
 #Setup fig
 ax1 = fig.add_subplot(1,2,2, axisbg='black')
