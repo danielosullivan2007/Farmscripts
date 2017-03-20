@@ -10,7 +10,7 @@ import glob
 import pandas
 
 ###To run Type concatenate()
-
+###Original files produced by searching in windows explorer, than concatenating "MFC2", MFC2 etc....
 
 def concatenate (indir="C:\\Users\\eardo\\Desktop\\pyoutput\\Concatenated", outfile="C:\\Users\\eardo\\Desktop\\pyoutput\\\\Concatenated\\ConcatenatedAll.csv"):
     os.chdir(indir)
