@@ -281,7 +281,8 @@ plt.title('Measured v GLOMAP (N12)', fontsize=14)
 # draw temporary red and blue lines and use them to create a legend
 hB, = plot([1,1],'b-')
 hR, = plot([1,1],'r-')
-legend((hB, hR),('Measured', 'Modelled'))
+legend((hB, hR),('Measured', 'Modelled'), loc = 'upper left')
+plt.legend(loc = 'upper left')
 hB.set_visible(False)
 hR.set_visible(False)
 
