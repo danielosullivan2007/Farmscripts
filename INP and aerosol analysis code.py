@@ -15,6 +15,8 @@ import pylab
 import matplotlib.pyplot as plt
 import datetime
 
+
+num2words={-15:'minus15', -20:'minus20',-25: 'minus25'}
 b='Blan'
 c='Port'
 #defining a function
@@ -41,9 +43,9 @@ APSrangesum1=[]
 time_run=[]
 APS_concentration=[]
 #aero_full=np.genfromtxt(path+'\\'+'APS data.csv',delimiter=',',skip_header=True,usecols=1)
-
-day_folder='W:\\'
-
+T=-20
+day_folder='Z:\\shared\\Farm-Leeds\\Formatted Correctly\\'
+out_folder='C:\\Users\\useradmin\\Desktop\\Farmscripts\\INP_T\\'
 """
 This section of the code creates the time series plots, taking data from the
 excel files specified and searching for the INP concentration at a specified 
@@ -64,7 +66,7 @@ for i in range(0,number_days):
     path=paths[i]
     os.chdir(path)
     excels = [i for i in glob.glob('*.{}'.format(extension))]
-    print(excels)
+    #print(excels)
     number_excels=len(excels)
     if number_excels==0:
         print('no excels on the '+str(path[-6:]))
@@ -78,7 +80,7 @@ for i in range(0,number_days):
         time=excels[i]          
         day.append(path[-6:-4]+'/'+path[-4:-2]+'/'+path[-2:])
         fday.append(path[-6:-4]+path[-4:-2]+path[-2:]+time[17:21]+time[22:26])
-       # print(time)
+        print(time)
         try:
             time=int((time[5:11])+(time[17:21])+(time[22:26]))
         except ValueError:
@@ -89,25 +91,25 @@ for i in range(0,number_days):
         
             for i in range(0,len(data)):
                 #print(i)
-                if data[i,0]/-22>=1 and data[i-1,0]>-22 and data[i+1,0]<-22: 
+                if data[i,0]/T>=1 and data[i-1,0]>T and data[i+1,0]<T: 
                     point=data[i-1:i+1]                
                     m=(point[1,1]-point[0,1])/(point[1,0]-point[0,0])
-                    INP21=point[0,1]+m*(-22-point[0,0])
+                    INP21=point[0,1]+m*(T-point[0,0])
                     print('INP concentration = %s'%INP21)
                     INPp21.append(INP21)
                     pass
             print(data[0,0])
-            if data[0,0]<-22:
+            if data[0,0]<T:
                 #print(data[0,1])
-                print('Freezing starts below -21')
+                print('Freezing starts below specified T')
                 print(data[0,0],'This is the first freezing value')
                 INP21=data[0,1]
                 INPp21.append(INP21)
                 pass
     
-            if data[-1,0]>-22:
+            if data[-1,0]>T:
                 #print(data[-1,1])
-                print('Freezing ends before -21')
+                print('Freezing ends before specified T')
                 print(data[-1,0],'This is the last freezing value')
                 INP21=data[-1,1]
                 INPp21.append(INP21)
@@ -223,6 +225,7 @@ outputfileaero=np.zeros((aerolen,2))
 outputfileaero[:,0]=aeroconc
 outputfileaero[:,1]=aerorun
 
-np.savetxt(day_folder+'INP data.csv',outputfileINP,delimiter=',')
+np.savetxt(out_folder+'INP data'+num2words[T]+'.csv',outputfileINP,delimiter=',')
 np.savetxt(day_folder+'Aero data.csv',outputfileaero,delimiter=',')
+
 
