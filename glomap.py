@@ -9,12 +9,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from itertools import repeat
 
-
-indir="U:\pyoutput"
+saveloc= "C:/Users/useradmin/Desktop/Farmscripts/"
+indir="Z:\shared\Farm-Leeds\pyoutput"
 os.chdir(indir)
 degree_sign= u'\N{DEGREE SIGN}'
-glo=np.genfromtxt("GLOMAPfromjesus1.csv", delimiter=",",skip_header=1,)
+glo=np.genfromtxt("Niemand_1.csv", delimiter=",",skip_header=1,)
 leeds=np.genfromtxt("INPleeds.csv", delimiter=",",skip_header=1,)
+
+
 
 Dayg=glo[:,0]
 Day15l=leeds[:,0]
@@ -160,7 +162,7 @@ ax1.set_yscale('log')
 plt.title('Glomap v observed', fontsize=14)
 plt.xlabel('T'+degree_sign+'C')
 plt.ylabel('[INP] /L')
-
+plt.savefig(saveloc+'N12compare.png')
 plt.show()
 ##########################################################################
 loginp15l=np.log10(INP15l)
@@ -177,7 +179,7 @@ plt.title('Measured v GLOMAP at -15'+degree_sign+'C', fontsize=14)
 ax1.set_xticklabels(['Measured', 'GLOMAP'"\n"'(VT17)'])
 plt.ylabel('Log$_{10}$ [INP]')
 ax1.set_yscale('log')
-plt.savefig('Boxplot15.png')
+plt.savefig(saveloc+'N12_Boxplot15.png')
 
 
 
@@ -197,11 +199,14 @@ plt.title('Measured v GLOMAP at -20'+degree_sign+'C', fontsize=14)
 ax1.set_xticklabels(['Measured', 'GLOMAP'"\n"'(VT17)'])
 plt.ylabel('Log$_{10}$ [INP]')
 ax1.set_yscale('log')
-plt.savefig('Boxplot20.png')
+plt.savefig(saveloc+'N_12Boxplot20.png')
 ###########################################################################
 
-INP25l=np.genfromtxt('loginp25l.csv',delimiter=',')
-INP25g=np.log10(INP25g)
+#NP25l=np.genfromtxt('loginp25l.csv',delimiter=',')
+#INP25g=np.log10(INP25g)I
+
+INP25l= INP25l[np.logical_not(np.isnan(INP25l))]
+INP25g= INP25g[np.logical_not(np.isnan(INP25g))]
 
 
 data_to_plot=[INP25l,INP25g]
@@ -214,7 +219,77 @@ ax1.set_xticklabels(['Measured', 'GLOMAP'"\n"'(VT17)'])
 plt.ylabel('Log$_{10}$ [INP]')
 ax1.set_yscale('log')
 
-plt.savefig('Boxplot25.png')
+plt.savefig(saveloc+'N_12Boxplot25.png')
+
+
+
+#############################################################################
+
+
+from pylab import plot, show, savefig, xlim, figure, \
+                hold, ylim, legend, boxplot, setp, axes
+
+# function for setting the colors of the box plots pairs
+def setBoxColors(bp):
+    setp(bp['boxes'][0], color='blue')
+    setp(bp['caps'][0], color='blue')
+    setp(bp['caps'][1], color='blue')
+    setp(bp['whiskers'][0], color='blue')
+    setp(bp['whiskers'][1], color='blue')
+    setp(bp['fliers'][0], color='blue')
+    setp(bp['fliers'][1], color='blue')
+    setp(bp['medians'][0], color='blue')
+
+    setp(bp['boxes'][1], color='red')
+    setp(bp['caps'][2], color='red')
+    setp(bp['caps'][3], color='red')
+    setp(bp['whiskers'][2], color='red')
+    setp(bp['whiskers'][3], color='red')
+    #setp(bp['fliers'][2], color='red')
+    #setp(bp['fliers'][3], color='red')
+    #setp(bp['medians'][1], color='red')
+
+# data to plot
+A= [[INP15l],[INP15g]]
+B = [[INP20l],[INP20g]]
+C = [[INP25l],[INP25g]]
+
+fig = figure()
+ax = axes()
+hold(True)
+
+# first boxplot pair
+bp = boxplot(A, positions = [2, 3], widths = 0.6)
+setBoxColors(bp)
+
+# second boxplot pair
+bp = boxplot(B, positions = [5, 6], widths = 0.6)
+setBoxColors(bp)
+
+# thrid boxplot pair
+bp = boxplot(C, positions = [8, 9], widths = 0.6)
+setBoxColors(bp)
+
+# set axes limits and labels
+
+ax.set_xticklabels(['','-15'+degree_sign+'C', '-20'+degree_sign+'C', '-25' +degree_sign+'C'])
+ax.set_xticks([1.5,2.5, 5.5, 8.5])
+plt.ylabel('[INP] $L^{-1}$')
+ax.set_yscale('log')
+plt.title('Measured v GLOMAP (N12)', fontsize=14)
+
+# draw temporary red and blue lines and use them to create a legend
+hB, = plot([1,1],'b-')
+hR, = plot([1,1],'r-')
+legend((hB, hR),('Measured', 'Modelled'))
+hB.set_visible(False)
+hR.set_visible(False)
+
+savefig(saveloc+'N12.png')
+show()
+
+
+
 
 
 
