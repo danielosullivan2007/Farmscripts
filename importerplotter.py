@@ -14,13 +14,14 @@ import numpy as np
 import numpy.ma as ma
 
 #Create Keylist for globbing
+
 key = []
 for i in range(0, 2):
     print i
     key.append(raw_input('add a keyword---->'))    
     
    
-
+daynumber= 5
 #Glob top folder
 folder='X:\\'
 os.chdir(folder)
@@ -34,7 +35,7 @@ out2[:] = np.NAN
 out3[:] = np.NAN
 #Glob each subfolder
 for ifolder in range(len(a)):
-    os.chdir(folder+ a[ifolder])
+    os.chdir(folder+ a[daynumber])
     #search for files containing keywords
     for i in range(len(key)):
         #print "Searching for "+key[i]+" in "+ a[ifolder]
@@ -64,11 +65,12 @@ for ifolder in range(len(a)):
                 
 fig1=plt.figure()
 plt.yscale('log') 
-plt.scatter(out1[:,0], out1[:,1],20,'r', label = key[0])
-plt.scatter(out3[:,0], out3[:,1], 20,'g', label = "not " + key[0]+"ed")
+plt.scatter(out1[:,0], out1[:,1],20,'r', label = key[0] + "ed", edgecolor = 'none')
+plt.scatter(out3[:,0], out3[:,1], 20,'g', label = "not " + key[0]+"ed", edgecolor = 'none')
 plt.legend()
-plt.ylabel('n$_s$'+ "$( cm^{-2}$)")
-plt.xlabel("Temperature ("+ degree_sign+ "C)")
-
-
-            
+plt.title (a[daynumber][4:6] + '-'+ a[daynumber][2:4]+ '-' + a[daynumber][0:2])
+plt.ylabel('n$_s$'+ "$( cm^{-2}$)", fontsize = 12)
+plt.xlabel("Temperature ("+ degree_sign+ "C)", fontsize = 12)
+os.chdir('X:\\')
+plt.savefig(a[daynumber][0:6]+".png")
+    

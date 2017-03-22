@@ -17,6 +17,9 @@ os.chdir(indir)
 
 '''DATA MUST BE IN LOG BINS BY INP NUMBER'''
 
+
+
+
 degree_sign= u'\N{DEGREE SIGN}'
 indata= np.genfromtxt('all data.csv', delimiter = ',')
 
