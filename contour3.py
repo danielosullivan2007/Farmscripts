@@ -11,60 +11,74 @@ import scipy.ndimage as ndimage
 from matplotlib.gridspec import GridSpec
 
 
-indir="U:\pyoutput\Frequency analysis"
-os.chdir(indir)
+
 
 
 '''DATA MUST BE IN LOG BINS BY INP NUMBER'''
 
+import numpy as np
+import os as os
+import matplotlib.pyplot as plt
+
+indir="/Users/Daniel/Desktop/farmscripts"
+os.chdir(indir)
+
+indata= np.genfromtxt('all data_1.csv', delimiter = ',')
+inx= indata[:,0]*-1
+iny=(indata[:,1])
+
+
+xedges= np.linspace(5, 30, 50)
+yedges  = np.logspace(-2, 2.5, 50)
 
 
 
+H, xedges, yedges = np.histogram2d(inx, iny, bins=(xedges, yedges))
+
+
+sum1=np.sum(H)
+H=H/sum1*100
+z=np.transpose(H)
 degree_sign= u'\N{DEGREE SIGN}'
-indata= np.genfromtxt('all data.csv', delimiter = ',')
-
-binx= np.linspace(-28.4, -4, 50)
-biny  = np.linspace(0.015, 61.48, 20 )
-data1=np.genfromtxt('freqtable.csv',  delimiter=',')
-Tz=indata[:,0]
-INPz=indata[:,1]
-#freqz = ((25 <indata[] ) & (a < 100)).sum()
+indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 
 
-T=data1[1:,0]
-logINP=data1[0,1:]
-INP=logINP
-x,y=np.meshgrid(T,INP)
-freqs=np.genfromtxt('freqtable.csv',  delimiter=',')
-z=data1[1:,1:]
-z=np.transpose(z)
-z.append(1e6)
+
+
+T=inx
+INP=iny
+x,y=np.meshgrid(xedges[0:-1]*-1,yedges[0:-1])
+
 
 #Smoothing step
-z = ndimage.gaussian_filter(z, sigma=0.2, order=0)
-data2=np.genfromtxt('all data.csv',  delimiter=',')
+#z = ndimage.gaussian_filter(z, sigma=0.2, order=0)
+data2=np.genfromtxt('all data_1.csv',  delimiter=',')
 #Change Figure size
 fig=plt.figure(figsize= (8,4))
 
 #set levels for contour plot
-levels = np.linspace(0, 0.55, 9)
+
+levels = np.linspace(0.001, 0.6, 10)
+
 ##################################################
 #Setup fig
-ax1 = fig.add_subplot(1,2,2, axisbg='black')
+ax1 = fig.add_subplot(1,2,2, axisbg='white')
 ax2 = fig.add_subplot(121)
 #p1=ax1.contourf(x,y,z)
-p1=ax1.contourf(x,y,z, levels = levels, extend ="both")
+
+p1=ax1.contourf(x,y,z, levels = levels, extend = 'both')
 
 
 cmap = plt.get_cmap()
-cmap.set_under('k')
+cmap.set_under('black')
 
 
 #p1.set_clim(0, 1)
 cbaxes=fig.add_axes([1, 0.1, 0.02, 0.8]) 
-cb = fig.colorbar(p1, cax = cbaxes, label='% of Total Observations')
+cb = fig.colorbar(p1, cax = cbaxes, label='% of Total Observations', format ='%0.2f')
 
 
+    
 
 
 
