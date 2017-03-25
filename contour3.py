@@ -22,6 +22,26 @@ import matplotlib.pyplot as plt
 
 indir="/Users/Daniel/Desktop/farmscripts"
 os.chdir(indir)
+DMT_T=np.genfromtxt('demott.csv', delimiter = ',')[:,0]
+DMT_I=np.genfromtxt('demott.csv', delimiter = ',')[:,1]
+DMT_T= DMT_T[np.logical_not(np.isnan(DMT_T))]
+DMT_I=DMT_I[np.logical_not(np.isnan(DMT_I))]
+
+
+pettersup=np.genfromtxt('pettersup.csv', delimiter = ',')
+pupT=pettersup[:,0]
+pupT= pupT[np.logical_not(np.isnan(pupT))]
+
+pupINP=pettersup[:,1]
+pupINP= pupINP[np.logical_not(np.isnan(pupINP))]
+
+
+pettersdown= np.genfromtxt('pettersdown.csv', delimiter = ',')
+pdownT=pettersup[:,0]
+pdownT= pupT[np.logical_not(np.isnan(pupT))]
+
+pdownINP=pettersdown[:,1]
+pdownINP= pdownINP[np.logical_not(np.isnan(pupINP))]
 
 indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 inx= indata[:,0]*-1
@@ -67,6 +87,8 @@ ax2 = fig.add_subplot(121)
 #p1=ax1.contourf(x,y,z)
 
 p1=ax1.contourf(x,y,z, levels = levels, extend = 'both')
+ax1.plot(pupT, pupINP)
+ax1.plot(pdownT, pdownINP)
 
 
 cmap = plt.get_cmap()
@@ -82,8 +104,9 @@ cb = fig.colorbar(p1, cax = cbaxes, label='% of Total Observations', format ='%0
 
 
 
-p2=ax2.plot(data2[:,0],data2[:,1], linewidth=0,marker="o" )
+p2=ax2.plot(data2[:,0],data2[:,1], linewidth=0,marker="o", zorder =0 )
 
+ax2.scatter(DMT_T,DMT_I, marker="x", color = "red")
 
 #################
 #ax1 properties

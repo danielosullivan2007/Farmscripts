@@ -9,11 +9,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from itertools import repeat
 
-saveloc= "C:/Users/useradmin/Desktop/Farmscripts/"
-indir="Z:\shared\Farm-Leeds\pyoutput"
+saveloc= "/Users/Daniel/Desktop/farmscripts/glomap data"
+indir="/Users/Daniel/Desktop/farmscripts/glomap data"
 os.chdir(indir)
 degree_sign= u'\N{DEGREE SIGN}'
-glo=np.genfromtxt("Niemand_1.csv", delimiter=",",skip_header=1,)
+glo=(np.genfromtxt("Niemand_1.csv", delimiter=",",skip_header=1,))[15:,:]
+
 leeds=np.genfromtxt("INPleeds.csv", delimiter=",",skip_header=1,)
 
 
@@ -36,12 +37,16 @@ T15g=[]
 T20g=[]
 T25g=[]
 
-for x in range (0,30):
-    z= Dayg[x]-160900
-    Gloday.append(z)
-for x in range (30,61):
-    z= Dayg[x]-161000+30
-    Gloday.append(z)
+for x in range (len(Dayg)):
+    if Dayg[x]<161000:
+        z= Dayg[x]-160900
+        Gloday.append(z)
+    elif Dayg[x]<161100:  
+        z= Dayg[x]-161000+30
+        print x
+        Gloday.append(z)
+
+
 for x in range (0,len(Day15l)):
     if Day15l[x]<161000:
         z= Day15l[x]-160900
