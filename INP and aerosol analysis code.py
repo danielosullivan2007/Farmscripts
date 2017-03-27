@@ -44,8 +44,8 @@ time_run=[]
 APS_concentration=[]
 #aero_full=np.genfromtxt(path+'\\'+'APS data.csv',delimiter=',',skip_header=True,usecols=1)
 T=-20
-day_folder='Z:\\shared\\Farm-Leeds\\Formatted Correctly\\'
-out_folder='C:\\Users\\useradmin\\Desktop\\Farmscripts\\INP_T\\'
+day_folder='W:\\'
+out_folder='C:\\Users\\eardo\\Desktop\\Farmscripts\\INP_T\\'
 """
 This section of the code creates the time series plots, taking data from the
 excel files specified and searching for the INP concentration at a specified 
@@ -226,6 +226,6 @@ outputfileaero[:,0]=aeroconc
 outputfileaero[:,1]=aerorun
 
 np.savetxt(out_folder+'INP data'+num2words[T]+'.csv',outputfileINP,delimiter=',')
-np.savetxt(day_folder+'Aero data.csv',outputfileaero,delimiter=',')
+np.savetxt(out_folder+'Aero data.csv',outputfileaero,delimiter=',')
 
 
