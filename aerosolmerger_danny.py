@@ -11,61 +11,128 @@ import glob as glob
 import csv
 import matplotlib.pyplot as plt
 
-infolder = 'W:\\161027\\SMPS\\'
+
+chi=1.2
+rho0=1
+rho=2.4
+
+
+
+
+
+infolder = 'W:\\'
 os.chdir(infolder)
-x=glob.glob('*.csv')
 
 
+
+#Glob top folder
+
+a=glob.glob('*\\')
+filelist=[]
+out1=np.empty(shape=(1,2))
+out2=np.empty(shape=(1,2))
+out3=np.empty(shape=(1,2))
+out1[:] = np.NAN
+out2[:] = np.NAN
+out3[:] = np.NAN
+
+'''
+#Glob SMPS folders
+for dayfolder in range(len(a)):
+    os.chdir(infolder+ a[dayfolder]+'SMPS\\')
+    files = glob.glob('*.csv')
+    if len(files) ==0:
+        continue
+    else:
+    
+#SMPS Calcs
 #####################################################################
-data=[]
-with open(x[0]) as csvfile:
-    reader = csv.reader(csvfile, delimiter =',')
-    data=[row for row in reader]
+
+        for i in range(len(files)):
+                indata= np.genfromtxt(files[i], delimiter =',', skip_header=34, skip_footer = 30 )
+            
+        sizes= (indata[:,0])/1000
+        dW= indata[:,1:]
+        SMPSavnum=np.mean(dW, axis = 1)
+        DpSMPS=(1/chi)*sizes
+        fig = plt.figure() 
+        ax1=plt.scatter(DpSMPS, SMPSavnum)
+        DpSMPS = np.array(DpSMPS)
+        SMPSavnum = np.array (SMPSavnum)
+        outtime = files[i][6:11]
+        outname = infolder+ a[dayfolder]+'SMPSav '+outtime+'.csv'
+        q=np.transpose(np.vstack((DpSMPS, SMPSavnum)))
+        np.savetxt(outname, q, delimiter = ',')
+        plt.title(str(files[i]))
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.ylabel('dw')
+        plt.xlabel('Dp ($\mu$m)')
+
+#glob APS folders
+for dayfolder in range(len(a)):
+    os.chdir(infolder+ a[dayfolder]+'APS\\')
+    files = glob.glob('*.csv')
+    if len(files) ==0:
+        continue
+    else:
     
-header = data[25]
-
-size= np.array(header[9:], dtype = float)
-size=(size)/1000
-for i in range(len(x)):
-        indata= np.genfromtxt(x[i], delimiter =',', skip_header=26)[:,9:]
-    
-SMPSavnum=np.mean(indata, axis = 0)
-
-for i in range(len(size))
-    bins[i]=size[i]
-fig = plt.figure() 
-ax1=plt.scatter(size, SMPSavnum)
-plt.xscale('log')
-plt.yscale('log')
-
+#APS Calcs
 ######################################################################
 
-infolder = 'W:\\161027\\APS\\'
+        
+        
+        for i in range(len(files)):
+                APSdata= np.genfromtxt(files[i], delimiter =',', skip_header=7)[:,5:54]
+
+                with open(files[0]) as csvfile:
+                    reader = csv.reader(csvfile, delimiter =',')
+                    APShead=[row for row in reader]
+            
+        APSheader = APShead[6]
+        APSsize= (APSheader[5:54])
+        APSsize = [float(x) for x in APSsize]
+        APSsize = np.array(APSsize)
+        
+        APSdata[APSdata == 0] = np.nan  
+        APSavnum=np.mean(APSdata, axis = 0) 
+        DpAPS=(((chi*rho0)/rho)**0.5)*APSsize
+        z=np.transpose(np.vstack((DpAPS, APSavnum)))
+        
+        outtime = files[i][6:11]
+        outname = infolder+ a[dayfolder]+'APSav '+outtime+'.csv'
+        
+        np.savetxt(outname, z, delimiter = ',')
+        
+        
+        plt.xlim(0.01, 20)
+        ax2 = plt.scatter(DpAPS, APSavnum, c = 'red')
+        plt.ylim(0.01,100)
+        plt.xscale('log')
+        plt.yscale('log')
+
+        '''
+################################################################
+
 os.chdir(infolder)
-x=glob.glob('*.csv')
 
-
-with open(x[0]) as csvfile:
-    reader = csv.reader(csvfile, delimiter =',')
-    APSdata=[row for row in reader]
-    
-APSheader = APSdata[6]
-
-APSsize= (APSheader[5:54])
-APSsize = [float(i) for i in APSsize]
-
-
-for i in range(len(x)):
-        APSdata= np.genfromtxt(x[i], delimiter =',', skip_header=7)[:,5:54]
-
-APSdata[APSdata == 0] = np.nan  
-
-APSavnum=np.mean(APSdata, axis = 0) 
-plt.xlim(0.01, 20)
-ax2 = plt.scatter(APSsize, APSavnum, c = 'red')
-plt.ylim(0.01,100)
-plt.xscale('log')
-plt.yscale('log')
-
-
+a=glob.glob('*\\')[17:18]
+for dayfolder in range(len(a)):
+    os.chdir(infolder+ a[dayfolder])
+    smps_files = glob.glob('SMPS*.csv')
+    aps_files = glob.glob('APS*.csv')
+    if len(smps_files) or len (aps_files) ==0:
+        continue
+    else:
+        for smpsrun in range(len(smps_files)):
+            smps_data=np.genfromtxt(smps_files[smpsrun], delimiter = ',')
+        for apsrun in range(len(aps_files)):
+            aps_data = np.genfromtxt(aps_files[apsrun], delimiter = ',')
+            merged = np.vstack((smps_data, aps_data))
+            
+            print merged
+            
+            outname = infolder+ a[dayfolder]+'merged.csv'
+            np.savetxt(outname, merged, delimiter = ',')
+            
 
