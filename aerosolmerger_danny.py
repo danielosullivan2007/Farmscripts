@@ -21,7 +21,6 @@ import matplotlib.pyplot as plt
 
 
 
-
 chi=1.2
 rho0=1
 rho=2.4

@@ -20,9 +20,17 @@ import numpy as np
 import os as os
 import matplotlib.pyplot as plt
 
-indir="/Users/Daniel/Desktop/farmscripts"
+
+
+
+
+
+
+
+indir="/Users/eardo/Desktop/Farmscripts"
 os.chdir(indir)
-DMT_T=np.genfromtxt('demott.csv', delimiter = ',')[:,0]
+
+'''DMT_T=np.genfromtxt('demott.csv', delimiter = ',')[:,0]
 DMT_I=np.genfromtxt('demott.csv', delimiter = ',')[:,1]
 DMT_T= DMT_T[np.logical_not(np.isnan(DMT_T))]
 DMT_I=DMT_I[np.logical_not(np.isnan(DMT_I))]
@@ -41,7 +49,8 @@ pdownT=pettersup[:,0]
 pdownT= pupT[np.logical_not(np.isnan(pupT))]
 
 pdownINP=pettersdown[:,1]
-pdownINP= pdownINP[np.logical_not(np.isnan(pupINP))]
+pdownINP= pdownINP[np.logical_not(np.isnan(pupINP))]'''
+
 
 indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 inx= indata[:,0]*-1
@@ -87,8 +96,8 @@ ax2 = fig.add_subplot(121)
 #p1=ax1.contourf(x,y,z)
 
 p1=ax1.contourf(x,y,z, levels = levels, extend = 'both')
-ax1.plot(pupT, pupINP)
-ax1.plot(pdownT, pdownINP)
+#ax1.plot(pupT, pupINP)
+#ax1.plot(pdownT, pdownINP)
 
 
 cmap = plt.get_cmap()
@@ -106,7 +115,7 @@ cb = fig.colorbar(p1, cax = cbaxes, label='% of Total Observations', format ='%0
 
 p2=ax2.plot(data2[:,0],data2[:,1], linewidth=0,marker="o", zorder =0 )
 
-ax2.scatter(DMT_T,DMT_I, marker="x", color = "red")
+#ax2.scatter(DMT_T,DMT_I, marker="x", color = "red")
 
 #################
 #ax1 properties
@@ -139,7 +148,13 @@ ttl2 = ax2.title
 ttl2.set_position([.5, 1.05])
 
 #####################
-
+otherdata = "/Users/eardo/Desktop/Farmscripts/Past Data"
+os.chdir(otherdata)
+pastdata=np.genfromtxt('Past Data.csv', skip_header=0, delimiter =",")
+Garcia = pastdata[1:,0:2]
+Belosi = pastdata[1:,2:4]
+ax2.scatter(Belosi[:,0],Belosi[:,1], marker="x", color = "red")
+ax2.scatter(Garcia[:,0], Garcia[:,1], marker="x", color = "green")
 
 plt.tight_layout()
 plt.tight_layout()
