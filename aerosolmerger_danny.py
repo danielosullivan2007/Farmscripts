@@ -2,7 +2,15 @@
 """
 Created on Mon Mar 27 13:48:21 2017
 
-@author: eardo
+@author: Daniel O'Sullivan
+
+Notes: a is the list of day folders. The code works by 1)Globbing the top folder,
+2) globbing for SMPS files, importing data
+and getting geometeric diameter as per Mohler 2008, then outputting averaged 
+3) globbing for APS files and doing the same as 2)
+and 4) merging the SMPS and APS by reglobbing again!
+
+Fun no? 
 """
 
 import numpy as np
@@ -12,12 +20,11 @@ import csv
 import matplotlib.pyplot as plt
 
 
+
+
 chi=1.2
 rho0=1
 rho=2.4
-
-
-
 
 
 infolder = 'W:\\'
@@ -27,7 +34,7 @@ os.chdir(infolder)
 
 #Glob top folder
 
-a=glob.glob('*\\')
+a=glob.glob('*\\')[17:18] 
 filelist=[]
 out1=np.empty(shape=(1,2))
 out2=np.empty(shape=(1,2))
@@ -35,10 +42,11 @@ out3=np.empty(shape=(1,2))
 out1[:] = np.NAN
 out2[:] = np.NAN
 out3[:] = np.NAN
-
-'''
+#%%
+#####################################################################
 #Glob SMPS folders
-for dayfolder in range(len(a)):
+
+for dayfolder in range(len(a)):                 
     os.chdir(infolder+ a[dayfolder]+'SMPS\\')
     files = glob.glob('*.csv')
     if len(files) ==0:
@@ -46,7 +54,7 @@ for dayfolder in range(len(a)):
     else:
     
 #SMPS Calcs
-#####################################################################
+
 
         for i in range(len(files)):
                 indata= np.genfromtxt(files[i], delimiter =',', skip_header=34, skip_footer = 30 )
@@ -69,6 +77,8 @@ for dayfolder in range(len(a)):
         plt.ylabel('dw')
         plt.xlabel('Dp ($\mu$m)')
 
+#%%
+######################################################################
 #glob APS folders
 for dayfolder in range(len(a)):
     os.chdir(infolder+ a[dayfolder]+'APS\\')
@@ -78,9 +88,6 @@ for dayfolder in range(len(a)):
     else:
     
 #APS Calcs
-######################################################################
-
-        
         
         for i in range(len(files)):
                 APSdata= np.genfromtxt(files[i], delimiter =',', skip_header=7)[:,5:54]
@@ -95,6 +102,7 @@ for dayfolder in range(len(a)):
         APSsize = np.array(APSsize)
         
         APSdata[APSdata == 0] = np.nan  
+        
         APSavnum=np.mean(APSdata, axis = 0) 
         DpAPS=(((chi*rho0)/rho)**0.5)*APSsize
         z=np.transpose(np.vstack((DpAPS, APSavnum)))
@@ -110,8 +118,8 @@ for dayfolder in range(len(a)):
         plt.ylim(0.01,100)
         plt.xscale('log')
         plt.yscale('log')
-
-        '''
+#%%
+#merge smps and aps in all folders    
 ################################################################
 
 os.chdir(infolder)
@@ -121,18 +129,20 @@ for dayfolder in range(len(a)):
     os.chdir(infolder+ a[dayfolder])
     smps_files = glob.glob('SMPS*.csv')
     aps_files = glob.glob('APS*.csv')
-    if len(smps_files) or len (aps_files) ==0:
+    if len(smps_files)== 0 or len(aps_files) == 0:
         continue
     else:
         for smpsrun in range(len(smps_files)):
             smps_data=np.genfromtxt(smps_files[smpsrun], delimiter = ',')
         for apsrun in range(len(aps_files)):
             aps_data = np.genfromtxt(aps_files[apsrun], delimiter = ',')
+            
+            
             merged = np.vstack((smps_data, aps_data))
             
-            print merged
+            
             
             outname = infolder+ a[dayfolder]+'merged.csv'
             np.savetxt(outname, merged, delimiter = ',')
-            
-
+         
+print ' Data has been merged :)'
