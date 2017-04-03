@@ -33,7 +33,7 @@ os.chdir(infolder)
 
 #Glob top folder
 
-a=glob.glob('*\\')[17:18] 
+a=glob.glob('*\\')
 filelist=[]
 out1=np.empty(shape=(1,2))
 out2=np.empty(shape=(1,2))
@@ -123,7 +123,7 @@ for dayfolder in range(len(a)):
 
 os.chdir(infolder)
 
-a=glob.glob('*\\')[17:18]
+a=glob.glob('*\\')
 for dayfolder in range(len(a)):
     os.chdir(infolder+ a[dayfolder])
     smps_files = glob.glob('SMPS*.csv')
