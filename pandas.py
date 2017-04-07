@@ -14,7 +14,8 @@ import matplotlib.pyplot as plt
 #==============================================================================
 
 degree_sign = u'\N{DEGREE SIGN}'
-infolder = '/Users/Daniel/Desktop/farmscripts/glomap data'  #infolder for mac
+#infolder = '/Users/Daniel/Desktop/farmscripts/glomap data'  #infolder for mac
+infolder ='C:\Users\eardo\Desktop\Farmscripts\glomap data'
 os.chdir(infolder)
 
 df1 = pd.read_csv('INP_variability_marine_Farm.csv', index_col = 0)
@@ -32,44 +33,22 @@ alldata['ratio20'] = alldata['-20f']/alldata['-20m']
 alldata['ratio25'] = alldata['-25f']/alldata['-25m']
 
 fig1 = plt.figure()
-plt.scatter(alldata.index, alldata.ratio15, color = 'r')
+ax = plt.subplot(111)
+ax.scatter(alldata.index, alldata.ratio15, color = 'r', marker = 'x', label ='-15 '+degree_sign+'C')
+ax.scatter(alldata.index, alldata.ratio20, color = 'g', marker = '*',label ='-20 '+degree_sign+'C')
+ax.scatter(alldata.index, alldata.ratio25, color = 'b', marker='v',label = '-25 '+degree_sign+'C')
 #plt.scatter(alldata.index, ratio_20, color = 'g')
 #plt.scatter(alldata.index, ratio_25, color = 'b')
-plt.legend()
+plt.legend(loc = 2, fontsize=10)
 plt.yscale('log')
 plt.ylim(0.001)
 plt.axhline(y=1)
-plt.title('ratio of INP sources at -15 '+degree_sign+'C')
+plt.title('ratio of INPs k-feldspar:marine in GLOMAP')
 plt.xlabel('Day')
 plt.ylabel('[INP]$_{Feldspar}$/ [INP]$_{Marine}$$ L^{-1}$')
 print 'ratio is less than 1 in '+str(float((alldata['ratio15']<1).sum())/61*100)+'% of cases'
+plt.savefig(infolder+'\\ratios')
 
-
-fig1b = plt.figure()
-plt.scatter(alldata.index, alldata.ratio20, color = 'r')
-#plt.scatter(alldata.index, ratio_20, color = 'g')
-#plt.scatter(alldata.index, ratio_25, color = 'b')
-plt.legend()
-plt.yscale('log')
-plt.ylim(0.001)
-plt.axhline(y=1)
-plt.title('ratio of INP sources at -20 '+degree_sign+'C')
-plt.xlabel('Day')
-plt.ylabel('[INP]$_{Feldspar}$/ [INP]$_{Marine}$$ L^{-1}$')
-print 'ratio is less than 1 in '+str(float((alldata['ratio20']<1).sum())/len(alldata['ratio20']))+'% of cases'
-
-
-fig1c = plt.figure()
-plt.scatter(alldata.index, alldata.ratio25, color = 'r')
-#plt.scatter(alldata.index, ratio_20, color = 'g')
-#plt.scatter(alldata.index, ratio_25, color = 'b')
-plt.legend()
-plt.yscale('log')
-plt.ylim(0.001)
-plt.axhline(y=1)
-plt.title('ratio of INP sources at -25 '+degree_sign+'C')
-plt.xlabel('Day')
-plt.ylabel('[INP]$_{Feldspar}$/ [INP]$_{Marine}$$ L^{-1}$')
 
 #ax1=alldata.reset_index().plot()
 #ax2=alldata.reset_index().plot.scatter( x= 'Days', y = '-20m')

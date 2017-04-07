@@ -20,7 +20,7 @@ corr15=data15.corr(method = 'pearson')
 corr20=data20.corr(method = 'pearson')
 corr25=data25.corr(method = 'pearson')
 
-
+fig, ax = plt.subplots(figsize=(5, 5))
 ax= plt.subplot(111)
 
 
@@ -30,12 +30,16 @@ z = corr25.loc['Time':'Mean Wind Speed',['LogINP']].values
 index = corr15.index
 index = index[1:12]
 y_pos = np.arange(len(index))
-ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b')
-ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r')
-ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g')
-plt.xticks(y_pos,index, rotation = 'vertical')
+ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C')
+ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C')
+ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C')
+plt.xticks(y_pos,index, rotation = 90)
 plt.xlim(-0.5,10.5)
+plt.legend(loc=2, fontsize =10)
+plt.ylabel('Pearson R Coefficient')
 plt.ylim(-1,1)
+plt.tight_layout()
+plt.savefig(infolder+"\correlations")
 
 
 #==============================================================================
