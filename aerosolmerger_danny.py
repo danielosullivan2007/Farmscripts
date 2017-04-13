@@ -62,17 +62,17 @@ for dayfolder in range(len(a)):
         dW= indata[:,1:]
         SMPSavnum=np.mean(dW, axis = 1)
         DpSMPS=(1/chi)*sizes
-        fig = plt.figure() 
-        ax1=plt.scatter(DpSMPS, SMPSavnum)
+        
         DpSMPS = np.array(DpSMPS)
         SMPSavnum = np.array (SMPSavnum)
         outtime = files[i][6:11]
         outname = infolder+ a[dayfolder]+'SMPSav '+outtime+'.csv'
         q=np.transpose(np.vstack((DpSMPS, SMPSavnum)))
         np.savetxt(outname, q, delimiter = ',')
-        plt.title(str(files[i]))
-        plt.xscale('log')
-        plt.yscale('log')
+        #plt.title(str(files[i]))
+        #plt.xscale('log')
+        
+        #plt.yscale('log')
         plt.ylabel('dw')
         plt.xlabel('Dp ($\mu$m)')
 
@@ -102,7 +102,7 @@ for dayfolder in range(len(a)):
         
         APSdata[APSdata == 0] = np.nan  
         
-        APSavnum=np.mean(APSdata, axis = 0) 
+        APSavnum=np.nanmean(APSdata, axis = 0) 
         DpAPS=(((chi*rho0)/rho)**0.5)*APSsize
         z=np.transpose(np.vstack((DpAPS, APSavnum)))
         
@@ -137,11 +137,16 @@ for dayfolder in range(len(a)):
             aps_data = np.genfromtxt(aps_files[apsrun], delimiter = ',')
             
             
+            
             merged = np.vstack((smps_data, aps_data))
             
-            
-            
+            plt.scatter(merged[:,0], merged[:,1])
+            plt.xscale('log')
+            plt.yscale('log')
+            plt.ylim(0.0001,100)
             outname = infolder+ a[dayfolder]+'merged.csv'
             np.savetxt(outname, merged, delimiter = ',')
+            
+
          
 print ' Data has been merged :)'
