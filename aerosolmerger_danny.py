@@ -18,7 +18,7 @@ import os as os
 import glob as glob
 import csv
 import matplotlib.pyplot as plt
-
+import pandas as pd
 
 
 chi=1.2
@@ -30,7 +30,9 @@ infolder = 'W:\\'
 os.chdir(infolder)
 
 
-
+s_list=[]
+a_list=[]
+smps_count=pd.Series()
 #Glob top folder
 
 a=glob.glob('*\\')
@@ -44,28 +46,49 @@ out3[:] = np.NAN
 #%%
 #####################################################################
 #Glob SMPS folders
-
+n=0
+index=0
 for dayfolder in range(len(a)):                 
     os.chdir(infolder+ a[dayfolder]+'SMPS\\')
-    files = glob.glob('*.csv')
-    if len(files) ==0:
+    s_files = glob.glob('*.csv')
+    if len(s_files) ==0:
         continue
     else:
     
 #SMPS Calcs
 
-
-        for i in range(len(files)):
-                indata= np.genfromtxt(files[i], delimiter =',', skip_header=34, skip_footer = 30 )
-            
-        sizes= (indata[:,0])/1000
-        dW= indata[:,1:]
-        SMPSavnum=np.mean(dW, axis = 1)
-        DpSMPS=(1/chi)*sizes
         
+        for i in range(len(s_files)):
+                indata= np.genfromtxt(s_files[i], delimiter =',', skip_header=34, skip_footer = 30 )
+                s_list.append(s_files[i])
+                s_dates = [x[0:6] for x in s_list]
+                s_times = [x[7:11] for x in s_list]
+                dW= indata[:,1:]
+                sizes= (indata[:,0])/1000
+                SMPSavnum=np.mean(dW, axis = 1)
+                DpSMPS=(1/chi)*sizes
+                smps_cols=(np.ndarray.tolist(sizes))
+                smps_df=pd.DataFrame((np.transpose(dW)))
+                smps_df.columns=smps_cols
+                
+                if smps_df.mean().sum():
+                    smps_count = smps_count.append(pd.Series(smps_df.mean().sum(), index=[index]))
+                else:
+                    smps_count = smps_count.append(pd.Series('NaN', index=[index]))
+                index+=1
+                
+        
+        s_dates=pd.Series(s_dates)
+        s_times=pd.Series(s_times).replace('.csv','NaN').replace('csv','NaN')
+        
+        
+        
+
+    
+
         DpSMPS = np.array(DpSMPS)
         SMPSavnum = np.array (SMPSavnum)
-        outtime = files[i][6:11]
+        outtime = s_files[i][6:11]
         outname = infolder+ a[dayfolder]+'SMPSav '+outtime+'.csv'
         q=np.transpose(np.vstack((DpSMPS, SMPSavnum)))
         np.savetxt(outname, q, delimiter = ',')
@@ -75,23 +98,30 @@ for dayfolder in range(len(a)):
         #plt.yscale('log')
         plt.ylabel('dw')
         plt.xlabel('Dp ($\mu$m)')
-
+        n+=1
+smpsav_df = pd.concat([s_dates, s_times, smps_count], axis =1)
+    
+'''
 #%%
 ######################################################################
 #glob APS folders
 for dayfolder in range(len(a)):
     os.chdir(infolder+ a[dayfolder]+'APS\\')
-    files = glob.glob('*.csv')
-    if len(files) ==0:
+    a_files = glob.glob('*.csv')
+    if len(a_files) ==0:
         continue
     else:
     
 #APS Calcs
         
-        for i in range(len(files)):
-                APSdata= np.genfromtxt(files[i], delimiter =',', skip_header=7)[:,5:54]
+        for i in range(len(a_files)):
+                APSdata= np.genfromtxt(a_files[i], delimiter =',', skip_header=7)[:,5:54]
+                a_list.append(a_files[i])                
+                a_dates = pd.Series([x[0:6] for x in a_list])
+                a_times = pd.Series([x[7:11] for x in a_list]).replace('.csv', np.NAN).replace('csv', np.NAN)
+                a
 
-                with open(files[0]) as csvfile:
+                with open(a_files[0]) as csvfile:
                     reader = csv.reader(csvfile, delimiter =',')
                     APShead=[row for row in reader]
             
@@ -106,10 +136,16 @@ for dayfolder in range(len(a)):
         DpAPS=(((chi*rho0)/rho)**0.5)*APSsize
         z=np.transpose(np.vstack((DpAPS, APSavnum)))
         
-        outtime = files[i][6:11]
+        outtime = a_files[i][6:11]
         outname = infolder+ a[dayfolder]+'APSav '+outtime+'.csv'
         
         np.savetxt(outname, z, delimiter = ',')
+        
+        aps_cols=(np.ndarray.tolist(APSsize))
+        aps_df=pd.DataFrame(APSdata)
+        aps_df.columns=aps_cols
+        aps_count = aps_df.mean().sum()
+
         
         
         plt.xlim(0.01, 20)
@@ -150,3 +186,6 @@ for dayfolder in range(len(a)):
 
          
 print ' Data has been merged :)'
+'''
+del s_list
+#del s_files
