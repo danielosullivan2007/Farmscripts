@@ -33,6 +33,7 @@ os.chdir(infolder)
 s_list=[]
 a_list=[]
 smps_count=pd.Series()
+aps_count=pd.Series()
 #Glob top folder
 
 a=glob.glob('*\\')
@@ -43,6 +44,7 @@ out3=np.empty(shape=(1,2))
 out1[:] = np.NAN
 out2[:] = np.NAN
 out3[:] = np.NAN
+'''
 #%%
 #####################################################################
 #Glob SMPS folders
@@ -105,6 +107,7 @@ smpsav_df = pd.concat([s_dates, s_times, smps_count], axis =1)
 #%%
 ######################################################################
 #glob APS folders
+index=0
 for dayfolder in range(len(a)):
     os.chdir(infolder+ a[dayfolder]+'APS\\')
     a_files = glob.glob('*.csv')
@@ -115,11 +118,18 @@ for dayfolder in range(len(a)):
 #APS Calcs
         
         for i in range(len(a_files)):
+                
                 APSdata= np.genfromtxt(a_files[i], delimiter =',', skip_header=7)[:,5:54]
+                aps_df = pd.DataFrame(APSdata)
                 a_list.append(a_files[i])                
-                a_dates = pd.Series([x[0:6] for x in a_list])
-                a_times = pd.Series([x[7:11] for x in a_list]).replace('.csv', np.NAN).replace('csv', np.NAN)
-                a
+                a_dates = pd.Series([x[0:2]+"-"+ x[2:4]+"-"+x[4:6] for x in a_list])
+                a_times = pd.Series([x[7:9]+":"+x[9:11] for x in a_list]).replace('.c:sv', np.NAN).replace('cs:v', np.NAN)
+                if aps_df.mean().sum():
+                    aps_count = aps_count.append(pd.Series(aps_df.mean().sum(), index=[index]))
+                else:
+                    aps_count = aps_count.append(pd.Series('NaN', index=[index]))
+                    index+=1
+                
 
                 with open(a_files[0]) as csvfile:
                     reader = csv.reader(csvfile, delimiter =',')
@@ -143,20 +153,29 @@ for dayfolder in range(len(a)):
         
         aps_cols=(np.ndarray.tolist(APSsize))
         aps_df=pd.DataFrame(APSdata)
-        aps_df.columns=aps_cols
-        aps_count = aps_df.mean().sum()
-
+        aps_size = aps_df.columns
         
+        
+
         
         plt.xlim(0.01, 20)
         ax2 = plt.scatter(DpAPS, APSavnum, c = 'red')
         plt.ylim(0.01,100)
         plt.xscale('log')
         plt.yscale('log')
+        
+        aps_count.reset_index(drop = True, inplace = True)
+        aps_result = pd.concat([a_dates, a_times, aps_count], axis =1)
+        aps_result.columns = ['a_dates', 'a_times', 'a_count']
+        aps_result['datetime']=pd.to_datetime(aps_result['a_dates']+" "+aps_result['a_times'], yearfirst =True)
+        aps_result.set_index('datetime', inplace = True)
+        aps_result.to_pickle('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\aps.p')
+        
+
 #%%
 #merge smps and aps in all folders    
 ################################################################
-
+'''
 os.chdir(infolder)
 
 a=glob.glob('*\\')
@@ -186,6 +205,7 @@ for dayfolder in range(len(a)):
 
          
 print ' Data has been merged :)'
-'''
-del s_list
+
+#del s_list
 #del s_files
+'''
