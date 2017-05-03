@@ -53,8 +53,14 @@ for ifolder in range(len(a)):
         for s in range(len(filelist)):
             n+=1
             #print n
+            if "noheat" in filelist[s]:
+                    print "looking for key not in: "+filelist[s]
+                    frame_notin=np.genfromtxt(filelist[s], delimiter = ",", usecols=(0,1))
+                    out3=np.concatenate((out3,frame_notin))
+                    filename_notin = filelist[s]
+                    continue 
                 
-            if key[0] in filelist[s]:
+            elif "heat" in filelist[s]:
                 
                 print "looking for phrase "+str(key[0])+" in: "+filelist[s]
                 frame_in=np.genfromtxt(filelist[s], delimiter = ",", usecols=(0,1))
@@ -67,31 +73,28 @@ for ifolder in range(len(a)):
 #                 out2=np.concatenate((out2,frame_notin))
 #==============================================================================
                 
-            if key[0] not in filelist[s]:
-                    print "looking for key not in: "+filelist[s]
-                    frame_notin=np.genfromtxt(filelist[s], delimiter = ",", usecols=(0,1))
-                    out3=np.concatenate((out3,frame_notin))
-                    filename_notin = filelist[s]
-                    continue 
+            
 
             
                 
-        fig=plt.figure(num = n)
-        plt.scatter(frame_in[:,0], frame_in[:,1],20,'r',  label = filename_in,edgecolor = 'none')
-        plt.scatter(frame_notin[:,0], frame_notin[:,1],20,'g',  label = filename_notin, edgecolor = 'none')
-        plt.legend(fontsize = 'x-small')
-        plt.ylabel('n$_s$'+ "$( cm^{-2}$)", fontsize = 12)
-        plt.xlabel("Temperature ("+ degree_sign+ "C)", fontsize = 12)
-        plt.yscale('log')
-        plt.title(a[ifolder][0:6])
+#==============================================================================
+#         fig=plt.figure(num = n)
+#         plt.scatter(frame_in[:,0], frame_in[:,1],20,'r',  label = filename_in,edgecolor = 'none')
+#         plt.scatter(frame_notin[:,0], frame_notin[:,1],20,'g',  label = filename_notin, edgecolor = 'none')
+#         plt.legend(fontsize = 'x-small')
+#         plt.ylabel('# Ice nucleating particles'+ "$(L^{-1}$ air)", fontsize = 12)
+#         plt.xlabel("Temperature ("+ degree_sign+ "C)", fontsize = 12)
+#         plt.yscale('log')
+#         plt.title(a[ifolder][0:6])
+#==============================================================================
                 
 fig1=plt.figure()
 plt.yscale('log') 
-plt.scatter(out1[:,0], out1[:,1],20,'r', label = key[0] + "ed", edgecolor = 'none')
-plt.scatter(out3[:,0], out3[:,1], 20,'g', label = "not " + key[0]+"ed", edgecolor = 'none')
-plt.legend()
+plt.scatter(out1[:,0], out1[:,1],20,'r', label = "Inorganic INPs (after heat)" , edgecolor = 'none')
+plt.scatter(out3[:,0], out3[:,1], 20,'g', label = "Inorganic + Bio INPs (untreated)", edgecolor = 'none')
+plt.legend(fontsize=10)
 #plt.title (a[daynumber][4:6] + '-'+ a[daynumber][2:4]+ '-' + a[daynumber][0:2])
-plt.ylabel('n$_s$'+ "$( cm^{-2}$)", fontsize = 12)
+plt.ylabel('# Ice Nucleating Particles'+ "$(L^{-1}$ air)", fontsize = 12)
 plt.xlabel("Temperature ("+ degree_sign+ "C)", fontsize = 12)
 os.chdir('X:\\')
 plt.savefig(a[ifolder][0:6]+".png")
