@@ -58,7 +58,7 @@ for i in range (len(df_INPtidy)):
     print df_INPtidy['start_datetime'][i]
     windavs = windavs.append(wind.loc[windmask].mean(axis=0), ignore_index=True)
 
-
+x=pd.join([df_INP, metavs], axis =1)
 
 #==============================================================================
 #     met_align = met.reindex(df_INP.index, method ='nearest')
