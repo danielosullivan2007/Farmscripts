@@ -63,7 +63,6 @@ for i in range (len(df_INPtidy)):
 windavs=windavs.drop(u'Unnamed: 0', axis=1)
     
 
-
 #==============================================================================
 # indir = ('W:\APS')
 # 
