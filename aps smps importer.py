@@ -42,19 +42,25 @@ os.chdir(indir)
 indir = ('W:\SMPS')
 
 os.chdir(indir)
-df_smps = pd.DataFrame(columns= ['NaT',u'Date', u'Start Time',u' 14.1', u' 14.6',u' 15.1',u' 15.7',u' 16.3',
- u' 16.8',u' 17.5', u'514.0',u'532.8',u'552.3',u'572.5',u'593.5',u'615.3',u'637.8',u'661.2',u'685.4', u'710.5'])
+df_smps = pd.DataFrame()
 a=glob.glob('*.csv')
 
 for i in range(len(a)):
-    df=pd.read_csv(a[9], delimiter =',', header =25, skip_footer=30)
+    df=pd.read_csv(a[i], delimiter =',', header =25, skip_footer=30)
     df=df.drop(df.index[2:8])
-    df.loc[-1] = pd.to_datetime(df.iloc[0][1:]+" "+df.iloc[1][1:])
-    df.index = df.index + 1  # shifting index
-    df = df.sort()  # sorting by index
+
+    
     df = df.transpose()
-    df=df.set_index(df[0])
+    
     df.columns = df.iloc[0][:]
     df=df.drop(df.index[0])
-    df_smps = df_smps.append(df)
-
+    df['datetime']=pd.to_datetime(df['Date']+" "+df['Start Time'])
+    df=df.drop(['Date', 'Start Time'], axis =1)
+    
+    df_smps = df_smps.append(df, ignore_index=True)
+datetimes = df_smps['datetime']
+df_smps.drop('datetime', axis =1, inplace = True)
+df_smps = df_smps.iloc[:,1:].astype(float)
+df_smps.insert(0,'datetimes', datetimes)
+   # df_smps.iloc[0:, 1:] = df_smps.iloc[0:, 1:].astype(float)
+df_smps.to_pickle('C:\Users\eardo\Desktop\Farmscripts\Pickels\smps.p')
