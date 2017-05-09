@@ -8,41 +8,52 @@ import pandas as pd
 import numpy as np
 import os as os
 import glob 
+import matplotlib.pyplot as plt
+
 topfolder='W:\\'
 key_terms= ["Data"]
 
-timediff_end=pd.Series()
-timediff_start=pd.Series()
-timediffs=pd.DataFrame( columns= ['t_from_start', 't_from_end'])
+degree_sign= u'\N{DEGREE SIGN}'
 
+
+def get_t_diffs(dataset, mask):
+
+                INP_start = df_INPtidy['start_datetime'][i]
+                INP_end = df_INPtidy['end_datetime'][i]
+                
+                first_data = dataset.loc[mask]['datetimes'].iloc[0]
+                last_data = dataset.loc[mask]['datetimes'].iloc[-1]
+                
+                diff_from_start = dataset.loc[mask]['datetimes'].iloc[0] - df_INPtidy['start_datetime'][i]
+                diff_to_end= dataset.loc[mask]['datetimes'].iloc[-1] - df_INPtidy['end_datetime'][i] 
+                
+                return INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start
+
+                
+
+def compile_t_diffs(INP_start, INP_end, last_data, first_Data, diff_to_end, diff_from_start):
+
+    t_stamp_INP_end.set_value(i, INP_end)
+    t_stamp_INP_start.set_value(i, INP_start)
+    
+    dataset_start_t.set_value(i, first_data)
+    dataset_end_t.set_value(i, last_data)
+    
+    timediff_start.set_value(i, diff_from_start)
+    timediff_end.set_value(i, diff_to_end)
+    timediffs = pd.concat([ t_stamp_INP_start, dataset_start_t, timediff_start, t_stamp_INP_end , dataset_end_t, timediff_end ], axis=1)
+    timediffs.columns =['t_stamp_INP_start', 'dataset_start_t', 'timediff_start', 't_stamp_INP_end' , 'dataset_end_t', 'timediff_end' ]
+    return timediffs
+
+
+#timediffs=pd.DataFrame( columns= ['timediff_start', 't_stamp_INP_start', 'timediff_end', 't_stamp_INP_end'])
 
 num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
            -19:'minus19',-20:'minus20',-21:'minus21',
            -22:'minus22', -23:'minus23', -24:'minus24',-25: 'minus25'}
            
-metavs=pd.DataFrame(columns=[u'level_0', u'index',
-       u'Dry Bulb Temperature', u'Dew Point Temperature', u'Grass Temperature',
-       u'Concrete Temperature', u'10cm Soil Temperature',
-       u'Rainfall Total since 0900', u'Radiation Total since 0900',
-       u'Humidity'])
 
-windavs =pd.DataFrame(columns=['MEAN_WIND_DIR', 'MEAN_WIND_SPEED', 
-'MAX_GUST_DIR', 'MAX_GUST_SPEED', 'MAX_GUST_CTIME'])
 
-apsavs= pd.DataFrame(columns =[u'0.542', u'0.583', u'0.626', u'0.673', u'0.723', u'0.777', u'0.835',
-       u'0.898', u'0.965', u'1.037', u'1.114', u'1.197', u'1.286', u'1.382',
-       u'1.486', u'1.596', u'1.715', u'1.843', u'1.981', u'10.37', u'11.14',
-       u'11.97', u'12.86', u'13.82', u'14.86', u'15.96', u'17.15', u'18.43',
-       u'19.81', u'2.129', u'2.288', u'2.458', u'2.642', u'2.839', u'3.051',
-       u'3.278', u'3.523', u'3.786', u'4.068', u'4.371', u'4.698', u'5.048',
-       u'5.425', u'5.829', u'6.264', u'6.732', u'7.234', u'7.774', u'8.354',
-       u'8.977', u'9.647', u'<0.523', u'Aerodynamic Diameter', u'Date',
-       u'Start Time', u'datetime'])
-
-smps_avs = pd.DataFrame(columns = [u'datetime',    u' 14.1',    u' 14.6',    u' 15.1',    u' 15.7',
-          u' 16.3',    u' 16.8',    u' 17.5',    u' 18.1',    u' 18.8',
-          u'358.7',    u'371.8',    u'385.4',    u'399.5',    u'414.2',
-          u'429.4',    u'445.1',    u'461.4',    u'478.3',    u'495.8'])
 ######################################################################################################
 #==============================================================================
 # indir = ('W:\SMPS')
@@ -100,9 +111,19 @@ smps_avs = pd.DataFrame(columns = [u'datetime',    u' 14.1',    u' 14.6',    u' 
 indir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
 os.chdir(indir)
 aps=pd.read_pickle(indir+"aps.p")
+
+aps['datetimes']=aps.datetime
+
 INPs =pd.read_pickle(indir+"INPs.p")
 met = pd.read_pickle(indir+ "met.p")
+met.reset_index(inplace=True)
+met.rename(columns ={'Datetime':'datetimes'}, inplace =True)
+
+
 wind = pd.read_pickle(indir+ "wind.p")
+wind.reset_index(inplace=True)
+wind.rename({'OB_END_TIME':'datetimes'}, inplace=True)
+wind['datetimes']=wind.OB_END_TIME
 smps = pd.read_pickle(indir+"SMPS.p")
 #smps=smps.drop([u'<0.523', u'Aerodynamic Diameter', u'Date',
        #u'Start Time'], axis =0)
@@ -118,63 +139,242 @@ for T in range (-25,-10, 5):
     df_INPtidy = df_INP.drop([ u'T'], axis =1).reset_index()
     
     df_INPtidy = df_INPtidy.drop('index', axis=1)
-    met.reset_index(inplace=True)
+    
+###############################################################################################################################
+#MET AVERAGING 
+
+    dataset_start_t=pd.Series()
+    dataset_end_t=pd.Series()
+    timediff_end=pd.Series()
+    timediff_start=pd.Series()
+    t_stamp_INP_start=pd.Series()
+    t_stamp_INP_end=pd.Series()
+    
+    metavs=pd.DataFrame(columns=[u'level_0', u'index',
+       u'Dry Bulb Temperature', u'Dew Point Temperature', u'Grass Temperature',
+       u'Concrete Temperature', u'10cm Soil Temperature',
+       u'Rainfall Total since 0900', u'Radiation Total since 0900',
+       u'Humidity'])
+    
+    
+    windavs =pd.DataFrame(columns=['MEAN_WIND_DIR', 'MEAN_WIND_SPEED', 
+                                   'MAX_GUST_DIR', 'MAX_GUST_SPEED', 'MAX_GUST_CTIME'])
+
+    apsavs= pd.DataFrame(columns =[u'0.542', u'0.583', u'0.626', u'0.673', u'0.723', u'0.777', u'0.835',
+           u'0.898', u'0.965', u'1.037', u'1.114', u'1.197', u'1.286', u'1.382',
+           u'1.486', u'1.596', u'1.715', u'1.843', u'1.981', u'10.37', u'11.14',
+           u'11.97', u'12.86', u'13.82', u'14.86', u'15.96', u'17.15', u'18.43',
+           u'19.81', u'2.129', u'2.288', u'2.458', u'2.642', u'2.839', u'3.051',
+           u'3.278', u'3.523', u'3.786', u'4.068', u'4.371', u'4.698', u'5.048',
+           u'5.425', u'5.829', u'6.264', u'6.732', u'7.234', u'7.774', u'8.354',
+           u'8.977', u'9.647', u'<0.523', u'Aerodynamic Diameter', u'Date',
+           u'Start Time', u'datetime'])
+
+    smps_avs = pd.DataFrame(columns = [u'datetime',    u' 14.1',    u' 14.6',    u' 15.1',    u' 15.7',
+              u' 16.3',    u' 16.8',    u' 17.5',    u' 18.1',    u' 18.8',
+              u'358.7',    u'371.8',    u'385.4',    u'399.5',    u'414.2',
+              u'429.4',    u'445.1',    u'461.4',    u'478.3',    u'495.8'])
+    
     
     for i in range (len(df_INPtidy)):
-        metmask=(met['Datetime'] > df_INPtidy['start_datetime'][i]) & (met['Datetime'] <=  df_INPtidy['end_datetime'][i])
+        #print i
+        met_mask=(met['datetimes'] > df_INPtidy['start_datetime'][i]) & (met['datetimes'] <=  df_INPtidy['end_datetime'][i])
+        if met.loc[met_mask]['datetimes'].empty:
+            #print 'pass'
+            continue
+        else:
+            
+            metavs = metavs.append(met.loc[met_mask].mean(axis=0), ignore_index=True)
+            
+            INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(met, met_mask)
+            timediffs_met = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
         
-        metavs = metavs.append(met.loc[metmask].mean(axis=0), ignore_index=True)
+        
     metavs.drop([u'index', u'Unnamed: 0',u'level_0'], axis=1)
     
-        
-    wind.reset_index(inplace=True)
+###############################################################################################################################
+#SMPS AVERAGING'''        
+    dataset_start_t=pd.Series()
+    dataset_end_t=pd.Series()
+    timediff_end=pd.Series()
+    timediff_start=pd.Series()
+    t_stamp_INP_start=pd.Series()
+    t_stamp_INP_end=pd.Series()
+    
     for i in range (len(df_INPtidy)):
         
         smps_mask = (smps['datetimes'] > df_INPtidy['start_datetime'][i]) & (smps['datetimes']  <=  df_INPtidy['end_datetime'][i])
-        smps_avs=smps_avs.append(smps.loc[smps_mask].mean(axis=0, skipna = True), ignore_index=True)
-        diff_to_end= (smps.loc[smps_mask]['datetimes'].iloc[-1] - df_INPtidy['end_datetime'][i]) #/ pd.Timedelta('1 hour')
-        diff_from_start = (smps.loc[smps_mask]['datetimes'].iloc[0] - df_INPtidy['start_datetime'][i]) 
+        if smps.loc[smps_mask]['datetimes'].empty:
+            
+                
+            continue
+        else:
+            
+            smps_avs=smps_avs.append(smps.loc[smps_mask].mean(axis=0, skipna = True), ignore_index=True)
+            INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(smps, smps_mask)
+            timediffs_smps = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
         
-#==============================================================================
-#         timediff_start=timediff_start.set_value(i, diff_from_start)
-#         timediff_end=timediff_end.set_value(i, diff_to_end)
-#         
-#         timediffs=pd.DataFrame([timediff_start, timediff_end])
-#         timediffs=timediffs.transpose()
-#         timediffs = timediffs/ np.timedelta64(1, 'h')
-#         smps_total = smps_avs.sum(axis=1)
-#         smps_total.columns='SMPS_total'
-#==============================================================================
+        smps_total = smps_avs.sum(axis=1)
+        smps_total.columns='SMPS_total'
     
+
+############################################################################################################################### 
+#APS AVERAGING''' 
+    dataset_start_t=pd.Series()
+    dataset_end_t=pd.Series()
+    timediff_end=pd.Series()
+    timediff_start=pd.Series()
+    t_stamp_INP_start=pd.Series()
+    t_stamp_INP_end=pd.Series()
     
-    aps=pd.read_pickle(indir+"aps.p")
     for i in range(len(df_INPtidy)):
+        
         aps_mask=  (aps['datetime'] > df_INPtidy['start_datetime'][i]) & (aps['datetime'] <=  df_INPtidy['end_datetime'][i])
-        apsavs=apsavs.append(aps.loc[aps_mask].mean(axis=0), ignore_index=True)
+        if aps.loc[aps_mask]['datetimes'].empty:
+            
+            continue
+        
+        else:
+            
+            apsavs=apsavs.append(aps.loc[aps_mask].mean(axis=0), ignore_index=True)
+            INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(aps, aps_mask)
+            timediffs_aps = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
         aps_total= apsavs.sum(axis=1)
         
-    
+############################################################################################################################### 
+#WIND AVERAGING'''     
+    dataset_start_t=pd.Series()
+    dataset_end_t=pd.Series()
+    timediff_end=pd.Series()
+    timediff_start=pd.Series()
+    t_stamp_INP_start=pd.Series()
+    t_stamp_INP_end=pd.Series()
     
     for i in range (len(df_INPtidy)):
-        windmask=(wind['OB_END_TIME'] > df_INPtidy['start_datetime'][i]) & (wind['OB_END_TIME'] <=  df_INPtidy['end_datetime'][i])
-        
-        windavs = windavs.append(wind.loc[windmask].mean(axis=0), ignore_index= True)
+        wind_mask=(wind['OB_END_TIME'] > df_INPtidy['start_datetime'][i]) & (wind['OB_END_TIME'] <=  df_INPtidy['end_datetime'][i])
+        if  wind.loc[wind_mask]['datetimes'].empty:
+            
+            continue
+        else: 
+            
+            windavs = windavs.append(wind.loc[wind_mask].mean(axis=0), ignore_index= True)
+            INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(wind, wind_mask)
+            timediffs_wind = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
+            
     windavs=windavs.drop(u'Unnamed: 0', axis=1)
-    
     data=pd.concat([df_INPtidy, windavs, metavs, aps_total, smps_total], axis =1)
     data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0'], axis=1)
     
-    
-    corr=data.corr()
+del t_stamp_INP_end,t_stamp_INP_start, timediff_end, timediff_start, 
+###################################################################################################
+#DATA CORRELATION SECTION 
+corr=data.corr()
 #==============================================================================
-#     corr = corr.drop(['100cm Soil Temperature','30cm Soil Temperature','Battery Voltage', 'Logger Temperature',
-#      'Sunshine total since 0900', 'Date', 'Time', ' '], axis =1)
+# corr.drop(['Logger Temperature',
+#  'Sunshine total since 0900', 'Date', 'Time', ' '], axis = 1, inplace=True)
+# 
+# corr.drop([ 'Logger Temperature',
+#  'Sunshine total since 0900', 'Date', 'Time', ' '], axis =0, inplace=True)
 #==============================================================================
-    
-    corr.rename(columns = {u'Dry Bulb Temperature':'Dry Bulb T', u'Dew Point Temperature': 'Dew Point T', u'Grass Temperature':'Grass T', 
-    u'Concrete Temperature': 'Concrete T', u'10cm Soil Temperature': 'Soil T', u'Rainfall Total since 0900': 'Rainfall Total',
-     u'Radiation Total since 0900': 'Radiation Total',  0L: 'APS Total Count' , 1L: 'SMPS Total Count'}, inplace = True)
 
-    corr.to_csv(indir+"corr at" + num2words[T]+".csv")
-    print 'done'
+corr.rename(columns = {'INP':'Log10 INPs',u'Dry Bulb Temperature':'Dry Bulb T', u'Dew Point Temperature': 'Dew Point T', u'Grass Temperature':'Grass T', 
+u'Concrete Temperature': 'Concrete T', u'10cm Soil Temperature': 'Soil T', u'Rainfall Total since 0900': 'Rainfall Total',
+ u'Radiation Total since 0900': 'Radiation Total',  0L: 'APS Total Count' , 1L: 'SMPS Total Count', u'OB_END_TIME': 'Obs. end Time',  
+    u'MEAN_WIND_DIR': 'Av. wind dir',
+   u'MEAN_WIND_SPEED':' Av. wind speed', u'MAX_GUST_DIR':'Max gust direction', u'MAX_GUST_SPEED': 'Max gust speed',
+   u'MAX_GUST_CTIME': ' Max Gust Ctime'}, inplace = True)
+
+corr.rename(index = {'INP':'Log10 INPs', u'Dry Bulb Temperature':'Dry Bulb T', u'Dew Point Temperature': 'Dew Point T', u'Grass Temperature':'Grass T', 
+u'Concrete Temperature': 'Concrete T', u'10cm Soil Temperature': 'Soil T', u'Rainfall Total since 0900': 'Rainfall Total',
+ u'Radiation Total since 0900': 'Radiation Total',  0L: 'APS Total Count' , 1L: 'SMPS Total Count', u'OB_END_TIME': 'Obs. end Time',  
+    u'MEAN_WIND_DIR': 'Av. wind dir',
+   u'MEAN_WIND_SPEED':' Av. wind speed', u'MAX_GUST_DIR':'Max gust direction', u'MAX_GUST_SPEED': 'Max gust speed',
+   u'MAX_GUST_CTIME': ' Max Gust Ctime'}, inplace = True)
+
+corr.to_csv(indir+"corr at" + num2words[T]+".csv")
+print 'done'
+
+################################################################################
+#GRAPHING
     
+minus15=pd.read_csv('corr atminus15.csv', index_col='Unnamed: 0')
+minus20=pd.read_csv('corr atminus20.csv', index_col='Unnamed: 0')
+minus25=pd.read_csv('corr atminus25.csv', index_col='Unnamed: 0')
+
+
+
+
+minus15=pd.read_csv('corr atminus15.csv', index_col='Unnamed: 0')
+minus20=pd.read_csv('corr atminus20.csv', index_col='Unnamed: 0')
+minus25=pd.read_csv('corr atminus25.csv', index_col='Unnamed: 0')
+
+
+x = np.square(minus15.loc['Av. wind dir':'SMPS Total Count',['Log10 INPs']].values)
+y = np.square(minus20.loc['Av. wind dir':'SMPS Total Count',['Log10 INPs']].values)
+z = np.square(minus25.loc['Av. wind dir':'SMPS Total Count',['Log10 INPs']].values)
+
+
+fig, ax = plt.subplots(figsize=(5, 5))
+ax= plt.subplot(111)
+
+
+index = minus15.index
+index = index[1:16]
+y_pos = np.arange(len(index))
+ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C')
+ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C')
+ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C')
+plt.xticks(y_pos,index, rotation = 90)
+plt.xlim(-1,17)
+plt.legend(loc=2, fontsize =10)
+plt.ylabel('Coefficient of determination $\mathregular{R^2}$')
+#plt.ylabel('Pearson R Coefficient')
+plt.ylim(0,1)
+plt.tight_layout()
+plt.savefig(indir+"\correlations")
+
+#==============================================================================
+# 
+# index = corr.index[1:]
+# y_pos = np.arange(len(index))
+# fig, ax = plt.subplots()
+# ax= plt.subplot(111)
+# plt.legend(loc=2, fontsize =10)
+# plt.ylabel('Pearson R Coefficient')
+# plt.ylim(-1,1)
+# plt.tight_layout()
+# plt.xticks(y_pos,index, rotation = 90)
+# ax.bar(y_pos, x)
+#==============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
