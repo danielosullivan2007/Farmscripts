@@ -15,8 +15,10 @@ import pylab
 import matplotlib.pyplot as plt
 import datetime
 import pandas as pd
+import matplotlib.patches as mpatches
 
-
+percent = [0.2, 0.5, 0.8]
+degree_sign= u'\N{DEGREE SIGN}'
 #==============================================================================
 # num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
 #            -19:'minus19',-20:'minus20',-21:'minus21',
@@ -242,14 +244,56 @@ import pandas as pd
 # # df= df.append(df2, ignore_index=True)
 # #==============================================================================
 #==============================================================================
+pickdir = ('/Users/Daniel/Desktop/farmscripts/Pickels/')
+INPs = pd.read_pickle(pickdir+'INPs.p').sort(columns='T')
+INPs2 =INPs.pivot(index=None, columns='T', values='INP')
+
+df_INP_15 = INPs2[-15.0].describe()
+df_INP_16 = INPs2[-16.0].describe()
+df_INP_17 = INPs2[-17.0].describe()
+df_INP_18 = INPs2[-18.0].describe()
+df_INP_19 = INPs2[-19.0].describe()
+df_INP_20 = INPs2[-20.0].describe()
+df_INP_21 = INPs2[-21.0].describe()
+df_INP_22 = INPs2[-22.0].describe()
+df_INP_23 = INPs2[-23.0].describe()
+df_INP_24 = INPs2[-24.0].describe()
+df_INP_25 = INPs2[-25.0].describe()
+
+stats=(pd.concat([df_INP_15,df_INP_16,df_INP_16,
+                  df_INP_17,df_INP_18,df_INP_19,df_INP_20,df_INP_21,df_INP_22,df_INP_23, df_INP_24, df_INP_25],axis=1)).T
+    
+fig1=plt.plot()
+plt.subplot(111)
+plt.yscale('log', nonposy='clip')
+plt.xlabel('T')
+plt.ylabel('INP')
+
+
+
+        
+# fig = ax1.get_figure()
+# fig.savefig(out_folder+keyword+'Binned INP')
+# 
+# df4=(df3.iloc[:,[3,4]]).dropna(how='any')
+# df4.to_csv(out_folder+keyword+'.csv')
+# df5=df4.pivot(index=None, columns='T', values='INP')
+# ax2=df5.plot.box(logy=True)
+# fig = ax2.get_figure()
+# fig.savefig(out_folder+keyword+'boxplots')                 
+
+
+
 import datetime
-glodir=('C:\\Users\\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
+
+#glodir=('C:\\Users\\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
+glodir = ('/Users/Daniel/Desktop/farmscripts/glomap data/160509/')
 zero_day = datetime.date(2001,1,1)
 start_day = datetime.date(2001, 9, 15)
 end_day = datetime.date(2001, 10,31)
 
 
-felds=pd.read_csv(glodir+'INP_spectra_danny_feldspar.csv', delimiter =',', index_col=0)
+felds=pd.read_csv(glodir+'INP_spectra_danny_feldspar.csv', delimiter =',', index_col=0)/1000
 day = list(felds.columns)
 
 for i in range(len(day)):
@@ -261,33 +305,129 @@ for i in range(len(day)):
 felds = felds.transpose()
 felds['date']=day
 feld_mask=  (felds['date'] > start_day) & (felds['date'] <=  end_day)
-felds_data=felds.loc[feld_mask]
+feld_data=felds.loc[feld_mask]
 
-Nie=pd.read_csv(glodir+'INP_spectra_danny_m3_Niemand.csv', delimiter =',', index_col=0)
+feld_data=felds.loc[feld_mask].T.reset_index()
+feld_data['T'] = feld_data['# Temps']*-1
+feld_data=feld_data.T
+feld_data.columns=list(feld_data.loc['T'])
+feld_data.drop('# Temps', inplace = True)
+feld_data.set_index('', inplace =True)
+feld_data.drop('', inplace =True)
+
+
+
+feld_data_stats = pd.DataFrame()
+for i in range (len(list(feld_data.columns))):
+    feld_data_stats[i]=pd.to_numeric(feld_data.iloc[:,i]).describe(percentiles=percent)
+
+feld_data_stats = feld_data_stats.T
+feld_data_stats.index = feld_data_stats.index*-1
+
+
+
+
+Nie=pd.read_csv(glodir+'INP_spectra_danny_m3_Niemand.csv', delimiter =',', index_col=0)/1000
 Nie=Nie.transpose()
 Nie['date']=day
 Nie_mask=  (Nie['date'] > start_day) & (Nie['date'] <=  end_day)
 Nie_data=Nie.loc[Nie_mask]
 
+Nie_data=Nie.loc[Nie_mask].T.reset_index()
+Nie_data['T'] = Nie_data['# Temps']*-1
+Nie_data=Nie_data.T
+Nie_data.columns=list(Nie_data.loc['T'])
+Nie_data.drop('# Temps', inplace = True)
+Nie_data.set_index('', inplace =True)
+Nie_data.drop('', inplace =True)
 
-total=pd.read_csv(glodir+'INP_spectra_danny_m3_total.csv', delimiter =',', index_col=0)
+
+
+Nie_data_stats = pd.DataFrame()
+for i in range (len(list(Nie_data.columns))):
+    Nie_data_stats[i]=pd.to_numeric(Nie_data.iloc[:,i]).describe(percentiles=percent)
+
+Nie_data_stats = Nie_data_stats.T
+Nie_data_stats.index = Nie_data_stats.index*-1
+
+
+total=pd.read_csv(glodir+'INP_spectra_danny_m3_total.csv', delimiter =',', index_col=0)/1000
 total=total.transpose()
 total['date']=day
 total_mask=  (total['date'] > start_day) & (total['date'] <=  end_day)
-total_data=total.loc[total_mask]
 
-marine=pd.read_csv(glodir+'INP_spectra_danny_marine.csv', delimiter =',', index_col=0)
+total_data=total.loc[total_mask].T.reset_index()
+total_data['T'] = total_data['# Temps']*-1
+total_data=total_data.T
+total_data.columns=list(total_data.loc['T'])
+total_data.drop('# Temps', inplace = True)
+total_data.set_index('', inplace =True)
+total_data.drop('', inplace =True)
+
+
+
+total_data_stats = pd.DataFrame()
+for i in range (len(list(total_data.columns))):
+    total_data_stats[i]=pd.to_numeric(total_data.iloc[:,i]).describe(percentiles=percent)
+
+total_data_stats = total_data_stats.T
+total_data_stats.index = total_data_stats.index*-1
+
+marine=pd.read_csv(glodir+'INP_spectra_danny_marine.csv', delimiter =',', index_col=0)/1000
 marine=marine.transpose()
 marine['date']=day
 marine_mask=  (marine['date'] > start_day) & (marine['date'] <=  end_day)
 marine_data=marine.loc[marine_mask]
 
+marine_data=marine.loc[marine_mask].T.reset_index()
+marine_data['T'] = marine_data['# Temps']*-1
+marine_data=marine_data.T
+marine_data.columns=list(marine_data.loc['T'])
+marine_data.drop('# Temps', inplace = True)
+marine_data.set_index('', inplace =True)
+marine_data.drop('', inplace =True)
 
 
-del marine_mask, total_mask, Nie_mask, feld_mask, felds, total, marine, Nie, day, date
+
+marine_data_stats = pd.DataFrame()
+for i in range (len(list(marine_data.columns))):
+    marine_data_stats[i]=pd.to_numeric(marine_data.iloc[:,i]).describe(percentiles=percent)
+marine_data_stats = marine_data_stats.T
+marine_data_stats.index = marine_data_stats.index*-1
+
+
+
+del marine_mask, total_mask, Nie_mask, feld_mask, felds, total, marine, Nie, day
     
+indir2 = ('/Users/Daniel/Desktop/farmscripts/')
+os.chdir(indir2)
+indata= np.genfromtxt('all data_1.csv', delimiter = ',')
+
+fig1=plt.plot()
+plt.subplot(111)
+plt.yscale('log', nonposy='clip')
+plt.xlim(-27, -13)
+plt.ylim(0.001, 50)
+plt.xlabel('T ('+degree_sign+'C)')
+plt.ylabel('INP /L')
 
 
+#ax1=plt.fill_between(stats.index, stats['25%'],stats['75%'],  color = 'k', zorder =2)
+ax0 = plt.scatter(indata[:,0], indata[:,1])
+ax1=plt.scatter(INPs['T'], INPs['INP'], color = 'k')
+
+ax2=plt.fill_between(total_data_stats.index, total_data_stats['20%'],total_data_stats['80%'], alpha = 0.65, color ='b', zorder =1)
+ax3=plt.fill_between(Nie_data_stats.index, Nie_data_stats['20%'],Nie_data_stats['80%'], alpha = 0.65, color = 'r', zorder =0)
+#ax4=plt.fill_between(marine_data_stats.index, marine_data_stats['20%'],marine_data_stats['80%'], alpha = 0.5)
+#ax4=plt.fill_between(feld_data_stats.index, feld_data_stats['20%'],feld_data_stats['80%'], alpha = 0.5)
+
+red_patch = mpatches.Patch(color='red', label='Niemand')
+blue_patch = mpatches.Patch(color='blue', label='Feldspar + Marine')
+black_patch = mpatches.Patch(color='black', label='Measured')
+
+plt.legend(handles=[red_patch, blue_patch, black_patch])
+
+plt.show()
 
 
 

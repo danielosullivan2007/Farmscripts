@@ -317,6 +317,8 @@ z = np.square(minus25.loc['Av. wind dir':'SMPS Total Count',['Log10 INPs']].valu
 fig, ax = plt.subplots(figsize=(5, 5))
 ax= plt.subplot(111)
 
+indir2=
+indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 
 index = minus15.index
 index = index[1:16]
