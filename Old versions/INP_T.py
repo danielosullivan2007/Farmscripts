@@ -22,7 +22,14 @@ if host == 'see4-234':
     pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
     indir2 = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
     glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
+<<<<<<< HEAD
     
+=======
+elif host == 'Daniels-Air.home':
+    pickdir = ('//Users//Daniel//Desktop//farmscripts//Pickels//')
+    indir2 = ('//Users//Daniel//Desktop//farmscripts//')
+    glodir = ('//Users//Daniel//Desktop//farmscripts//glomap data//160509//')
+>>>>>>> 1c30fefec82dafaf580d7bf809ca160f418581c5
 #==============================================================================
 # else:
 #     pickdir = ('/Users/Daniel/Desktop/farmscripts/Pickels/')
@@ -30,6 +37,7 @@ if host == 'see4-234':
 #     glodir = ('/Users/Daniel/Desktop/farmscripts/glomap data/160509/')
 #==============================================================================
 
+<<<<<<< HEAD
 percent = [0.2, 0.5, 0.8]
 degree_sign= u'\N{DEGREE SIGN}'
 num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
@@ -40,6 +48,18 @@ num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
 
 
 #==============================================================================
+=======
+#==============================================================================
+# percent = [0.2, 0.5, 0.8]
+# degree_sign= u'\N{DEGREE SIGN}'
+# num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
+#            -19:'minus19',-20:'minus20',-21:'minus21',
+#            -22:'minus22', -23:'minus23', -24:'minus24',-25: 'minus25'}
+# 
+# #defining a function
+# 
+# 
+>>>>>>> 1c30fefec82dafaf580d7bf809ca160f418581c5
 # INP=[]
 # point=[]
 # paths=[]
@@ -409,8 +429,13 @@ indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 fig1=plt.plot()
 plt.subplot(111)
 plt.yscale('log', nonposy='clip')
+<<<<<<< HEAD
 plt.xlim(-30, -10)
 plt.ylim(0.001, 100)
+=======
+plt.xlim(-27, -5)
+plt.ylim(0.001, 50)
+>>>>>>> 1c30fefec82dafaf580d7bf809ca160f418581c5
 plt.xlabel('T ('+degree_sign+'C)')
 plt.ylabel('INP /L')
 

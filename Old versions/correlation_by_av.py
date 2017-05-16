@@ -14,7 +14,12 @@ topfolder='W:\\'
 key_terms= ["Data"]
 
 degree_sign= u'\N{DEGREE SIGN}'
-
+import socket
+comp_name = socket.gethostname()
+if comp_name == "Daniels-Air.home":
+    indir ="//Users//Daniel//Desktop//farmscripts//pickels//"
+elif comp_name == 'x':
+    indir = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
 
 def get_t_diffs(dataset, mask):
 
@@ -108,7 +113,7 @@ num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
 
 ##############################################################################################################################
 #indir = ('/Users/Daniel/Desktop/Farmscripts/Pickels/')
-indir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
+#indir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
 os.chdir(indir)
 aps=pd.read_pickle(indir+"aps.p")
 
@@ -131,8 +136,8 @@ smps = pd.read_pickle(indir+"SMPS.p")
 smps = smps.rename(columns ={'index':'datetime'})
 
 
-for T in range (-25,-10, 5):
-    df_INP = INPs.loc[INPs['T'] ==T]
+for T in range (-25,-20, 5):
+    df_INP = INPs.loc[INPs['T'] ==-23]
     #df_INP['timedelta']= df_INP['end_datetime']-df_INP['start_datetime']
 
     
@@ -318,7 +323,11 @@ fig, ax = plt.subplots(figsize=(5, 5))
 ax= plt.subplot(111)
 
 
+<<<<<<< HEAD
 indata= np.genfromtxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\all data_1.csv', delimiter = ',')
+=======
+indata= np.genfromtxt('all data_1.csv', delimiter = ',')
+>>>>>>> 1c30fefec82dafaf580d7bf809ca160f418581c5
 
 index = minus15.index
 index = index[1:16]
@@ -353,7 +362,7 @@ plt.savefig(indir+"\correlations")
 
 
 
-
+data.to_csv(indir+"data.csv")
 
 
 
