@@ -317,8 +317,8 @@ z = np.square(minus25.loc['Av. wind dir':'SMPS Total Count',['Log10 INPs']].valu
 fig, ax = plt.subplots(figsize=(5, 5))
 ax= plt.subplot(111)
 
-indir2=
-indata= np.genfromtxt('all data_1.csv', delimiter = ',')
+
+indata= np.genfromtxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\all data_1.csv', delimiter = ',')
 
 index = minus15.index
 index = index[1:16]
@@ -327,7 +327,7 @@ ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+deg
 ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C')
 ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C')
 plt.xticks(y_pos,index, rotation = 90)
-plt.xlim(-1,17)
+plt.xlim(-1,15)
 plt.legend(loc=2, fontsize =10)
 plt.ylabel('Coefficient of determination $\mathregular{R^2}$')
 #plt.ylabel('Pearson R Coefficient')
@@ -335,8 +335,8 @@ plt.ylim(0,1)
 plt.tight_layout()
 plt.savefig(indir+"\correlations")
 
+
 #==============================================================================
-# 
 # index = corr.index[1:]
 # y_pos = np.arange(len(index))
 # fig, ax = plt.subplots()
@@ -347,9 +347,9 @@ plt.savefig(indir+"\correlations")
 # plt.tight_layout()
 # plt.xticks(y_pos,index, rotation = 90)
 # ax.bar(y_pos, x)
+# 
+# 
 #==============================================================================
-
-
 
 
 

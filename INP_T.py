@@ -16,17 +16,30 @@ import matplotlib.pyplot as plt
 import datetime
 import pandas as pd
 import matplotlib.patches as mpatches
+import socket
+host=socket.gethostname()
+if host == 'see4-234':
+    pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
+    indir2 = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
+    glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
+    
+#==============================================================================
+# else:
+#     pickdir = ('/Users/Daniel/Desktop/farmscripts/Pickels/')
+#     indir2 = ('/Users/Daniel/Desktop/farmscripts/')
+#     glodir = ('/Users/Daniel/Desktop/farmscripts/glomap data/160509/')
+#==============================================================================
 
 percent = [0.2, 0.5, 0.8]
 degree_sign= u'\N{DEGREE SIGN}'
+num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
+           -19:'minus19',-20:'minus20',-21:'minus21',
+           -22:'minus22', -23:'minus23', -24:'minus24',-25: 'minus25'}
+
+#defining a function
+
+
 #==============================================================================
-# num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
-#            -19:'minus19',-20:'minus20',-21:'minus21',
-#            -22:'minus22', -23:'minus23', -24:'minus24',-25: 'minus25'}
-# 
-# #defining a function
-# 
-# 
 # INP=[]
 # point=[]
 # paths=[]
@@ -35,13 +48,8 @@ degree_sign= u'\N{DEGREE SIGN}'
 # date=[]
 # Tlist=[]
 # 
-# 
-# dayp=[]
+# # dayp=[]
 # fdayp=[]
-# fday17=[]
-# datep17=[]
-# datep20=[]
-# datep23=[]
 # excels_list=[]
 # time_run=[]
 # INP_Tlist=[]
@@ -86,8 +94,8 @@ degree_sign= u'\N{DEGREE SIGN}'
 #         daily_reading=0
 #         for i in range(0,number_excels):
 #                 datain=np.genfromtxt(path+'\\'+excels[i],delimiter=',',skip_header=1,usecols=(0,1),dtype=float)
-#                 df=pd.DataFrame(datain, columns = ['T', 'INP'])
-#                 df2=df.drop_duplicates(['T'], keep = 'last')
+#                 df=pd.DataFrame(datain, columns = ['T', 'INP']) 
+#                 df2=df.drop_duplicates(['T'], keep = 'last')  ##########V Important! drops duplicates and keeps highest value
 #                 data=df2.as_matrix()
 #                 #print(len(data))
 #                 filename=excels[i]          
@@ -218,33 +226,33 @@ degree_sign= u'\N{DEGREE SIGN}'
 # plt.xlabel('T')
 # plt.ylabel('INP')
 # plt.savefig(out_folder+keyword+'Boxplots')
-# 
-# #==============================================================================
-# 
-# #df3.plot.box(x=minus'T', y='INP', logy=True)
-# #==============================================================================
-# # INPconc=np.genfromtxt(day_folder+'INP output.csv')
-# # INPrun=np.genfromtxt(day_folder+'INP run.csv')
-# # 
-# #==============================================================================
-# #==============================================================================
-# # for i in range(0,len(fday)):
-# #     b=0
-# #     a=fday[i]
-# #     b=datetime.datetime(int('20'+a[0:2]),int(a[2:4]),int(a[4:6]))
-# #     date.append(b) 
-# #     c=str(fday[i][6:10])
-# #     start_tlist.append(c)
-# #     d=str(fday[i][10:14])
-# #     end_tlist.append(d)
-# # 
-# #     
-# # x=np.transpose(np.vstack((date, start_tlist, end_tlist, INP_Tlist)))
-# # df2=pd.DataFrame(x, columns = ['Date', 'Start_time','End_time', 'INP_T'])
-# # df= df.append(df2, ignore_index=True)
-# #==============================================================================
+# INPs = pd.read_pickle(pickdir+'INPs.p')
 #==============================================================================
-pickdir = ('/Users/Daniel/Desktop/farmscripts/Pickels/')
+#==============================================================================
+
+#df3.plot.box(x=minus'T', y='INP', logy=True)
+#==============================================================================
+# INPconc=np.genfromtxt(day_folder+'INP output.csv')
+# INPrun=np.genfromtxt(day_folder+'INP run.csv')
+# 
+#==============================================================================
+#==============================================================================
+# for i in range(0,len(fday)):
+#     b=0
+#     a=fday[i]
+#     b=datetime.datetime(int('20'+a[0:2]),int(a[2:4]),int(a[4:6]))
+#     date.append(b) 
+#     c=str(fday[i][6:10])
+#     start_tlist.append(c)
+#     d=str(fday[i][10:14])
+#     end_tlist.append(d)
+# 
+#     
+# x=np.transpose(np.vstack((date, start_tlist, end_tlist, INP_Tlist)))
+# df2=pd.DataFrame(x, columns = ['Date', 'Start_time','End_time', 'INP_T'])
+# df= df.append(df2, ignore_index=True)
+#==============================================================================
+
 INPs = pd.read_pickle(pickdir+'INPs.p').sort(columns='T')
 INPs2 =INPs.pivot(index=None, columns='T', values='INP')
 
@@ -283,11 +291,6 @@ plt.ylabel('INP')
 # fig.savefig(out_folder+keyword+'boxplots')                 
 
 
-
-import datetime
-
-#glodir=('C:\\Users\\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
-glodir = ('/Users/Daniel/Desktop/farmscripts/glomap data/160509/')
 zero_day = datetime.date(2001,1,1)
 start_day = datetime.date(2001, 9, 15)
 end_day = datetime.date(2001, 10,31)
@@ -399,21 +402,21 @@ marine_data_stats.index = marine_data_stats.index*-1
 
 del marine_mask, total_mask, Nie_mask, feld_mask, felds, total, marine, Nie, day
     
-indir2 = ('/Users/Daniel/Desktop/farmscripts/')
+
 os.chdir(indir2)
 indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 
 fig1=plt.plot()
 plt.subplot(111)
 plt.yscale('log', nonposy='clip')
-plt.xlim(-27, -13)
-plt.ylim(0.001, 50)
+plt.xlim(-30, -10)
+plt.ylim(0.001, 100)
 plt.xlabel('T ('+degree_sign+'C)')
 plt.ylabel('INP /L')
 
 
 #ax1=plt.fill_between(stats.index, stats['25%'],stats['75%'],  color = 'k', zorder =2)
-ax0 = plt.scatter(indata[:,0], indata[:,1])
+ax0 = plt.scatter(indata[:,0], indata[:,1], alpha =0.1, color = 'g')
 ax1=plt.scatter(INPs['T'], INPs['INP'], color = 'k')
 
 ax2=plt.fill_between(total_data_stats.index, total_data_stats['20%'],total_data_stats['80%'], alpha = 0.65, color ='b', zorder =1)
@@ -423,9 +426,9 @@ ax3=plt.fill_between(Nie_data_stats.index, Nie_data_stats['20%'],Nie_data_stats[
 
 red_patch = mpatches.Patch(color='red', label='Niemand')
 blue_patch = mpatches.Patch(color='blue', label='Feldspar + Marine')
-black_patch = mpatches.Patch(color='black', label='Measured')
+black_patch = mpatches.Patch(color='k', label='Measured')
 
-plt.legend(handles=[red_patch, blue_patch, black_patch])
+plt.legend(handles=[red_patch, blue_patch, black_patch], loc =3)
 
 plt.show()
 
