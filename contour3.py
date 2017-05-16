@@ -11,7 +11,7 @@ from matplotlib.gridspec import GridSpec
 import datetime
 import matplotlib.cm as cm
 from scipy.stats import gaussian_kde
-
+import matplotlib.patches as mpatches
 
 '''DATA MUST BE IN LOG BINS BY INP NUMBER'''
 
@@ -192,8 +192,16 @@ p2=plt.plot(feld_data_stats.index, feld_data_stats['20%'], linewidth =1.5, color
 p2=plt.plot(feld_data_stats.index, feld_data_stats['80%'], linewidth =1.5, color = 'k')
 p2=plt.plot(marine_data_stats.index, marine_data_stats['20%'], linewidth =1.5, color = 'cyan')
 p2=plt.plot(marine_data_stats.index, marine_data_stats['80%'], linewidth =1.5, color = 'cyan')
-p2=plt.fill_between(feld_data_stats.index, feld_data_stats['20%'],feld_data_stats['80%'], alpha =0.4, color = 'black')
-p3=plt.fill_between(marine_data_stats.index, marine_data_stats['20%'],marine_data_stats['80%'], alpha = 0.7)
+p2=plt.fill_between(feld_data_stats.index, feld_data_stats['20%'],feld_data_stats['80%'], alpha =0.4, 
+                    color = 'black',
+                    label = 'Feldspar')
+p3=plt.fill_between(marine_data_stats.index, marine_data_stats['20%'],marine_data_stats['80%'],
+                    label = 'Marine' , alpha = 0.7)
+blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
+gray_patch = mpatches.Patch(  alpha =0.85 , label='Feldspar', lw =1,edgecolor ='k' ,facecolor='gray')
+plt.legend(handles=[blue_patch, gray_patch])
+
+
 #ax1.plot(pupT, pupINP)
 
 
@@ -207,7 +215,9 @@ p1=ax0.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['20%'], linewidth =1.5, color = 'k')
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['80%'], linewidth =1.5, color = 'k')
 p2=plt.fill_between(Nie_data_stats.index, Nie_data_stats['20%'],Nie_data_stats['80%'], alpha =0.4, color = 'black')
-
+blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
+gray_patch = mpatches.Patch(  alpha =0.85 , label='Niemand', lw =1,edgecolor ='k' ,facecolor='gray')
+plt.legend(handles=[ gray_patch])
 
 cmap = plt.get_cmap()
 cmap.set_under('white')
@@ -250,6 +260,7 @@ ax1.get_xaxis().set_tick_params(which='both', direction='out')
 ax1.set_title("Feldspar + Marine", fontsize=14)
 ttl1 = ax1.title
 ttl1.set_position([.5, 1.05])
+
 
 
 
