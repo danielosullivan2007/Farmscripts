@@ -18,7 +18,7 @@ import socket
 comp_name = socket.gethostname()
 if comp_name == "Daniels-Air.home":
     indir ="//Users//Daniel//Desktop//farmscripts//pickels//"
-elif comp_name == 'see4-234':
+elif comp_name == 'see4-234:
     indir = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
 
 def get_t_diffs(dataset, mask):
