@@ -17,6 +17,7 @@ import pandas as pd
 #Create Keylist for globbing
 data = pd.DataFrame()
 key = ["heat"]
+
 figfold='C:\\Users\\eardo\\Desktop\\Farmscripts\\Figures\\'
 #Glob each subfolder
 def globber(topfolder, key_terms):
@@ -91,7 +92,8 @@ filesloc_key2=[]
 folderloc_key2=[]
 #Glob each subfolder
 n=0
-
+############################################################
+#This section Searches for a keyword both in and not in file
 for ifolder in range(len(folders)):
     
     os.chdir(topfolder+ folders[ifolder])
@@ -132,7 +134,7 @@ for ifolder in range(len(folders)):
             
         elif "heat" in filelist[s]:
             
-            #print "looking for phrase "+str(key[0])+" in: "+filelist[s]
+            
             filesloc_key2.append(filelist[s])
             
             folderloc_key2.append(os.getcwd()+'\\')
@@ -176,7 +178,14 @@ del i, end2, end_1, end_key1, end_key2, dfstart1, dfstart2, filename_in1, filena
 del data, dfend1, dfend2
 
 
-
+################################################################
+#   THIS SECTION 1) GETS DATETIMES FROM ALL THE BULK FILES, 
+#                2) GETS DATETIMES FOR FILES WHICH MATCHED WITH 
+#                3) CREATES A MASK TO SELECT DATA FILES IN THE BULK DATABASE, 
+#                 WHICH MATCH WITH THOSE IDENTIFIED IN THE KEYWORD FOLDER (IN THIS CASE 'HEATED')
+#                4)PLOTS OUTPUT DATA, SAVES FIGURES
+#
+#                
 bulk_indir= "W:\\"
 #os.chdir(bulk_indir)
 out_bulk=np.empty(shape=(1,4))
@@ -194,6 +203,8 @@ bulk_run_fileloc=[]
 bulk_run_loc=[]
 match2_run_start=[]
 
+
+#1) GETS DATETIMES FROM ALL THE BULK FILES,
 #HERE, RUN REFERS TO THE START AND END TIME POINTS ON THE FILE, 
 #ELEMENT REFERS TO THE TIMESTAMP FOR EACH DATA POINT"" 
 for i in range(len(bulk_folders)):
@@ -217,7 +228,7 @@ for i in range(len(bulk_folders)):
                 bulk_elements_starttimes.append(x)
                 bulk_elements_endtimes.append(y)
                 
-            print bulk_data_list[csv]
+            #print bulk_data_list[csv]
             out_bulk = np.concatenate([out_bulk, frame], axis =0)
     else:
         continue
@@ -236,6 +247,7 @@ del bulk_data_list, bulk_end_i, bulk_start_i, csv, file_info
 del found_files, frame, i,  start_1, start_key1,start_key2, x, y
 del files_to_pull, bulk_run_start
 
+#2) GETS DATETIMES FOR FILES WHICH MATCHED WITH
 match1_run_start, match1_run_end = get_datetimes(files_key1)
 
 match1=pd.DataFrame(zip(match1_run_start, match1_run_end), columns=['start', 'end'])
@@ -245,20 +257,28 @@ match2=pd.DataFrame(zip(match2_run_start, match2_run_end), columns=['start', 'en
 match2['locations']=[(i + j) for i, j in zip(folderloc_key2, filesloc_key2)]
 
 pulled_from_bulk=[]
-#######################################################
+
+
+#3) CREATES A MASK TO SELECT DATA FILES IN THE BULK DATABASE, 
+#                 WHICH MATCH WITH THOSE IDENTIFIED IN THE KEYWORD FOLDER (IN THIS CASE 'HEATED')
+
+n=0
 for i in range(len(match2.locations)):
+    
     core_mask = (core['start'] == match2['start'][i]) & (core['end']  ==  match2['end'][i])
     if core.loc[core_mask]['start'].empty:
-        
+        print match2['locations'][i], 'EMPTY'
         continue
     else: 
         data_heat=np.genfromtxt(match2['locations'][i], delimiter =',')
-        
+        #print core.loc[core_mask]['locations']
         data_corresp=np.genfromtxt(core.loc[core_mask]['locations'].iloc[0],delimiter =',')
         pulled_from_bulk.append(core.loc[core_mask]['locations'].iloc[0])
         out4=np.concatenate([out4, data_corresp])
+        n+=1
         
         fig2=plt.figure()
+        
         ax1=plt.scatter(data_heat[:,0], data_heat[:,1], label =str(match2['locations'][i]), color='red')
         ax2=plt.scatter(data_corresp[:,0], data_corresp[:,1],
                      label =core.loc[core_mask]['locations'].iloc[0])
@@ -266,17 +286,22 @@ for i in range(len(match2.locations)):
         plt.legend()
         plt.savefig(figfold+str([i])+'.jpg')
         
-        
+#     4)PLOTS OUTPUT DATA, SAVES FIGURES        
 fig1=plt.figure()
-ax_a= plt.scatter(data_key2['T'], data_key2['INP'],color='red')
+ax_a= plt.scatter(data_key2['T'], data_key2['INP'],color='red',zorder=0)
 ax_b=plt.scatter(data_key1['T'], data_key1['INP'], color='blue')
 plt.yscale('log')
 plt.title('initial runs')
 plt.savefig(figfold+str('initial runs')+'.jpg')
     
 fig3=plt.figure()
-ax_c= plt.scatter(data_key2['T'], data_key2['INP'], color='red')
-ax_d=plt.scatter(out4[:,0], out4[:,1], color ='blue')
+ax_c= plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=0)
+ax_d=plt.scatter(out4[:,0], out4[:,1], color ='blue',zorder=1)
 plt.yscale('log')
-plt.title('including later runs')
+plt.title('')
 plt.savefig(figfold+str('with updated runs')+'.jpg')
+
+del bulk_run_fileloc, bulk_run_folderloc, i, j, match2_run_start,match2_run_end, q, r, key
+del a, b, bulk_elements_endtimes, bulk_elements_starttimes, bulk_folders, degree_sign, bulk_indir
+bulk_dataframe.to_csv('C:\\Users\\eardo\\Desktop\\Farmscripts\\alldata_withdates.csv')
+data_key2.to_csv('C:\\Users\\eardo\\Desktop\\Farmscripts\\heatdata.csv')

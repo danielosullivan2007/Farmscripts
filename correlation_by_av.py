@@ -18,7 +18,7 @@ import socket
 comp_name = socket.gethostname()
 if comp_name == "Daniels-Air.home":
     indir ="//Users//Daniel//Desktop//farmscripts//pickels//"
-elif comp_name == 'see4-234:
+elif comp_name == 'see4-234':
     indir = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
 
 def get_t_diffs(dataset, mask):
@@ -136,8 +136,9 @@ smps = pd.read_pickle(indir+"SMPS.p")
 smps = smps.rename(columns ={'index':'datetime'})
 
 
-for T in range (-25,-20, 5):
-    df_INP = INPs.loc[INPs['T'] ==-23]
+for T in range (-25,-10, 5):
+    df_INP = INPs.loc[INPs['T'] == T]
+    print T
     #df_INP['timedelta']= df_INP['end_datetime']-df_INP['start_datetime']
 
     
@@ -268,12 +269,14 @@ for T in range (-25,-20, 5):
             
     windavs=windavs.drop(u'Unnamed: 0', axis=1)
     data=pd.concat([df_INPtidy, windavs, metavs, aps_total, smps_total], axis =1)
-    data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0'], axis=1)
+    data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0',u'start_datetime',
+                     u'end_datetime', u'MEAN_WIND_DIR', u'MEAN_WIND_DIR'], axis=1)
     
-del t_stamp_INP_end,t_stamp_INP_start, timediff_end, timediff_start, 
+    del t_stamp_INP_end,t_stamp_INP_start, timediff_end, timediff_start, 
 ###################################################################################################
 #DATA CORRELATION SECTION 
-corr=data.corr()
+
+    corr=data.corr()
 #==============================================================================
 # corr.drop(['Logger Temperature',
 #  'Sunshine total since 0900', 'Date', 'Time', ' '], axis = 1, inplace=True)
@@ -282,22 +285,25 @@ corr=data.corr()
 #  'Sunshine total since 0900', 'Date', 'Time', ' '], axis =0, inplace=True)
 #==============================================================================
 
-corr.rename(columns = {'INP':'Log10 INPs',u'Dry Bulb Temperature':'Dry Bulb T', u'Dew Point Temperature': 'Dew Point T', u'Grass Temperature':'Grass T', 
-u'Concrete Temperature': 'Concrete T', u'10cm Soil Temperature': 'Soil T', u'Rainfall Total since 0900': 'Rainfall Total',
- u'Radiation Total since 0900': 'Radiation Total',  0L: 'APS Total Count' , 1L: 'SMPS Total Count', u'OB_END_TIME': 'Obs. end Time',  
-    u'MEAN_WIND_DIR': 'Av. wind dir',
-   u'MEAN_WIND_SPEED':' Av. wind speed', u'MAX_GUST_DIR':'Max gust direction', u'MAX_GUST_SPEED': 'Max gust speed',
-   u'MAX_GUST_CTIME': ' Max Gust Ctime'}, inplace = True)
+    corr.rename(columns = {'INP':'Log10 INPs',u'Dry Bulb Temperature':'Dry Bulb T', u'Dew Point Temperature': 'Dew Point T', u'Grass Temperature':'Grass T', 
+    u'Concrete Temperature': 'Concrete T', u'10cm Soil Temperature': 'Soil T', u'Rainfall Total since 0900': 'Rainfall Total',
+     u'Radiation Total since 0900': 'Radiation Total',  0L: 'APS Total Count' , 1L: 'SMPS Total Count', u'OB_END_TIME': 'Obs. end Time',  
+        u'MEAN_WIND_DIR': 'Av. wind dir',
+       u'MEAN_WIND_SPEED':'Wind speed', u'MAX_GUST_DIR':'Max gust direction', u'MAX_GUST_SPEED': 'Max gust speed',
+       u'MAX_GUST_CTIME': ' Max Gust Ctime'}, inplace = True)
+    
+    corr.rename(index = {'INP':'Log10 INPs', u'Dry Bulb Temperature':'Dry Bulb T', u'Dew Point Temperature': 'Dew Point T', u'Grass Temperature':'Grass T', 
+    u'Concrete Temperature': 'Concrete T', u'10cm Soil Temperature': 'Soil T', u'Rainfall Total since 0900': 'Rainfall Total',
+     u'Radiation Total since 0900': 'Radiation Total',  0L: 'APS Total Count' , 1L: 'SMPS Total Count', u'OB_END_TIME': 'Obs. end Time',  
+        u'MEAN_WIND_DIR': 'Av. wind dir',
+       u'MEAN_WIND_SPEED':'Wind speed', u'MAX_GUST_DIR':'Max gust direction', u'MAX_GUST_SPEED': 'Max gust speed',
+       u'MAX_GUST_CTIME': ' Max Gust Ctime'}, inplace = True)
+    
+    
+    
+    corr.to_csv(indir+"corr at" + num2words[T]+".csv")
 
-corr.rename(index = {'INP':'Log10 INPs', u'Dry Bulb Temperature':'Dry Bulb T', u'Dew Point Temperature': 'Dew Point T', u'Grass Temperature':'Grass T', 
-u'Concrete Temperature': 'Concrete T', u'10cm Soil Temperature': 'Soil T', u'Rainfall Total since 0900': 'Rainfall Total',
- u'Radiation Total since 0900': 'Radiation Total',  0L: 'APS Total Count' , 1L: 'SMPS Total Count', u'OB_END_TIME': 'Obs. end Time',  
-    u'MEAN_WIND_DIR': 'Av. wind dir',
-   u'MEAN_WIND_SPEED':' Av. wind speed', u'MAX_GUST_DIR':'Max gust direction', u'MAX_GUST_SPEED': 'Max gust speed',
-   u'MAX_GUST_CTIME': ' Max Gust Ctime'}, inplace = True)
 
-corr.to_csv(indir+"corr at" + num2words[T]+".csv")
-print 'done'
 
 ################################################################################
 #GRAPHING
@@ -314,9 +320,9 @@ minus20=pd.read_csv('corr atminus20.csv', index_col='Unnamed: 0')
 minus25=pd.read_csv('corr atminus25.csv', index_col='Unnamed: 0')
 
 
-x = np.square(minus15.loc['Av. wind dir':'SMPS Total Count',['Log10 INPs']].values)
-y = np.square(minus20.loc['Av. wind dir':'SMPS Total Count',['Log10 INPs']].values)
-z = np.square(minus25.loc['Av. wind dir':'SMPS Total Count',['Log10 INPs']].values)
+x = np.square(minus15.loc['Wind speed':'SMPS Total Count',['Log10 INPs']].values)
+y = np.square(minus20.loc['Wind speed':'SMPS Total Count',['Log10 INPs']].values)
+z = np.square(minus25.loc['Wind speed':'SMPS Total Count',['Log10 INPs']].values)
 
 
 fig, ax = plt.subplots(figsize=(5, 5))
@@ -332,7 +338,7 @@ ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+deg
 ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C')
 ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C')
 plt.xticks(y_pos,index, rotation = 90)
-plt.xlim(-1,17)
+plt.xlim(-1,14)
 plt.legend(loc=2, fontsize =10)
 plt.ylabel('Coefficient of determination $\mathregular{R^2}$')
 #plt.ylabel('Pearson R Coefficient')
@@ -356,7 +362,7 @@ plt.savefig(indir+"\correlations")
 
 
 
-data.to_csv(indir+"data.csv")
+INPs.to_csv('C:\\Users\\eardo\\Desktop\\Farmscripts\\alldata_withdates.csv')
 
 
 

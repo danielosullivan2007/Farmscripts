@@ -12,7 +12,8 @@ import datetime
 import matplotlib.cm as cm
 from scipy.stats import gaussian_kde
 import matplotlib.patches as mpatches
-
+import matplotlib.lines as mlines
+from matplotlib.ticker import MaxNLocator
 '''DATA MUST BE IN LOG BINS BY INP NUMBER'''
 
 import numpy as np
@@ -104,6 +105,7 @@ zero_day = datetime.date(2001,1,1)
 start_day = datetime.date(2001, 9, 15)
 end_day = datetime.date(2001, 10,31)
 
+data_key2=pd.read_csv ('C:\\Users\\eardo\\Desktop\\Farmscripts\\heatdata.csv', delimiter =',')
 felds=pd.read_csv(glodir+'INP_spectra_danny_feldspar.csv', delimiter =',', index_col=0)/1000
 day = list(felds.columns)
 
@@ -173,111 +175,182 @@ Nie_data.set_index('', inplace =True)
 Nie_data.drop('', inplace =True)
 
 
-
 Nie_data_stats = pd.DataFrame()
 for i in range (len(list(Nie_data.columns))):
     Nie_data_stats[i]=pd.to_numeric(Nie_data.iloc[:,i]).describe(percentiles=percent)
 
 Nie_data_stats = Nie_data_stats.T
 Nie_data_stats.index = Nie_data_stats.index*-1
-
+Nie_data_stats.drop ([  0,  -1,  -2,  -3,  -4,  -5,  -6,  -7,  -8,  -9, -10, -11, -12,
+            -13], inplace = True)
 ##################################################
 #Setup fig
-fig = plt.figure(figsize=(12, 4))
-ax2 = fig.add_subplot(131)
+fig = plt.figure(figsize=(7, 6))
+#ax2 =ORIGINAL DATA
+#ax2 = fig.add_subplot(131)
+#p2=ax2.plot(data2[:,0],data2[:,1], linewidth=0,marker="o", zorder =0 
 
-ax1 = fig.add_subplot(1,3,2)
-p1=ax1.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
+'''*********************Feld************************************************'''
+
+
+
+ax0 = fig.add_subplot(2,2,1)
+p2=ax0.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
 p2=plt.plot(feld_data_stats.index, feld_data_stats['20%'], linewidth =1.5, color = 'k')
 p2=plt.plot(feld_data_stats.index, feld_data_stats['80%'], linewidth =1.5, color = 'k')
+#p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
 p2=plt.plot(marine_data_stats.index, marine_data_stats['20%'], linewidth =1.5, color = 'cyan')
 p2=plt.plot(marine_data_stats.index, marine_data_stats['80%'], linewidth =1.5, color = 'cyan')
 p2=plt.fill_between(feld_data_stats.index, feld_data_stats['20%'],feld_data_stats['80%'], alpha =0.4, 
                     color = 'black',
                     label = 'Feldspar')
-p3=plt.fill_between(marine_data_stats.index, marine_data_stats['20%'],marine_data_stats['80%'],
+
+p2=plt.fill_between(marine_data_stats.index, marine_data_stats['20%'],marine_data_stats['80%'],
                     label = 'Marine' , alpha = 0.7)
 blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
+
 gray_patch = mpatches.Patch(  alpha =0.85 , label='Feldspar', lw =1,edgecolor ='k' ,facecolor='gray')
-plt.legend(handles=[blue_patch, gray_patch])
+#red_circle = mlines.Line2D(range(1), range(1), color="white", marker='o', markerfacecolor="red", label = 'heated')
+plt.legend(handles=[blue_patch, gray_patch], prop={'size':8},loc=3)
+
+#ax1 properties
+ax0.set_yscale('log')
+ax0.set_xlim(-34,-5)
+ax0.set_ylim(0.005,90)
+#ax1.set_xlabel('T ('+degree_sign+'C)')
+ax0.set_ylabel('[INP] /L')
+ax0.get_yaxis().set_tick_params(which='both', direction='out')
+ax0.get_xaxis().set_tick_params(which='both', direction='out')
+ax0.set_title("Feldspar + Marine", fontsize=14)
+ttl1 = ax0.title
+ttl1.set_position([.5, 1.05])
+ax0.set_xticklabels([])
+
+'''*********************Feld with heat************************************************'''
+ax1 = fig.add_subplot(2,2,3)
+p2=ax1.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
+p2=plt.plot(feld_data_stats.index, feld_data_stats['20%'], linewidth =1.5, color = 'k')
+p2=plt.plot(feld_data_stats.index, feld_data_stats['80%'], linewidth =1.5, color = 'k')
+p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
+p2=plt.plot(marine_data_stats.index, marine_data_stats['20%'], linewidth =1.5, color = 'cyan')
+p2=plt.plot(marine_data_stats.index, marine_data_stats['80%'], linewidth =1.5, color = 'cyan')
+p2=plt.fill_between(feld_data_stats.index, feld_data_stats['20%'],feld_data_stats['80%'], alpha =0.4, 
+                    color = 'black',
+                    label = 'Feldspar')
+
+p2=plt.fill_between(marine_data_stats.index, marine_data_stats['20%'],marine_data_stats['80%'],
+                    label = 'Marine' , alpha = 0.7)
+blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
+
+gray_patch = mpatches.Patch(  alpha =0.85 , label='Feldspar', lw =1,edgecolor ='k' ,facecolor='gray')
+#red_circle = mlines.Line2D(range(1), range(1), color="white", marker='o', markerfacecolor="red", label = 'heated')
+plt.legend(handles=[blue_patch, gray_patch, red_circle], prop={'size':8}, loc=3)
 
 
-#ax1.plot(pupT, pupINP)
+
+#################
+#ax1 properties
+ax1.set_yscale('log')
+ax1.set_xlim(-34,-5)
+ax1.set_ylim(0.005,90)
+ax1.set_xlabel('T ('+degree_sign+'C)')
+ax1.set_ylabel('[INP] /L')
+ax1.get_yaxis().set_tick_params(which='both', direction='out')
+ax1.get_xaxis().set_tick_params(which='both', direction='out')
+#ax1.set_title("Feldspar + Marine", fontsize=14)
+ttl1 = ax1.title
+ttl1.set_position([.5, 1.05])
+
+
+'''*********************NIEMAND************************************************'''
 
 
 
 
-#p1=ax1.contourf(x,y,z)
-
-
-ax0 = fig.add_subplot(1,3,3)
-p1=ax0.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
+ax2 = fig.add_subplot(2,2,2)
+p1=ax2.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['20%'], linewidth =1.5, color = 'k')
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['80%'], linewidth =1.5, color = 'k')
+#p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
 p2=plt.fill_between(Nie_data_stats.index, Nie_data_stats['20%'],Nie_data_stats['80%'], alpha =0.4, color = 'black')
 blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
 gray_patch = mpatches.Patch(  alpha =0.85 , label='Niemand', lw =1,edgecolor ='k' ,facecolor='gray')
-plt.legend(handles=[ gray_patch])
+#red_circle = mlines.Line2D(range(1), range(1), color="white", marker='o', markerfacecolor="red", label = 'heated')#ax0.set_yscale('log')
+
+
+plt.legend(handles=[ gray_patch], prop={'size':8},loc=3)
+ax2.set_yscale('log')
+ax2.set_xlim(-34,-5)
+ax2.set_ylim(0.005,90)
+#ax0.set_xlabel('T ('+degree_sign+'C)')
+#ax0.set_ylabel('[INP] /L')
+ax2.get_yaxis().set_tick_params(which='both', direction='out')
+ax2.get_xaxis().set_tick_params(which='both', direction='out')
+ax2.set_title("Niemand", fontsize=14)
+ttl0 = ax2.title
+ttl0.set_position([.5, 1.05])
+ax2.set_yticklabels([])
+ax2.set_xticklabels([])
+'''*********************NIEMAND w/ heat************************************************'''
+ax3 = fig.add_subplot(2,2,4)
+p1=ax3.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
+p2=plt.plot(Nie_data_stats.index, Nie_data_stats['20%'], linewidth =1.5, color = 'k')
+p2=plt.plot(Nie_data_stats.index, Nie_data_stats['80%'], linewidth =1.5, color = 'k')
+p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
+p2=plt.fill_between(Nie_data_stats.index, Nie_data_stats['20%'],Nie_data_stats['80%'], alpha =0.4, color = 'black')
+blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
+gray_patch = mpatches.Patch(  alpha =0.85 , label='Niemand', lw =1,edgecolor ='k' ,facecolor='gray')
+#red_circle = mlines.Line2D(range(1), range(1), color="white", marker='o', markerfacecolor="red", label = 'heated')
+
+plt.legend(handles=[ gray_patch, red_circle], prop={'size':8},loc=3)
+ax3.set_yscale('log')
+ax3.set_xlim(-34,-5)
+ax3.set_ylim(0.005,90)
+ax3.set_xlabel('T ('+degree_sign+'C)')
+#ax0.set_ylabel('[INP] /L')
+ax3.get_yaxis().set_tick_params(which='both', direction='out')
+ax3.get_xaxis().set_tick_params(which='both', direction='out')
+#ax0.set_title("Niemand", fontsize=14)
+#ttl0 = ax0.title
+#ttl0.set_position([.5, 1.05])
+ax3.set_yticklabels([])
+
 
 cmap = plt.get_cmap()
 cmap.set_under('white')
 
 
 
-cbaxes=fig.add_axes([1, 0.1, 0.02, 0.8]) 
+cbaxes=fig.add_axes([1, 0.525, 0.02, 0.4]) 
 cb = fig.colorbar(p1, cax = cbaxes, label='% of Total Observations', format ='%0.2f')
 
 
-    
 
 
-
-p2=ax2.plot(data2[:,0],data2[:,1], linewidth=0,marker="o", zorder =0 )
 #p2 =ax2.scatter(x, y, c=z, s=40, edgecolor='', cmap='OrRd')
 
 #ax2.scatter(DMT_T,DMT_I, marker="x", color = "red")
 #ax0 properties
-ax0.set_yscale('log')
-ax0.set_xlim(-30,-5)
-ax0.set_ylim(0.001,100)
-ax0.set_xlabel('T ('+degree_sign+'C)')
-ax0.set_ylabel('[INP] /L')
-ax0.get_yaxis().set_tick_params(which='both', direction='out')
-ax0.get_xaxis().set_tick_params(which='both', direction='out')
-ax0.set_title("Niemand", fontsize=14)
-ttl0 = ax0.title
-ttl0.set_position([.5, 1.05])
-
-#################
-#ax1 properties
-ax1.set_yscale('log')
-ax1.set_xlim(-30,-5)
-ax1.set_ylim(0.001,100)
-ax1.set_xlabel('T ('+degree_sign+'C)')
-ax1.set_ylabel('[INP] /L')
-ax1.get_yaxis().set_tick_params(which='both', direction='out')
-ax1.get_xaxis().set_tick_params(which='both', direction='out')
-ax1.set_title("Feldspar + Marine", fontsize=14)
-ttl1 = ax1.title
-ttl1.set_position([.5, 1.05])
 
 
 
 
 ######################
-#ax2 properties
+#ax2 (original data) properties
 
 
-ax2.set_yscale('log')
-ax2.set_xlim(-30,-5)
-ax2.set_ylim(0.001,100)
-ax2.get_yaxis().set_tick_params(which='both', direction='out')
-ax2.get_xaxis().set_tick_params(which='both', direction='out')
-ax2.set_xlabel('T ('+degree_sign+'C)')
-ax2.set_ylabel('[INP] /L')
-ax2.set_title("Original Data", fontsize=14)
-ttl2 = ax2.title
-ttl2.set_position([.5, 1.05])
+#==============================================================================
+# ax2.set_yscale('log')
+# ax2.set_xlim(-34,-5)
+# ax2.set_ylim(0.001,100)
+# ax2.get_yaxis().set_tick_params(which='both', direction='out')
+# ax2.get_xaxis().set_tick_params(which='both', direction='out')
+# ax2.set_xlabel('T ('+degree_sign+'C)')
+# ax2.set_ylabel('[INP] /L')
+# ax2.set_title("Original Data", fontsize=14)
+# ttl2 = ax2.title
+# ttl2.set_position([.5, 1.05])
+#==============================================================================
 
 #####################
 #==============================================================================
@@ -289,10 +362,20 @@ ttl2.set_position([.5, 1.05])
 # ax2.scatter(Belosi[:,0],Belosi[:,1], marker="x", color = "red")
 # ax2.scatter(Garcia[:,0], Garcia[:,1], marker="x", color = "green")
 #==============================================================================
+#==============================================================================
+# xticks = ax1.xaxis.get_major_ticks()
+# xticks[0].label1.set_visible(False)
+# xticks[-1].label1.set_visible(False)
+#==============================================================================
+xticks = ax1.xaxis.get_major_ticks()
+xticks[0].label1.set_visible(False)
+xticks[-1].label1.set_visible(False)
 
+yticks = ax3.yaxis.get_major_ticks()
+yticks[0].label1.set_visible(False)
+yticks[-1].label1.set_visible(False)
 
-plt.tight_layout()
-plt.tight_layout()
+plt.tight_layout(h_pad=0, w_pad= 0)
 
 fig.savefig('contour.png', dpi=100)
 plt.show()
