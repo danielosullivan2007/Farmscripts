@@ -13,7 +13,9 @@ import matplotlib.cm as cm
 from scipy.stats import gaussian_kde
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
-from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import LogFormatter 
+from matplotlib.ticker import LogFormatterMathtext 
+
 '''DATA MUST BE IN LOG BINS BY INP NUMBER'''
 
 import numpy as np
@@ -243,7 +245,7 @@ p2=plt.fill_between(marine_data_stats.index, marine_data_stats['20%'],marine_dat
 blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
 
 gray_patch = mpatches.Patch(  alpha =0.85 , label='Feldspar', lw =1,edgecolor ='k' ,facecolor='gray')
-#red_circle = mlines.Line2D(range(1), range(1), color="white", marker='o', markerfacecolor="red", label = 'heated')
+red_circle = mlines.Line2D(range(1), range(1), color="white", marker='o', markerfacecolor="red", label = 'heated')
 plt.legend(handles=[blue_patch, gray_patch, red_circle], prop={'size':8}, loc=3)
 
 
@@ -323,7 +325,7 @@ cmap.set_under('white')
 
 cbaxes=fig.add_axes([1, 0.525, 0.02, 0.4]) 
 cb = fig.colorbar(p1, cax = cbaxes, label='% of Total Observations', format ='%0.2f')
-
+ticks =cb.locator()
 
 
 
@@ -379,3 +381,76 @@ plt.tight_layout(h_pad=0, w_pad= 0)
 
 fig.savefig('contour.png', dpi=100)
 plt.show()
+
+###################################################################
+'''Figure 1 in paper'''
+
+picdir='C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
+lowruns_heated_data = np.genfromtxt(picdir+'lowruns_heated_data.csv', delimiter =',')
+highruns_heated_data = np.genfromtxt(picdir+'highruns_heated_data.csv', delimiter =',')
+lowruns_unheated_data = np.genfromtxt(picdir+'lowruns_unheated_data.csv', delimiter =',')
+highruns_unheated_data = np.genfromtxt(picdir+'highruns_unheated_data.csv', delimiter =',')
+all_data=np.genfromtxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\all data_1.csv',  delimiter=',')
+
+fig1=plt.figure(figsize=(10,3))
+ax0=plt.subplot(141)
+plt.scatter(all_data[:,0], all_data[:,1], color ='grey')
+ax0.set_ylabel('[INP] /L'),ax0.set_xlabel('T ('+degree_sign+'C)')
+degree_sign= u'\N{DEGREE SIGN}'
+ax0.get_yaxis().set_tick_params(which='both', direction='out')
+ax0.get_xaxis().set_tick_params(which='both', direction='out')
+plt.yscale('log'),plt.xlim(-30,-5), plt.ylim(0.01, 50)
+
+
+
+
+plt.gca().yaxis.get_major_ticks()[1].label1.set_visible(False)
+#plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
+        
+
+
+ax1=plt.subplot(142)
+p1=ax1.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 50)
+plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
+ax1.set_xlabel('T ('+degree_sign+'C)')
+ax1.axes.get_yaxis().set_ticks([])
+
+formatter = LogFormatterMathtext(10, labelOnlyBase=False) 
+cbaxes=fig1.add_axes([0.32, -0.03, 0.2, 0.05]) 
+
+ticks = [ 0.001 ,  0.1786346 ,   0.35626921,
+          0.53390381,   0.71153841]
+cb = fig1.colorbar(p1, cax = cbaxes,ticks=ticks, label='% of Total Observations',
+                   orientation ='horizontal', format ='%0.1f')
+
+
+
+
+ax2=plt.subplot(143)
+plt.scatter(lowruns_heated_data[:,0], lowruns_heated_data[:,1], color ='red')
+plt.scatter(lowruns_unheated_data[:,0], lowruns_unheated_data[:,1], color ='grey')
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 50)
+ax2.set_xlabel('T ('+degree_sign+'C)')
+ax2.axes.get_yaxis().set_ticks([])
+plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
+plt.axvline(-20, linestyle ='dashed', color ='k')
+
+ax3=plt.subplot(144)
+plt.scatter(highruns_heated_data[:,0], highruns_heated_data[:,1], color ='red')
+plt.scatter(highruns_unheated_data[:,0], highruns_unheated_data[:,1], color ='grey')
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 50)
+ax3.set_xlabel('T ('+degree_sign+'C)')
+ax3.axes.get_yaxis().set_ticks([])
+plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
+plt.axvline(-20, linestyle ='dashed', color ='k')
+
+subplots=[ax0, ax1, ax2, ax3]
+for ax in subplots:
+    ax.get_yaxis().set_tick_params(which='both', direction='out')
+    ax.get_xaxis().set_tick_params(which='both', direction='out')
+plt.tight_layout(h_pad=0, w_pad= 0)   
+
+
+
+
