@@ -3,6 +3,7 @@
 Created on Wed Feb 01 12:10:42 2017
 @author: eardo
 """
+import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import os as os
@@ -10,7 +11,6 @@ import scipy.ndimage as ndimage
 from matplotlib.gridspec import GridSpec
 import datetime
 import matplotlib.cm as cm
-from scipy.stats import gaussian_kde
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 from matplotlib.ticker import LogFormatter 
@@ -24,7 +24,8 @@ import matplotlib.pyplot as plt
 
 import socket
 host = socket.gethostname()
-
+##############################################################################
+'''Changes to required directory'''
 if host == 'see4-234':
     #pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
     indir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
@@ -41,7 +42,9 @@ percent = [0.2, 0.5, 0.8]
 
 os.chdir(indir)
 
-'''DMT_T=np.genfromtxt('demott.csv', delimiter = ',')[:,0]
+'''
+#Paramaterisations
+DMT_T=np.genfromtxt('demott.csv', delimiter = ',')[:,0]
 DMT_I=np.genfromtxt('demott.csv', delimiter = ',')[:,1]
 DMT_T= DMT_T[np.logical_not(np.isnan(DMT_T))]
 DMT_I=DMT_I[np.logical_not(np.isnan(DMT_I))]
@@ -83,26 +86,21 @@ degree_sign= u'\N{DEGREE SIGN}'
 indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 
 
-
-
 T=inx
 INP=iny
 
 x,y=np.meshgrid(xedges[0:-1]*-1,yedges[0:-1])
 
 
-#Smoothing step
-#z = ndimage.gaussian_filter(z, sigma=0.2, order=0)
+
 data2=np.genfromtxt('all data_1.csv',  delimiter=',')
-#Change Figure size
+'''#Change Figure size'''
 fig=plt.figure(figsize= (8,4))
 
-#set levels for contour plot
-
+'''#set levels for contour plot'''
 levels = np.linspace(0.001, np.max(z), 10)
 #################################################
-
-#GLOMAP DATA
+'''#GLOMAP DATA'''
 zero_day = datetime.date(2001,1,1)
 start_day = datetime.date(2001, 9, 15)
 end_day = datetime.date(2001, 10,31)
@@ -266,9 +264,6 @@ ttl1.set_position([.5, 1.05])
 
 '''*********************NIEMAND************************************************'''
 
-
-
-
 ax2 = fig.add_subplot(2,2,2)
 p1=ax2.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['20%'], linewidth =1.5, color = 'k')
@@ -317,11 +312,8 @@ ax3.get_xaxis().set_tick_params(which='both', direction='out')
 #ttl0.set_position([.5, 1.05])
 ax3.set_yticklabels([])
 
-
 cmap = plt.get_cmap()
 cmap.set_under('white')
-
-
 
 cbaxes=fig.add_axes([1, 0.525, 0.02, 0.4]) 
 cb = fig.colorbar(p1, cax = cbaxes, label='% of Total Observations', format ='%0.2f')
@@ -383,7 +375,8 @@ fig.savefig('contour.png', dpi=100)
 plt.show()
 
 ###################################################################
-'''Figure 1 in paper'''
+'''Figure 1 in paper. High Runs and Low Runs come from
+'''
 
 picdir='C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
 lowruns_heated_data = np.genfromtxt(picdir+'lowruns_heated_data.csv', delimiter =',')
@@ -399,6 +392,7 @@ ax0.set_ylabel('[INP] /L'),ax0.set_xlabel('T ('+degree_sign+'C)')
 degree_sign= u'\N{DEGREE SIGN}'
 ax0.get_yaxis().set_tick_params(which='both', direction='out')
 ax0.get_xaxis().set_tick_params(which='both', direction='out')
+ax0.text(-29, 0.015, '(a)', fontsize = 12)
 plt.yscale('log'),plt.xlim(-30,-5), plt.ylim(0.01, 50)
 
 
@@ -423,8 +417,7 @@ ticks = [ 0.001 ,  0.1786346 ,   0.35626921,
           0.53390381,   0.71153841]
 cb = fig1.colorbar(p1, cax = cbaxes,ticks=ticks, label='% of Total Observations',
                    orientation ='horizontal', format ='%0.1f')
-
-
+ax1.text(-29, 0.015, '(b)', fontsize = 12)
 
 
 ax2=plt.subplot(143)
@@ -435,6 +428,7 @@ ax2.set_xlabel('T ('+degree_sign+'C)')
 ax2.axes.get_yaxis().set_ticks([])
 plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
 plt.axvline(-20, linestyle ='dashed', color ='k')
+ax2.text(-29, 0.015, '(c)', fontsize = 12)
 
 ax3=plt.subplot(144)
 plt.scatter(highruns_heated_data[:,0], highruns_heated_data[:,1], color ='red')
@@ -444,6 +438,7 @@ ax3.set_xlabel('T ('+degree_sign+'C)')
 ax3.axes.get_yaxis().set_ticks([])
 plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
 plt.axvline(-20, linestyle ='dashed', color ='k')
+ax3.text(-29, 0.015, '(d)', fontsize = 12)
 
 subplots=[ax0, ax1, ax2, ax3]
 for ax in subplots:
