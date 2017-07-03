@@ -1,0 +1,203 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jun 27 15:47:31 2017
+
+@author: Daniel
+"""
+
+import mysql.connector
+import pandas as pd
+import numpy as np
+import glob
+import os
+from datetime import datetime
+
+indir = '/Users/Daniel/Desktop/Barbados/170627/'
+
+
+
+dict_INPs={}
+df_meta=pd.DataFrame()
+df_APS=pd.DataFrame(columns =[  u'<0.523', u'0.542',
+       u'0.583', u'0.626', u'0.673', u'0.723', u'0.777', u'0.835', u'0.898',
+       u'0.965', u'1.037', u'1.114', u'1.197', u'1.286', u'1.382', u'1.486',
+       u'1.596', u'1.715', u'1.843', u'1.981', u'2.129', u'2.288', u'2.458',
+       u'2.642', u'2.839', u'3.051', u'3.278', u'3.523', u'3.786', u'4.068',
+       u'4.371', u'4.698', u'5.048', u'5.425', u'5.829', u'6.264', u'6.732',
+       u'7.234', u'7.774', u'8.354', u'8.977', u'9.647', u'10.37', u'11.14',
+       u'11.97', u'12.86', u'13.82', u'14.86', u'15.96', u'17.15', u'18.43',
+       u'19.81', u'datetime'])
+
+    
+def get_INPs(indir):
+    os.chdir( indir + 'EF600')
+    a=glob.glob('Data*')
+    global df_meta
+    global dict_INPs
+    for i in range(len(a)):
+        
+        start= a[i][5:11]+"_"+a[i][12:16]
+        end = a[i][5:11]+"_"+a[i][17:21]
+        start_datetime = datetime.strptime(start, '%y%m%d_%H%M')
+        end_datetime =  datetime.strptime(end, '%y%m%d_%H%M')
+        df_meta= df_meta.append(pd.DataFrame({'start':[start_datetime], 'end':[end_datetime]}),ignore_index = True)
+        dict_INPs[start_datetime]=pd.read_csv(a[i], delimiter =",", header =0)
+        cols=df_meta.columns.tolist()
+        cols = cols[-1:] + cols[:-1]
+        df_meta=df_meta[cols]
+    return 
+
+
+def get_aps(indir):
+    os.chdir(indir+'APS')
+    global df_APS
+    a=glob.glob('*.csv')
+    for i in range(len(a)):
+        df_APS=pd.read_csv(a[i], delimiter =',', header =6).iloc[:, 4:56] 
+        df_APS['datetime']=pd.to_datetime (pd.read_csv(a[i], delimiter =',', header =6).iloc[:, 1]+" "+
+          pd.read_csv(a[i], delimiter =',', header =6).iloc[:, 2])
+        df_APS=df_APS.append(df_APS)
+    cols=df_APS.columns.tolist()
+    cols = cols[-1:] + cols[:-1]
+    df_APS=df_APS[cols]
+    return df_APS
+
+
+def get_smps(indir):
+
+    if 'SMPS' in os.listdir(indir):
+        df_smps = pd.DataFrame()
+        os.chdir(indir+'SMPS')
+        a=glob.glob('*.csv')
+        
+        for i in range(len(a)):
+            df=pd.read_csv(a[i], delimiter =',', header =25, skip_footer=30)
+            df=df.drop(df.index[2:8])
+        
+            
+            df = df.transpose()
+            
+            df.columns = df.iloc[0][:]
+            df=df.drop(df.index[0])
+            df['datetime']=pd.to_datetime(df['Date']+" "+df['Start Time'])
+            df=df.drop(['Date', 'Start Time'], axis =1)
+            
+            df_smps = df_smps.append(df, ignore_index=True)
+        datetimes = df_smps['datetime']
+        df_smps.drop('datetime', axis =1, inplace = True)
+        df_smps = df_smps.iloc[:,1:].astype(float)
+        df_smps.insert(0,'datetimes', datetimes)
+           # df_smps.iloc[0:, 1:] = df_smps.iloc[0:, 1:].astype(float)
+    else:
+        print 'No SMPS folder found'
+        pass
+    return df_smps
+
+
+
+
+
+get_INPs(indir)
+df_APS = get_aps(indir)
+df_SMPS=get_smps(indir)
+
+
+#APS AVERAGING''' 
+
+
+
+def get_APSavs(df_meta):
+    apsavs=pd.DataFrame()
+    aps_total =pd.DataFrame()
+    for i in range(len(df_meta)):
+        
+        aps_mask=  (df_APS['datetime'] > df_meta['start'][i]) & (df_APS['datetime'] <=  df_meta['end'][i])
+        if df_APS.loc[aps_mask]['datetime'].empty:
+            
+            continue
+        
+        else:
+            
+             apsavs = apsavs.append(df_APS.loc[aps_mask].mean(axis=0), ignore_index=True)
+            
+            #INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = 
+            
+            #get_t_diffs(aps, aps_mask)
+            
+            #timediffs_aps = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
+    frames1 = [apsavs, df_meta]
+    apsavs = pd.concat (frames1, axis =1, ignore_index= False, join= 'outer')
+    aps_total= aps_total.append(apsavs.sum(axis=1),ignore_index=True)
+    cols=apsavs.columns.tolist()
+    cols = cols[-2:] + cols[:-2]
+    apsavs = apsavs[cols]
+    df_meta['APS']= aps_total.T
+    return apsavs
+ 
+
+
+def get_smpsavs(df_meta):
+    smps_avs = pd.DataFrame()
+    smps_total=pd.DataFrame()
+    for i in range (len(df_meta)):
+        
+        smps_mask = (df_SMPS['datetimes'] > df_meta['start'][i]) & (df_SMPS['datetimes']  <=  df_meta['end'][i])
+        if df_SMPS.loc[smps_mask]['datetimes'].empty:
+            
+                
+            continue
+        else:
+            
+            smps_avs=smps_avs.append(df_SMPS.loc[smps_mask].mean(axis=0, skipna = True), ignore_index=True)
+#==============================================================================
+#             INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(smps, smps_mask)
+#             timediffs_smps = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
+#==============================================================================
+    frames2 = [smps_avs, df_meta]
+    smps_avs = pd.concat (frames2, axis =1, ignore_index= False, join= 'outer')
+    smps_total = smps_total.append(smps_avs.sum(axis=1), ignore_index=True).T
+    smps_total.columns=['SMPS_total']
+    cols=smps_avs.columns.tolist()
+    cols = cols[-2:] + cols[:-2]
+    smps_avs = smps_avs[cols]
+    df_meta['SMPS']= smps_total
+    return df_meta, smps_avs
+
+apsavs = get_APSavs(df_meta)
+df_meta, smps_avs = get_smpsavs(df_meta)
+del indir
+
+
+import mysql.connector
+from mysql.connector import errorcode
+
+try:
+    conn=mysql.connector.connect(user ='root',
+                                password = 'vercetti85',
+                                host = 'localhost',
+                                database ='bank')
+    print "Connected!"
+
+except mysql.connector.Error as e:
+    if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        print "something wrong with username or password"
+    elif e.errno == errorcode.ER_BAD_DB_ERROR:
+            print "Database doesn't exist"
+    else:
+        print (e)
+        
+cur = conn.cursor()
+
+query = ("SELECT * FROM product")
+
+cur.execute(query)
+
+for (product_cd, name, product_type_cd,
+     date_offered, date_retired) in cur:
+    
+    print "{},{},{},{},{}".format(product_cd, name, product_type_cd,
+     date_offered, date_retired)
+    
+cur.close()
+conn.close()
