@@ -380,21 +380,25 @@ plt.show()
 
 picdir='C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
 lowruns_heated_data = np.genfromtxt(picdir+'lowruns_heated_data.csv', delimiter =',')
+midruns_heated_data = np.genfromtxt(picdir+'midruns_heated_data.csv', delimiter =',')
 highruns_heated_data = np.genfromtxt(picdir+'highruns_heated_data.csv', delimiter =',')
 lowruns_unheated_data = np.genfromtxt(picdir+'lowruns_unheated_data.csv', delimiter =',')
+midruns_unheated_data = np.genfromtxt(picdir+'midruns_unheated_data.csv', delimiter =',')
 highruns_unheated_data = np.genfromtxt(picdir+'highruns_unheated_data.csv', delimiter =',')
 all_data=np.genfromtxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\all data_1.csv',  delimiter=',')
 
 fig1=plt.figure(figsize=(10,3))
-ax0=plt.subplot(141)
-plt.scatter(all_data[:,0], all_data[:,1], color ='grey')
-ax0.set_ylabel('[INP] /L'),ax0.set_xlabel('T ('+degree_sign+'C)')
-degree_sign= u'\N{DEGREE SIGN}'
-ax0.get_yaxis().set_tick_params(which='both', direction='out')
-ax0.get_xaxis().set_tick_params(which='both', direction='out')
-ax0.text(-29, 0.015, '(a)', fontsize = 12)
-plt.yscale('log'),plt.xlim(-30,-5), plt.ylim(0.01, 50)
-
+#==============================================================================
+# ax0=plt.subplot(141)
+# plt.scatter(all_data[:,0], all_data[:,1], color ='grey')
+# ax0.set_ylabel('[INP] /L'),ax0.set_xlabel('T ('+degree_sign+'C)')
+# degree_sign= u'\N{DEGREE SIGN}'
+# ax0.get_yaxis().set_tick_params(which='both', direction='out')
+# ax0.get_xaxis().set_tick_params(which='both', direction='out')
+# ax0.text(-29, 0.015, '(a)', fontsize = 12)
+# plt.yscale('log'),plt.xlim(-30,-5), plt.ylim(0.01, 50)
+# 
+#==============================================================================
 
 
 
@@ -403,37 +407,50 @@ plt.gca().yaxis.get_major_ticks()[1].label1.set_visible(False)
         
 
 
-ax1=plt.subplot(142)
+ax1=plt.subplot(141)
 p1=ax1.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
-plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 50)
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 100)
 plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
 ax1.set_xlabel('T ('+degree_sign+'C)')
-ax1.axes.get_yaxis().set_ticks([])
+ax1.set_ylabel('[INP] /L')
+#ax1.axes.get_yaxis().set_ticks([])
 
 formatter = LogFormatterMathtext(10, labelOnlyBase=False) 
-cbaxes=fig1.add_axes([0.32, -0.03, 0.2, 0.05]) 
+cbaxes=fig1.add_axes([0.085, -0.03, 0.2, 0.05]) 
 
 ticks = [ 0.001 ,  0.1786346 ,   0.35626921,
           0.53390381,   0.71153841]
 cb = fig1.colorbar(p1, cax = cbaxes,ticks=ticks, label='% of Total Observations',
                    orientation ='horizontal', format ='%0.1f')
-ax1.text(-29, 0.015, '(b)', fontsize = 12)
+ax1.text(-29, 0.015, '(a)', fontsize = 12)
 
+
+ax2=plt.subplot(142)
+plt.scatter(lowruns_heated_data[:,0], lowruns_heated_data[:,1], color ='red')
+plt.scatter(lowruns_unheated_data[:,0], lowruns_unheated_data[:,1], color ='black')
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 100)
+ax2.set_xlabel('T ('+degree_sign+'C)')
+
+ax2.axes.get_yaxis().set_ticks([])
+plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
+plt.axvline(-20, linestyle ='dashed', color ='k')
+ax2.text(-29, 0.015, '(b)', fontsize = 12)
 
 ax2=plt.subplot(143)
-plt.scatter(lowruns_heated_data[:,0], lowruns_heated_data[:,1], color ='red')
-plt.scatter(lowruns_unheated_data[:,0], lowruns_unheated_data[:,1], color ='grey')
-plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 50)
+plt.scatter(midruns_heated_data[:,0], midruns_heated_data[:,1], color ='red')
+plt.scatter(midruns_unheated_data[:,0], midruns_unheated_data[:,1], color ='black')
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 100)
 ax2.set_xlabel('T ('+degree_sign+'C)')
 ax2.axes.get_yaxis().set_ticks([])
 plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
 plt.axvline(-20, linestyle ='dashed', color ='k')
 ax2.text(-29, 0.015, '(c)', fontsize = 12)
 
+
 ax3=plt.subplot(144)
 plt.scatter(highruns_heated_data[:,0], highruns_heated_data[:,1], color ='red')
-plt.scatter(highruns_unheated_data[:,0], highruns_unheated_data[:,1], color ='grey')
-plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 50)
+plt.scatter(highruns_unheated_data[:,0], highruns_unheated_data[:,1], color ='black')
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 100)
 ax3.set_xlabel('T ('+degree_sign+'C)')
 ax3.axes.get_yaxis().set_ticks([])
 plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)

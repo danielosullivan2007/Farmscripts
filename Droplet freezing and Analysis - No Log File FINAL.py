@@ -66,7 +66,7 @@ import os
 import csv
 
 
-folder='U:\\Formatted Correctly\\' # CHANGE THIS FOLDER - also see bottom of code to alter analysis for wash-off/drop-on
+folder='X:\\' # CHANGE THIS FOLDER - also see bottom of code to alter analysis for wash-off/drop-on
 os.chdir(folder)
 b=glob('*\\')
 b.sort()
