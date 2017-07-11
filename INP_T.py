@@ -26,6 +26,12 @@ elif host == 'Daniels-Air.home':
     pickdir = ('//Users//Daniel//Desktop//farmscripts//Pickels//')
     indir2 = ('//Users//Daniel//Desktop//farmscripts//')
     glodir = ('//Users//Daniel//Desktop//farmscripts//glomap data//160509//')
+elif host == 'SEE-L10840':
+    pickdir = ('C://Users//useradmin//Desktop//Farmscripts//Pickels')
+    indir2 = ('C://Users//useradmin//Desktop//Farmscripts')
+    glodir = ('C://Users//useradmin//Desktop//Farmscripts//glomap data//160509')    
+    
+    
 #==============================================================================
 # else:
 #     pickdir = ('/Users/Daniel/Desktop/farmscripts/Pickels/')
