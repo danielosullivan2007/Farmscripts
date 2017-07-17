@@ -8,20 +8,23 @@ Created on Tue Jun 27 15:47:31 2017
 
 
 import pandas as pd
-
+import matplotlib.pyplot as plt
 import glob
+import numpy as np
 import os
 from datetime import datetime
-
+smps_counter = 0
+counter = 0
 #indir = '/Users/Daniel/Desktop/Barbados/'
-topdir = 'Y:\\'
-indir = 'Y:\\'
+topdir = 'C:\\Users\\useradmin\\Desktop\\Farm\Formatted Correctly\\'
+indir = 'C:\\Users\\useradmin\\Desktop\\Farm\\Formatted Correctly\\'
 
 a= glob.glob(indir+'/*/')
 df_summary=pd.DataFrame(columns = {'start_datetime', 'end_datetime',
                                     'APS_count', 'SMPS_count'})
 dict_INPs={}
 df_meta=pd.DataFrame()
+df_smps=pd.DataFrame()
 df_APS=pd.DataFrame(columns =[  u'<0.523', u'0.542',
        u'0.583', u'0.626', u'0.673', u'0.723', u'0.777', u'0.835', u'0.898',
        u'0.965', u'1.037', u'1.114', u'1.197', u'1.286', u'1.382', u'1.486',
@@ -45,7 +48,7 @@ df_APSreader=pd.DataFrame(columns =[  u'<0.523', u'0.542',
 def get_data(indir):
     os.chdir(indir)
     a=glob.glob('Data*')
-    
+    global smps_counter, counter,df_smps
     print a
     global df_meta
     global dict_INPs
@@ -54,6 +57,7 @@ def get_data(indir):
         print 'no data files on this day'
     else:    
         no_data_flag=0
+        
         for i in range(len(a)):
             
             #start= a[i][5:11]+"_"+a[i][12:16]
@@ -68,12 +72,13 @@ def get_data(indir):
             cols=df_meta.columns.tolist()
             cols = cols[-1:] + cols[:-1]
             df_meta=df_meta[cols]
-            print df_meta
+            #print df_meta
         
         
 #APS SECTION
 
     os.chdir(indir+'APS')
+    #print os.getcwd()
     global df_APS, df_out
     x=glob.glob('*.csv')
     for i in range(len(x)):
@@ -98,7 +103,7 @@ def get_data(indir):
         else:
             
              apsavs = apsavs.append(df_APS.loc[aps_mask].mean(axis=0), ignore_index=True)
-            
+             
             #INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = 
             
             #get_t_diffs(aps, aps_mask)
@@ -110,27 +115,33 @@ def get_data(indir):
     cols=apsavs.columns.tolist()
     cols = cols[-2:] + cols[:-2]
     apsavs = apsavs[cols]
-    print "df_meta", df_meta
-    print "aps_total", aps_total
+    #print "df_meta", df_meta
+    #print "aps_total", aps_total
     if no_data_flag==1:
-        print 'no data'
+        print 'no APS data'
     else:    
         df_meta['APS']= aps_total.T
-
+         
 #SMPS Section
+    
     if 'SMPS' in os.listdir(indir):
+       
+        counter +=1
+        print counter
         df_smps = pd.DataFrame()
         os.chdir(indir+'SMPS')
         z=glob.glob('*.csv')
+        
         if not z:
-            print 'no SMPS files on this day'
+            print 'no CSV files in SMPS folder'
+            
             
            # df_smps = df_smps.append(x, ignore_index=True)
         else:
             for i in range(len(z)):
                 df=pd.read_csv(z[i], delimiter =',', header =25, skip_footer=30)
                 df=df.drop(df.index[2:8])
-            
+                
     
                 df = df.transpose()
                 
@@ -142,7 +153,7 @@ def get_data(indir):
                 df_smps = df_smps.append(df, ignore_index=True)
                 
                 datetimes = df_smps['datetime']
-                print datetimes
+               #print datetimes
             df_smps.drop('datetime', axis =1, inplace = True)
             df_smps = df_smps.iloc[:,1:].astype(float)
             df_smps.insert(0,'datetimes', datetimes)
@@ -151,35 +162,38 @@ def get_data(indir):
 #Averaging
     smps_avs = pd.DataFrame()
     smps_total=pd.DataFrame()
+    
     for i in range (len(df_meta)):
-        #print len(df_meta)
-        if df_smps.empty: 
+        print i
+        print "hi"
+        print "length df_meta is {}".format(len(df_meta))
+       
+        print "number of cycles is {}".format(i) 
+        if df_smps.empty:
             continue
         else: 
             smps_mask = (df_smps['datetimes'] > df_meta['start'][i]) & (df_smps['datetimes']  <=  df_meta['end'][i])
-            if df_smps.loc[smps_mask]['datetimes'].empty:
-                    
-                continue
-            else:
-                
-                smps_avs=smps_avs.append(df_smps.loc[smps_mask].mean(axis=0, skipna = True), ignore_index=True)
-#==============================================================================
-#             INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(smps, smps_mask)
-#             timediffs_smps = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
-#==============================================================================
-        if no_data_flag==1:
-            print 'no data'  
+            
+        if df_smps.loc[smps_mask]['datetimes'].empty:    
+            continue
         else:
-            frames2 = [smps_avs, df_meta.drop('APS', axis =1)]
-            smps_avs = pd.concat (frames2, axis =1, ignore_index= False, join= 'outer')
-            print smps_avs
-            smps_total = smps_total.append(smps_avs.sum(axis=1), ignore_index=True).T
-            smps_total.columns=['SMPS_total']
-            cols=smps_avs.columns.tolist()
-            cols = cols[-2:] + cols[:-2]
-            smps_avs = smps_avs[cols]
-            df_meta['SMPS']= smps_total
-            return df_meta
+            smps_avs=smps_avs.append(df_smps.loc[smps_mask].mean(axis=0, skipna = True), ignore_index=True)
+            
+           
+    smps_total = smps_total.append(smps_avs.sum(axis=1), ignore_index=True).T
+    print smps_total
+    smps_total.columns=['SMPS_total']
+    
+    cols=smps_avs.columns.tolist()
+    cols = cols[-2:] + cols[:-2]
+    smps_avs = smps_avs[cols]
+    df_meta['SMPS']= smps_total
+            
+            #print "smps total count is {}".format(smps_total.tail(1))
+                 #print 'Warning: SMPS averages is zero for {}'.format(dayfolder)
+    
+    return df_meta
+            
 
 df_out = pd.DataFrame()
 for i in range(len(a)):
@@ -189,10 +203,12 @@ for i in range(len(a)):
     os.chdir(dayfolder)
     df_meta=pd.DataFrame()
     
-    print dayfolder
+    #print dayfolder
     get_data(dayfolder)
     df_out=df_out.append(df_meta)
-    
+
+
+df_out.reset_index(inplace = True)
     #get_APSavs(df_meta)
    # print df_meta
 #rename to make more readable
@@ -217,6 +233,33 @@ df_meta, smps_avs = get_smpsavs(df_meta)'''
 #         
 #             to_write = df_meta.loc[write_mask]
 #==============================================================================
+
+indir_INP = 'C:\\Users\\useradmin\\Desktop\\Farm\\'
+os.chdir(indir_INP)
+INPs = pd.read_csv('INPs.csv',delimiter =',')
+INPs['start']=[np.datetime64(INPs['start'][i]) for i in range(len(INPs['start']))]
+INPs['end']=[np.datetime64(INPs['end'][i]) for i in range(len(INPs['end']))]
+df_INP=pd.DataFrame()
+#%%
+for i in range(len(df_out)):
+        INP_mask=  (INPs['start'] == df_out['start'][i]) & (INPs['end'] ==  df_out['end'][i])
+        if INPs.loc[INP_mask].empty:
+            print 'empty'
+            continue
+        
+        else:
+            
+             df_INP = df_INP.append(INPs.loc[INP_mask], ignore_index=True)
+             
+df_out['INPs'] =df_INP['INP']
+
+plt.scatter(df_out.index,df_out['INP'])
+plt.scatter(df_out.index,df_out['SMPS'])
+plt.scatter(df_out.index,df_out['APS']*100)
+plt.legend()
+
+             
+#%%    
 from sqlalchemy import create_engine
 import pandas as pd
 engine = create_engine('mysql://root:vercetti85@localhost/barbados')
@@ -224,6 +267,7 @@ connection = engine.connect()
 
 if df_out.empty:
     pass
+
 else:
     df_out.to_sql('summary', con = connection, if_exists='replace', index = False)   
 
