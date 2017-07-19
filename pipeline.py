@@ -253,7 +253,7 @@ for i in range(len(df_out)):
              
 df_out['INPs'] =df_INP['INP']
 
-plt.scatter(df_out.index,df_out['INP'])
+plt.scatter(df_out.index,df_out['INPs']*100)
 plt.scatter(df_out.index,df_out['SMPS'])
 plt.scatter(df_out.index,df_out['APS']*100)
 plt.legend()
