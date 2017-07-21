@@ -22,16 +22,21 @@ if host == 'see4-234':
     pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
     indir2 = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
     glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
-elif host == 'Daniels-Air.home':
+elif host == 'Daniels-MacBook-Air.local':
     pickdir = ('//Users//Daniel//Desktop//farmscripts//Pickels//')
-    indir2 = ('//Users//Daniel//Desktop//farmscripts//')
+    indir2 = ('\Users\Daniel\Desktop\farmscripts\')
     glodir = ('//Users//Daniel//Desktop//farmscripts//glomap data//160509//')
+
+    day_folder='//Users//Daniel//Desktop//farmscripts//test data//'
+    out_folder='//Users//Daniel//Desktop//farmscripts//'
+    
 elif host == 'SEE-L10840':
     pickdir = ('C://Users//useradmin//Desktop//Farmscripts//Pickels//')
     indir2 = ('C://Users//useradmin//Desktop//Farmscripts//')
     glodir = ('C://Users//useradmin//Desktop//Farmscripts//glomap data//160509//')    
     
-    
+
+keyword='Data' 
 #==============================================================================
 # else:
 #     pickdir = ('/Users/Daniel/Desktop/farmscripts/Pickels/')
@@ -66,9 +71,7 @@ end_t=[]
 
 df = pd.DataFrame({'Date':[], 'Start_time':[],'End_time':[], 'INP_T':[]})
 
-day_folder='C:\\Users\\useradmin\\Desktop\\Farm\\Formatted Correctly\\'
-out_folder='C:\\Users\\useradmin\\Desktop\\Farm\\'
-keyword='Data'
+
 """
 This section of the code creates the time series plots, taking data from the
 excel files specified and searching for the INP concentration at a specified 

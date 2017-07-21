@@ -6,7 +6,7 @@ Created on Tue Jun 27 15:47:31 2017
 @author: Daniel
 """
 
-
+import socket
 import pandas as pd
 import matplotlib.pyplot as plt
 import glob
@@ -15,9 +15,21 @@ import os
 from datetime import datetime
 smps_counter = 0
 counter = 0
-#indir = '/Users/Daniel/Desktop/Barbados/'
-topdir = 'C:\\Users\\useradmin\\Desktop\\Farm\Formatted Correctly\\'
-indir = 'C:\\Users\\useradmin\\Desktop\\Farm\\Formatted Correctly\\'
+commentdate=[]
+comment=[]
+host = socket.gethostname()
+
+if host == 'Daniels-MacBook-Air.local':
+    indir ="//Users//Daniel//Desktop//farmscripts//test data//"
+    topdir=indir
+    indir_INP = indir
+    
+else:
+
+    topdir = 'C:\\Users\\useradmin\\Desktop\\Farm\Formatted Correctly\\'
+    indir = 'C:\\Users\\useradmin\\Desktop\\Farm\\Formatted Correctly\\'
+    indir_INP = '//Users//Daniel//Desktop//farmscripts//'
+
 
 a= glob.glob(indir+'/*/')
 df_summary=pd.DataFrame(columns = {'start_datetime', 'end_datetime',
@@ -50,7 +62,7 @@ def get_data(indir):
     a=glob.glob('Data*')
     global smps_counter, counter,df_smps
     print a
-    global df_meta
+    global df_meta, commentdate,comment
     global dict_INPs
     if not a:
         no_data_flag=1
@@ -74,7 +86,19 @@ def get_data(indir):
             df_meta=df_meta[cols]
             #print df_meta
         
-        
+    commentfile = glob.glob(indir+'/*.txt')
+    for i in range(len(commentfile)):
+        if commentfile[i] == []:
+            continue
+        else:
+            text_read= open(commentfile[0],'r')
+            commentdate = commentdate.extend(commentfile[i])
+            comment =  comment.extend(text_read.read())
+            print ('comment is {}'.format(comment))
+    comment_out = zip(commentdate, comment)
+            
+
+     
 #APS SECTION
 
     os.chdir(indir+'APS')
@@ -164,11 +188,10 @@ def get_data(indir):
     smps_total=pd.DataFrame()
     
     for i in range (len(df_meta)):
-        print i
-        print "hi"
-        print "length df_meta is {}".format(len(df_meta))
+        
+        #print "length df_meta is {}".format(len(df_meta))
        
-        print "number of cycles is {}".format(i) 
+        #print "number of cycles is {}".format(i) 
         if df_smps.empty:
             continue
         else: 
@@ -181,7 +204,7 @@ def get_data(indir):
             
            
     smps_total = smps_total.append(smps_avs.sum(axis=1), ignore_index=True).T
-    print smps_total
+    #print smps_total
     smps_total.columns=['SMPS_total']
     
     cols=smps_avs.columns.tolist()
@@ -215,8 +238,8 @@ df_out.reset_index(inplace = True)
 
 
 
-'''apsavs = get_APSavs(df_meta)
-df_meta, smps_avs = get_smpsavs(df_meta)'''
+#'''apsavs = get_APSavs(df_meta)
+#df_meta, smps_avs = get_smpsavs(df_meta)'''
 
 
 #==============================================================================
@@ -233,12 +256,22 @@ df_meta, smps_avs = get_smpsavs(df_meta)'''
 #         
 #             to_write = df_meta.loc[write_mask]
 #==============================================================================
+#%%
 
-indir_INP = 'C:\\Users\\useradmin\\Desktop\\Farm\\'
 os.chdir(indir_INP)
 INPs = pd.read_csv('INPs.csv',delimiter =',')
-INPs['start']=[np.datetime64(INPs['start'][i]) for i in range(len(INPs['start']))]
-INPs['end']=[np.datetime64(INPs['end'][i]) for i in range(len(INPs['end']))]
+INPs.dropna(axis =0, inplace = True)
+INPs.dropna(axis =0, inplace = True)
+
+def timefix(time):
+    
+    correct_time = datetime.strptime(str(int(time)), '%H%M').time()
+    return correct_time
+
+INPs['start']=INPs['start'].apply(timefix)
+INPs['end']=INPs['end'].apply(timefix)
+
+
 df_INP=pd.DataFrame()
 #%%
 for i in range(len(df_out)):
