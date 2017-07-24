@@ -13,12 +13,13 @@ import glob
 import numpy as np
 import os
 import matplotlib.dates as mdates
+import matplotlib.patches as patches
 from datetime import datetime
 
 #barbados
 #indir = 'C:\\Users\\useradmin\\Desktop\\Barbados Data'
 
-
+degree_sign= u'\N{DEGREE SIGN}'
 smps_counter = 0
 counter = 0
 notes_date=[]
@@ -285,22 +286,27 @@ df_out.drop(df_out.columns[0], axis =1, inplace =True)
 #%%
 fig, ax1 = plt.subplots()
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d-%m'))
-ax1.plot(df_out['end'],df_out['SMPS'], color = 'blue')
+line1, = ax1.plot(df_out['end'],df_out['SMPS'], color = 'blue', label ='SMPS count') 
+line2, = ax1.plot(df_out['end'],df_out['APS']*100, color = 'green', label ='APS count *100')
+   
 
-#plt.legend(loc = 'upper left', bbox_to_anchor = (1,1))  
-ax1.plot(df_out['end'],df_out['APS']*100, color = 'green')
-ax1.legend(loc = 'upper left', bbox_to_anchor = (0,1))   
-ax2= ax1.twinx()
 end=np.asarray(df_out['end'])
 INP=np.asarray(df_out['INPs'])
 
-ax2.scatter(end, INP, color = 'red')
-ax2.legend(loc = 'upper left', bbox_to_anchor = (0,1)) 
 ax1.set_ylabel('particles cm$^{-3}$')
+ax1.set_xlabel('Date')
+
+
+
+ax2= ax1.twinx()
+dots = ax2.scatter(end, INP, color = 'red', label = '[INPs] at T= -25'+degree_sign+'C' )
+ax2.set_ylabel('INPs L$^{-1}$')
 ax2.set_yscale('log')
 ax2.set_ylim(1,100)
-ax1.set_xlabel('Date')
-ax2.set_ylabel('INPs L$^{-1}$')
+ax1.legend(frameon= False)
+ax2.legend(loc = 'upper left', bbox_to_anchor = (0,0.865), frameon =False)
+
+
 
 #ax1 = ax1.plot_date(df_out['end'],df_out['INPs'])[0]
 #plt.legend(loc = 'upper right', bbox_to_anchor = (0.985,0.85))  
@@ -311,8 +317,7 @@ ax2.set_ylabel('INPs L$^{-1}$')
 # import pandas as pd
 # engine = create_engine('mysql://root:vercetti85@localhost/barbados')
 # connection = engine.connect()
-# 
-# if df_out.empty:
+# # if df_out.empty:
 #     pass
 # 
 # else:
