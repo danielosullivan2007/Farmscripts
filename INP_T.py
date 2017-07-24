@@ -22,19 +22,24 @@ if host == 'see4-234':
     pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
     indir2 = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
     glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
+    
+    
 elif host == 'Daniels-MacBook-Air.local':
+    
     pickdir = ('//Users//Daniel//Desktop//farmscripts//Pickels//')
-    indir2 = ('\Users\Daniel\Desktop\farmscripts\')
+    indir2 = ('//Users//Daniel//Desktop//farmscripts//')
     glodir = ('//Users//Daniel//Desktop//farmscripts//glomap data//160509//')
-
     day_folder='//Users//Daniel//Desktop//farmscripts//test data//'
     out_folder='//Users//Daniel//Desktop//farmscripts//'
     
 elif host == 'SEE-L10840':
     pickdir = ('C://Users//useradmin//Desktop//Farmscripts//Pickels//')
     indir2 = ('C://Users//useradmin//Desktop//Farmscripts//')
-    glodir = ('C://Users//useradmin//Desktop//Farmscripts//glomap data//160509//')    
+    glodir = ('C://Users//useradmin//Desktop//Farmscripts//glomap data//160509//')
+    day_folder='C:\\Users\\useradmin\\Desktop\\Farm\\Formatted Correctly\\'
+    out_folder='C:\\Users\\useradmin\\Desktop\\Farmscripts\\'
     
+
 
 keyword='Data' 
 #==============================================================================
@@ -87,7 +92,7 @@ for name in glob.glob(day_folder+'/*'):
 paths.sort()    
 number_days=len(paths)
 n=0
-for T in range(-25,-24):
+for T in range(-20,-19):
     
     n+=1
     for i in range(0,number_days):

@@ -12,23 +12,28 @@ import matplotlib.pyplot as plt
 import glob
 import numpy as np
 import os
+import matplotlib.dates as mdates
 from datetime import datetime
+
+#barbados
+#indir = 'C:\\Users\\useradmin\\Desktop\\Barbados Data'
+
+
 smps_counter = 0
 counter = 0
-commentdate=[]
-comment=[]
+notes_date=[]
+note=[]
+notes_loc=[]
 host = socket.gethostname()
 
 if host == 'Daniels-MacBook-Air.local':
     indir ="//Users//Daniel//Desktop//farmscripts//test data//"
-    topdir=indir
     indir_INP = indir
     
 else:
-
-    topdir = 'C:\\Users\\useradmin\\Desktop\\Farm\Formatted Correctly\\'
     indir = 'C:\\Users\\useradmin\\Desktop\\Farm\\Formatted Correctly\\'
-    indir_INP = '//Users//Daniel//Desktop//farmscripts//'
+    indir_INP = '\\Users\\useradmin\\Desktop\\Farmscripts\\'
+    out_folder='C:\\Users\\useradmin\\Desktop\\Farmscripts\\'
 
 
 a= glob.glob(indir+'/*/')
@@ -61,12 +66,11 @@ def get_data(indir):
     os.chdir(indir)
     a=glob.glob('Data*')
     global smps_counter, counter,df_smps
-    print a
-    global df_meta, commentdate,comment
+    global df_meta, notes_loc, notes_date, notes
     global dict_INPs
     if not a:
         no_data_flag=1
-        print 'no data files on this day'
+        print 'no NIPI runs with Data *.csv in Dayfolder'
     else:    
         no_data_flag=0
         
@@ -85,17 +89,21 @@ def get_data(indir):
             cols = cols[-1:] + cols[:-1]
             df_meta=df_meta[cols]
             #print df_meta
+      
+    notes_loc = glob.glob(indir+'/*.txt')
+    for i in range(len(notes_loc)):
         
-    commentfile = glob.glob(indir+'/*.txt')
-    for i in range(len(commentfile)):
-        if commentfile[i] == []:
+        if notes_loc[i] == []:
             continue
         else:
-            text_read= open(commentfile[0],'r')
-            commentdate = commentdate.extend(commentfile[i])
-            comment =  comment.extend(text_read.read())
-            print ('comment is {}'.format(comment))
-    comment_out = zip(commentdate, comment)
+            text_read= open(notes_loc[0],'r')
+           
+            
+            notes_date.append(datetime.strptime(
+                    [notes_loc[0].replace(indir,"")][0][0:6], '%y%m%d'))
+            note.append(text_read.read())
+            print ('comment is {}'.format(note[i]))
+    
             
 
      
@@ -142,7 +150,7 @@ def get_data(indir):
     #print "df_meta", df_meta
     #print "aps_total", aps_total
     if no_data_flag==1:
-        print 'no APS data'
+        print 'no csv files in APS folder'
     else:    
         df_meta['APS']= aps_total.T
          
@@ -151,7 +159,7 @@ def get_data(indir):
     if 'SMPS' in os.listdir(indir):
        
         counter +=1
-        print counter
+        
         df_smps = pd.DataFrame()
         os.chdir(indir+'SMPS')
         z=glob.glob('*.csv')
@@ -222,40 +230,16 @@ df_out = pd.DataFrame()
 for i in range(len(a)):
     
     dayfolder=a[i]
-    
+    print ('Analyzing {}').format(datetime.strftime(datetime.strptime(a[i][52:58],'%y%m%d'),'%d-%m-%y'))
     os.chdir(dayfolder)
     df_meta=pd.DataFrame()
-    
+    #pdb.set_trace()
     #print dayfolder
     get_data(dayfolder)
     df_out=df_out.append(df_meta)
 
 
-df_out.reset_index(inplace = True)
-    #get_APSavs(df_meta)
-   # print df_meta
-#rename to make more readable
 
-
-
-#'''apsavs = get_APSavs(df_meta)
-#df_meta, smps_avs = get_smpsavs(df_meta)'''
-
-
-#==============================================================================
-# sql_in = pd.read_sql('select * from summary', con = connection, index_col = 'id')
-# for i in range (len(sql_in)):
-#         if i ==0:
-#             continue
-#         
-#         write_mask = (df_meta['end_datetime'] != sql_in['end_datetime'][i])
-#         if df_meta.loc[write_mask]['end_datetime'].empty:
-# 
-#             continue
-#         else: 
-#         
-#             to_write = df_meta.loc[write_mask]
-#==============================================================================
 #%%
 
 os.chdir(indir_INP)
@@ -265,15 +249,17 @@ INPs.dropna(axis =0, inplace = True)
 
 def timefix(time):
     
-    correct_time = datetime.strptime(str(int(time)), '%H%M').time()
+    correct_time = datetime.strptime(str((time)), '%Y-%m-%d %H:%M:%S')
     return correct_time
 
 INPs['start']=INPs['start'].apply(timefix)
 INPs['end']=INPs['end'].apply(timefix)
 
 
-df_INP=pd.DataFrame()
+df_out.reset_index(inplace = True)
+
 #%%
+df_INP=pd.DataFrame()
 for i in range(len(df_out)):
         INP_mask=  (INPs['start'] == df_out['start'][i]) & (INPs['end'] ==  df_out['end'][i])
         if INPs.loc[INP_mask].empty:
@@ -285,25 +271,55 @@ for i in range(len(df_out)):
              df_INP = df_INP.append(INPs.loc[INP_mask], ignore_index=True)
              
 df_out['INPs'] =df_INP['INP']
+#df_out.dropna(axis=0, inplace = True)
+#%%
+df_out['Date']=df_out.start.dt.date
+notes_out =pd.DataFrame ([i for i in zip(notes_date, note)], 
+                          columns =['date', 'note'])
+notes_out.date=pd.to_datetime(notes_out.date)
+notes_out.index = notes_out.date
 
-plt.scatter(df_out.index,df_out['INPs']*100)
-plt.scatter(df_out.index,df_out['SMPS'])
-plt.scatter(df_out.index,df_out['APS']*100)
-plt.legend()
+df_out = df_out.drop(u'level_0', errors ='ignore').set_index('Date').join(
+        notes_out.set_index('date'),  how ='left')
+df_out.drop(df_out.columns[0], axis =1, inplace =True)
+#%%
+fig, ax1 = plt.subplots()
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d-%m'))
+ax1.plot(df_out['end'],df_out['SMPS'], color = 'blue')
 
-             
+#plt.legend(loc = 'upper left', bbox_to_anchor = (1,1))  
+ax1.plot(df_out['end'],df_out['APS']*100, color = 'green')
+ax1.legend(loc = 'upper left', bbox_to_anchor = (0,1))   
+ax2= ax1.twinx()
+end=np.asarray(df_out['end'])
+INP=np.asarray(df_out['INPs'])
+
+ax2.scatter(end, INP, color = 'red')
+ax2.legend(loc = 'upper left', bbox_to_anchor = (0,1)) 
+ax1.set_ylabel('particles cm$^{-3}$')
+ax2.set_yscale('log')
+ax2.set_ylim(1,100)
+ax1.set_xlabel('Date')
+ax2.set_ylabel('INPs L$^{-1}$')
+
+#ax1 = ax1.plot_date(df_out['end'],df_out['INPs'])[0]
+#plt.legend(loc = 'upper right', bbox_to_anchor = (0.985,0.85))  
+
 #%%    
-from sqlalchemy import create_engine
-import pandas as pd
-engine = create_engine('mysql://root:vercetti85@localhost/barbados')
-connection = engine.connect()
-
-if df_out.empty:
-    pass
-
-else:
-    df_out.to_sql('summary', con = connection, if_exists='replace', index = False)   
-
-
-
-connection.close()
+#==============================================================================
+# from sqlalchemy import create_engine
+# import pandas as pd
+# engine = create_engine('mysql://root:vercetti85@localhost/barbados')
+# connection = engine.connect()
+# 
+# if df_out.empty:
+#     pass
+# 
+# else:
+#     df_out.to_sql('summary', con = connection, if_exists='replace', index = False)   
+# 
+# 
+# 
+# connection.close()
+# 
+#==============================================================================
