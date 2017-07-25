@@ -11,7 +11,7 @@ import os as os
 import glob 
 import matplotlib.pyplot as plt
 import decimal 
-
+import matplotlib.cm as cm
 topfolder='W:\\'
 key_terms= ["Data"]
 
@@ -133,7 +133,7 @@ os.chdir(indir)
 aps=pd.read_pickle(indir+"aps.p")
 
 aps['datetimes']=aps.datetime
-
+aps = aps.reset_index(drop = True)
 INPs =pd.read_pickle(indir+"INPs.p")
 met = pd.read_pickle(indir+ "met.p")
 met.reset_index(inplace=True)
@@ -150,10 +150,10 @@ smps = pd.read_pickle(indir+"SMPS.p")
 
 smps = smps.rename(columns ={'index':'datetime'})
 
-colors = iter(cm.jet(np.linspace(0, 1, len_T)))
-for T in range (-25,-14, 1):
-    len_T=len(range(-25,-14, 1))
-    print T_kelvin
+for T in range (-25,-10, 5):
+    len_T=len(range(-25,-10, 5))
+    
+
     df_INP = INPs.loc[INPs['T'] == T]
     print T
     #df_INP['timedelta']= df_INP['end_datetime']-df_INP['start_datetime']
@@ -197,7 +197,10 @@ for T in range (-25,-14, 1):
               u' 16.3',    u' 16.8',    u' 17.5',    u' 18.1',    u' 18.8',
               u'358.7',    u'371.8',    u'385.4',    u'399.5',    u'414.2',
               u'429.4',    u'445.1',    u'461.4',    u'478.3',    u'495.8'])
-    
+    aps_sum_down=pd.DataFrame(data={'APS Total':[]})
+    aps_sum_accross=pd.DataFrame()
+    smps_sum_down=pd.DataFrame(data={'SMPS Total':[]})
+    smps_sum_accross=pd.DataFrame()
     
     for i in range (len(df_INPtidy)):
         #print i
@@ -239,19 +242,33 @@ for T in range (-25,-14, 1):
         
         smps_total = smps_avs.sum(axis=1)
         smps_total.columns='SMPS_total'
-    
+        
+    #sum accross average down
+        smps_mask2=  (smps['datetimes'] > df_INPtidy['start_datetime'][i]) & (smps['datetimes'] <=  df_INPtidy['end_datetime'][i])
+        
+        smps_mask2 = smps_mask2.reset_index(drop=True)
+        if smps.loc[smps_mask2]['datetimes'].empty:
+            
+            continue
+        
+        else:
+            
+            smps_sum_accross=smps.loc[smps_mask2].sum(axis=1)
+            
+        smps_sum_down.loc[i,:]= [smps_sum_accross.sum(axis=0)]
 
 ############################################################################################################################### 
-#APS AVERAGING''' 
+#%% #APS AVERAGING''' 
     dataset_start_t=pd.Series()
     dataset_end_t=pd.Series()
     timediff_end=pd.Series()
     timediff_start=pd.Series()
     t_stamp_INP_start=pd.Series()
     t_stamp_INP_end=pd.Series()
-    
+   
+    cycle=0
     for i in range(len(df_INPtidy)):
-        
+        cycle+=1
         aps_mask=  (aps['datetime'] > df_INPtidy['start_datetime'][i]) & (aps['datetime'] <=  df_INPtidy['end_datetime'][i])
         if aps.loc[aps_mask]['datetimes'].empty:
             
@@ -264,7 +281,23 @@ for T in range (-25,-14, 1):
             timediffs_aps = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
         aps_total= apsavs.sum(axis=1)
         
+#sum accross average down
+        aps_mask2=  (aps['datetime'] > df_INPtidy['start_datetime'][i]) & (aps['datetime'] <=  df_INPtidy['end_datetime'][i])
+        aps_mask2 = aps_mask2.reset_index(drop=True)
+        check = aps.loc[aps_mask2]['datetimes']
+        if aps.loc[aps_mask2]['datetimes'].empty:
+            
+            continue
+        
+        else:
+            
+            aps_sum_accross=aps.loc[aps_mask2].iloc[:,0:52].sum(axis=1)
+            
+        aps_sum_down.loc[i,:]= [aps_sum_accross.sum(axis=0)]
+       # aps_av_down.reset_index(drop=True, inplace = True)
+       # aps_av_down.rename(columns={0:'apsm2'}, inplace = True)
 ############################################################################################################################### 
+#%%
 #WIND AVERAGING'''     
     dataset_start_t=pd.Series()
     dataset_end_t=pd.Series()
@@ -285,12 +318,13 @@ for T in range (-25,-14, 1):
             timediffs_wind = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
             
     windavs=windavs.drop(u'Unnamed: 0', axis=1)
-    data=pd.concat([df_INPtidy, windavs, metavs, aps_total, smps_total,t_stamp_INP_start, t_stamp_INP_end], axis =1)
+    data=pd.concat([df_INPtidy, windavs, metavs, aps_total, aps_sum_down, smps_total,smps_sum_down, t_stamp_INP_start, t_stamp_INP_end], axis =1)
     data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0',u'start_datetime',
                      u'end_datetime', u'MEAN_WIND_DIR', u'MEAN_WIND_DIR'], axis=1)
     
     
-
+    
+    colors = iter(cm.jet(np.linspace(0, 1, len_T)))
     constant = a*T
     T_kelvin = T+273.16
     T_param=273.16-T_kelvin
@@ -367,9 +401,9 @@ minus20=pd.read_csv('corr atminus20.csv', index_col='Unnamed: 0')
 minus25=pd.read_csv('corr atminus25.csv', index_col='Unnamed: 0')
 
 
-x = np.square(minus15.loc['Wind speed':'SMPS Total Count',['Log10 INPs']].values)
-y = np.square(minus20.loc['Wind speed':'SMPS Total Count',['Log10 INPs']].values)
-z = np.square(minus25.loc['Wind speed':'SMPS Total Count',['Log10 INPs']].values)
+x = np.square(minus15.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
+y = np.square(minus20.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
+z = np.square(minus25.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 
 
 fig, ax = plt.subplots(figsize=(5, 5))
@@ -379,13 +413,13 @@ ax= plt.subplot(111)
 indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 
 index = minus15.index
-index = index[1:15]
+index = index[1:17]
 y_pos = np.arange(len(index))
-ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C')
+ax.bar(y_pos-0.1, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C')
 ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C')
-ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C')
+ax.bar(y_pos+0.1, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C')
 plt.xticks(y_pos,index, rotation = 90)
-plt.xlim(-1,14)
+plt.xlim(-1,17)
 plt.legend(loc=2, fontsize =10)
 plt.ylabel('Coefficient of determination $\mathregular{R^2}$')
 #plt.ylabel('Pearson R Coefficient')
