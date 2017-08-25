@@ -244,8 +244,8 @@ for i in range(len(bulk_folders)):
             for i in range (len(frame)):
                 x,y, =get_datetimes(file_info)
                 
-                bulk_elements_starttimes.append(x)
-                bulk_elements_endtimes.append(y)
+                bulk_elements_starttimes.extend(x)
+                bulk_elements_endtimes.extend(y)
                 
             #print bulk_data_list[csv]
             out_bulk = np.concatenate([out_bulk, frame], axis =0)
@@ -262,7 +262,7 @@ bulk_dataframe['end']=bulk_elements_endtimes
 core=pd.DataFrame({'start':bulk_run_start,'locations':bulk_run_loc,'end': bulk_run_end})
 
 # 
-del bulk_data_list, bulk_end_i, bulk_start_i, csv, file_info
+del  bulk_end_i, bulk_start_i, csv, file_info
 del found_files, frame, i,  start_1, start_key1,start_key2, x, y
 del files_to_pull, bulk_run_start
 
