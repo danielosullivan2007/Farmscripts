@@ -26,7 +26,7 @@ os.chdir(Organized)
 for i in range(len(APS_dates)):
     
     if not os.path.exists(Organized+APS_dates[i]):
-        os.mkdir(APS_dates[0])
+        os.mkdir(APS_dates[i])
     
     
     os.chdir(Organized+APS_dates[i])

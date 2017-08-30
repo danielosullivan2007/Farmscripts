@@ -21,7 +21,7 @@ from matplotlib.ticker import LogFormatterMathtext
 import numpy as np
 import os as os
 import matplotlib.pyplot as plt
-
+from scipy.stats import gaussian_kde
 import socket
 host = socket.gethostname()
 ##############################################################################
@@ -29,10 +29,16 @@ host = socket.gethostname()
 if host == 'see4-234':
     #pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
     indir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
+    picdir='C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
     glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
 elif host == 'Daniels-Air.home':
     pickdir = ('//Users//Daniel//Desktop//farmscripts//Pickels//')
     indir = ('//Users//Daniel//Desktop//farmscripts//')
+    
+elif host == 'SEE-L10840':
+    indir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\')
+    glodir = ('C:\\Users//useradmin//Desktop//Farmscripts//glomap data//160509//')    
+    picdir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\Pickels\\')
     #glodir = ('//Users//Daniel//Desktop//farmscripts//glomap data//160509//')
 
 
@@ -105,7 +111,7 @@ zero_day = datetime.date(2001,1,1)
 start_day = datetime.date(2001, 9, 15)
 end_day = datetime.date(2001, 10,31)
 
-data_key2=pd.read_csv ('C:\\Users\\eardo\\Desktop\\Farmscripts\\heatdata.csv', delimiter =',')
+data_key2=pd.read_csv (indir+'heatdata.csv', delimiter =',')
 felds=pd.read_csv(glodir+'INP_spectra_danny_feldspar.csv', delimiter =',', index_col=0)/1000
 day = list(felds.columns)
 
@@ -378,14 +384,14 @@ plt.show()
 '''Figure 1 in paper. High Runs and Low Runs come from
 '''
 
-picdir='C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
+
 lowruns_heated_data = np.genfromtxt(picdir+'lowruns_heated_data.csv', delimiter =',')
 midruns_heated_data = np.genfromtxt(picdir+'midruns_heated_data.csv', delimiter =',')
 highruns_heated_data = np.genfromtxt(picdir+'highruns_heated_data.csv', delimiter =',')
 lowruns_unheated_data = np.genfromtxt(picdir+'lowruns_unheated_data.csv', delimiter =',')
 midruns_unheated_data = np.genfromtxt(picdir+'midruns_unheated_data.csv', delimiter =',')
 highruns_unheated_data = np.genfromtxt(picdir+'highruns_unheated_data.csv', delimiter =',')
-all_data=np.genfromtxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\all data_1.csv',  delimiter=',')
+all_data=np.genfromtxt(indir+'all data_1.csv',  delimiter=',')
 
 fig1=plt.figure(figsize=(10,3))
 #==============================================================================
