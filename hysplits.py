@@ -4,8 +4,6 @@ Created on Thu Aug 31 10:39:59 2017
 
 @author: eardo
 """
-
- -*- coding: utf-8 -*-
 """
 Created on Tue May 23 12:22:41 2017
 @author: eardo
@@ -130,13 +128,16 @@ east_datamask = outdata['avdir'] == 'E'
 west_datamask = outdata['avdir'] == 'W'
 north_datamask = outdata['avdir'] == 'N'
 south_datamask = outdata['avdir'] == 'S'
-fig = plt.figure(figsize=(5, 5))
+
 
 east_data = outdata.loc[east_datamask]
 west_data = outdata.loc[west_datamask]
 north_data = outdata.loc[north_datamask]
 south_data = outdata.loc[south_datamask]
 
+
+#%%
+fig = plt.figure(figsize=(5, 5))
 ax1 = fig.add_subplot(111)
 line1 = plt.scatter(east_data['T'], east_data['INP'], color = 'k', label = 'East')
 line2 = plt.scatter(west_data['T'], west_data['INP'], color = 'red', label = 'West')
@@ -149,9 +150,12 @@ ax1.yaxis.tick_right()
 plt.ylim(0.02)
 plt.yscale('log')
 plt.legend(loc =3)
+ax1.tick_params(labelsize = 14)
+xticks = ax1.xaxis.get_major_ticks()
+xticks[0].label1.set_visible(False)
 #plt.title('[INPs] vs. major origin of back trajectory')
-plt.xlabel('T ('+degree_sign+'C)')
-plt.ylabel('[INP] /L')
+plt.xlabel('T ('+degree_sign+'C)',fontsize =14)
+plt.ylabel('[INP] /L', fontsize=14)
 #==============================================================================
 #             continue
 #         

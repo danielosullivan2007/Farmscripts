@@ -187,8 +187,7 @@ for i in range (len(list(Nie_data.columns))):
 
 Nie_data_stats = Nie_data_stats.T
 Nie_data_stats.index = Nie_data_stats.index*-1
-Nie_data_stats.drop ([  0,  -1,  -2,  -3,  -4,  -5,  -6,  -7,  -8,  -9, -10, -11, -12,
-            -13], inplace = True)
+Nie_data_stats.drop ([  0,  -1,  -2,  -3,  -4,  -5,  -6,  -7,  -8,  -9, -10, -11,-12], inplace = True)
 ##################################################
 #Setup fig
 fig = plt.figure(figsize=(7, 6))

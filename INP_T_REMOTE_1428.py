@@ -17,12 +17,15 @@ import datetime
 import pandas as pd
 import matplotlib.patches as mpatches
 import socket
+
+
 host=socket.gethostname()
 if host == 'see4-234':
     pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
     indir2 = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
     glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
-    
+    day_folder ='W:\\'
+    out_folder =indir2
     
 elif host == 'Daniels-MacBook-Air.local':
     
