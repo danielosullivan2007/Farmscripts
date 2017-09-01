@@ -41,7 +41,11 @@ elif host == 'SEE-L10840':
     picdir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\Pickels\\')
     #glodir = ('//Users//Daniel//Desktop//farmscripts//glomap data//160509//')
 
-
+elif host =='Feynman':
+    indir = ('C:\\Users\\Danny\\Desktop\\farmscripts\\')
+    glodir = ('C:\\Users\\Danny\\Desktop\\farmscripts\\glomap data\\')
+    picdir = ('C:\\Users\\Danny\\Desktop\\farmscripts\\Pickels\\')
+    
 percent = [0.2, 0.5, 0.8]
 
 
@@ -112,7 +116,10 @@ start_day = datetime.date(2001, 9, 15)
 end_day = datetime.date(2001, 10,31)
 
 data_key2=pd.read_csv (indir+'heatdata.csv', delimiter =',')
-felds=pd.read_csv(glodir+'INP_spectra_danny_feldspar.csv', delimiter =',', index_col=0)/1000
+felds=pd.read_csv(glodir+'INP_spectra_danny_feldspar.csv', delimiter =',', index_col='Temp')/1000
+
+
+#felds.drop(labels ='date', axis=1, inplace =True)
 day = list(felds.columns)
 
 for i in range(len(day)):
@@ -128,10 +135,10 @@ feld_mask=  (felds['date'] > start_day) & (felds['date'] <=  end_day)
 feld_data=felds.loc[feld_mask]
 
 feld_data=felds.loc[feld_mask].T.reset_index()
-feld_data['T'] = feld_data['# Temps']*-1
+feld_data['T'] = feld_data['Temp']*-1
 feld_data=feld_data.T
 feld_data.columns=list(feld_data.loc['T'])
-feld_data.drop('# Temps', inplace = True)
+feld_data.drop('Temp', inplace = True)
 feld_data.set_index('', inplace =True)
 feld_data.drop('', inplace =True)
 
@@ -143,17 +150,17 @@ for i in range (len(list(feld_data.columns))):
 feld_data_stats = feld_data_stats.T
 feld_data_stats.index = feld_data_stats.index*-1
 
-marine=pd.read_csv(glodir+'INP_spectra_danny_marine.csv', delimiter =',', index_col=0)/1000
+marine=pd.read_csv(glodir+'INP_spectra_danny_marine.csv', delimiter =',', index_col='Temp')/1000
 marine=marine.transpose()
 marine['date']=day
 marine_mask=  (marine['date'] > start_day) & (marine['date'] <=  end_day)
 marine_data=marine.loc[marine_mask]
 
 marine_data=marine.loc[marine_mask].T.reset_index()
-marine_data['T'] = marine_data['# Temps']*-1
+marine_data['T'] = marine_data['Temp']*-1
 marine_data=marine_data.T
 marine_data.columns=list(marine_data.loc['T'])
-marine_data.drop('# Temps', inplace = True)
+marine_data.drop('Temp', inplace = True)
 marine_data.set_index('', inplace =True)
 marine_data.drop('', inplace =True)
 
@@ -166,17 +173,17 @@ marine_data_stats = marine_data_stats.T
 marine_data_stats.index = marine_data_stats.index*-1
 
 
-Nie=pd.read_csv(glodir+'INP_spectra_danny_m3_Niemand.csv', delimiter =',', index_col=0)/1000
+Nie=pd.read_csv(glodir+'INP_spectra_danny_m3_Niemand.csv', delimiter =',', index_col='Temp')/1000
 Nie=Nie.transpose()
 Nie['date']=day
 Nie_mask=  (Nie['date'] > start_day) & (Nie['date'] <=  end_day)
 Nie_data=Nie.loc[Nie_mask]
 
 Nie_data=Nie.loc[Nie_mask].T.reset_index()
-Nie_data['T'] = Nie_data['# Temps']*-1
+Nie_data['T'] = Nie_data['Temp']*-1
 Nie_data=Nie_data.T
 Nie_data.columns=list(Nie_data.loc['T'])
-Nie_data.drop('# Temps', inplace = True)
+Nie_data.drop('Temp', inplace = True)
 Nie_data.set_index('', inplace =True)
 Nie_data.drop('', inplace =True)
 
