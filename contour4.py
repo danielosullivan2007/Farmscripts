@@ -195,51 +195,20 @@ for i in range (len(list(Nie_data.columns))):
 Nie_data_stats = Nie_data_stats.T
 Nie_data_stats.index = Nie_data_stats.index*-1
 Nie_data_stats.drop ([  0,  -1,  -2,  -3,  -4,  -5,  -6,  -7,  -8,  -9, -10, -11,-12], inplace = True)
-##################################################
+
+#%%
 #Setup fig
-fig = plt.figure(figsize=(7, 6))
+fig = plt.figure(figsize=(8, 4))
 #ax2 =ORIGINAL DATA
 #ax2 = fig.add_subplot(131)
 #p2=ax2.plot(data2[:,0],data2[:,1], linewidth=0,marker="o", zorder =0 
 
-'''*********************Feld************************************************'''
 
 
 
-ax0 = fig.add_subplot(2,2,1)
-p2=ax0.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
-p2=plt.plot(feld_data_stats.index, feld_data_stats['20%'], linewidth =1.5, color = 'k')
-p2=plt.plot(feld_data_stats.index, feld_data_stats['80%'], linewidth =1.5, color = 'k')
-#p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
-p2=plt.plot(marine_data_stats.index, marine_data_stats['20%'], linewidth =1.5, color = 'cyan')
-p2=plt.plot(marine_data_stats.index, marine_data_stats['80%'], linewidth =1.5, color = 'cyan')
-p2=plt.fill_between(feld_data_stats.index, feld_data_stats['20%'],feld_data_stats['80%'], alpha =0.4, 
-                    color = 'black',
-                    label = 'Feldspar')
-
-p2=plt.fill_between(marine_data_stats.index, marine_data_stats['20%'],marine_data_stats['80%'],
-                    label = 'Marine' , alpha = 0.7)
-blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
-
-gray_patch = mpatches.Patch(  alpha =0.85 , label='Feldspar', lw =1,edgecolor ='k' ,facecolor='gray')
-#red_circle = mlines.Line2D(range(1), range(1), color="white", marker='o', markerfacecolor="red", label = 'heated')
-plt.legend(handles=[blue_patch, gray_patch], prop={'size':8},loc=3)
-
-#ax1 properties
-ax0.set_yscale('log')
-ax0.set_xlim(-34,-5)
-ax0.set_ylim(0.005,90)
-#ax1.set_xlabel('T ('+degree_sign+'C)')
-ax0.set_ylabel('[INP] /L')
-ax0.get_yaxis().set_tick_params(which='both', direction='out')
-ax0.get_xaxis().set_tick_params(which='both', direction='out')
-ax0.set_title("Feldspar + Marine", fontsize=14)
-ttl1 = ax0.title
-ttl1.set_position([.5, 1.05])
-ax0.set_xticklabels([])
 
 '''*********************Feld with heat************************************************'''
-ax1 = fig.add_subplot(2,2,3)
+ax1 = fig.add_subplot(1,2,1)
 p2=ax1.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
 p2=plt.plot(feld_data_stats.index, feld_data_stats['20%'], linewidth =1.5, color = 'k')
 p2=plt.plot(feld_data_stats.index, feld_data_stats['80%'], linewidth =1.5, color = 'k')
@@ -259,7 +228,6 @@ red_circle = mlines.Line2D(range(1), range(1), color="white", marker='o', marker
 plt.legend(handles=[blue_patch, gray_patch, red_circle], prop={'size':8}, loc=3)
 
 
-
 #################
 #ax1 properties
 ax1.set_yscale('log')
@@ -274,34 +242,9 @@ ttl1 = ax1.title
 ttl1.set_position([.5, 1.05])
 
 
-'''*********************NIEMAND************************************************'''
 
-ax2 = fig.add_subplot(2,2,2)
-p1=ax2.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
-p2=plt.plot(Nie_data_stats.index, Nie_data_stats['20%'], linewidth =1.5, color = 'k')
-p2=plt.plot(Nie_data_stats.index, Nie_data_stats['80%'], linewidth =1.5, color = 'k')
-#p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
-p2=plt.fill_between(Nie_data_stats.index, Nie_data_stats['20%'],Nie_data_stats['80%'], alpha =0.4, color = 'black')
-blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
-gray_patch = mpatches.Patch(  alpha =0.85 , label='Niemand', lw =1,edgecolor ='k' ,facecolor='gray')
-#red_circle = mlines.Line2D(range(1), range(1), color="white", marker='o', markerfacecolor="red", label = 'heated')#ax0.set_yscale('log')
-
-
-plt.legend(handles=[ gray_patch], prop={'size':8},loc=3)
-ax2.set_yscale('log')
-ax2.set_xlim(-34,-5)
-ax2.set_ylim(0.005,90)
-#ax0.set_xlabel('T ('+degree_sign+'C)')
-#ax0.set_ylabel('[INP] /L')
-ax2.get_yaxis().set_tick_params(which='both', direction='out')
-ax2.get_xaxis().set_tick_params(which='both', direction='out')
-ax2.set_title("Niemand", fontsize=14)
-ttl0 = ax2.title
-ttl0.set_position([.5, 1.05])
-ax2.set_yticklabels([])
-ax2.set_xticklabels([])
 '''*********************NIEMAND w/ heat************************************************'''
-ax3 = fig.add_subplot(2,2,4)
+ax3 = fig.add_subplot(1,2,2)
 p1=ax3.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['20%'], linewidth =1.5, color = 'k')
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['80%'], linewidth =1.5, color = 'k')
@@ -327,7 +270,7 @@ ax3.set_yticklabels([])
 cmap = plt.get_cmap()
 cmap.set_under('white')
 
-cbaxes=fig.add_axes([1, 0.525, 0.02, 0.4]) 
+cbaxes=fig.add_axes([1, 0.3, 0.02, 0.6]) 
 cb = fig.colorbar(p1, cax = cbaxes, label='% of Total Observations', format ='%0.2f')
 ticks =cb.locator()
 
@@ -418,15 +361,19 @@ plt.gca().yaxis.get_major_ticks()[1].label1.set_visible(False)
 #plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
         
 
-
 ax1=plt.subplot(141)
 p1=ax1.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
-plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 100)
-plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
+
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
+#plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
 ax1.set_xlabel('T ('+degree_sign+'C)')
 ax1.set_ylabel('[INP] /L')
 #ax1.axes.get_yaxis().set_ticks([])
 
+xticks = ax1.xaxis.get_major_ticks()
+xticks[0].set_visible(False)
+#xticks[-1].label1.set_visible(False)
+plt.title('(a) All Data')
 formatter = LogFormatterMathtext(10, labelOnlyBase=False) 
 cbaxes=fig1.add_axes([0.085, -0.03, 0.2, 0.05]) 
 
@@ -434,40 +381,51 @@ ticks = [ 0.001 ,  0.1786346 ,   0.35626921,
           0.53390381,   0.71153841]
 cb = fig1.colorbar(p1, cax = cbaxes,ticks=ticks, label='% of Total Observations',
                    orientation ='horizontal', format ='%0.1f')
-ax1.text(-29, 0.015, '(a)', fontsize = 12)
+#ax1.text(-29, 0.015, '(a)', fontsize = 12)
 
 
 ax2=plt.subplot(142)
-plt.scatter(lowruns_heated_data[:,0], lowruns_heated_data[:,1], color ='red')
-plt.scatter(lowruns_unheated_data[:,0], lowruns_unheated_data[:,1], color ='black')
-plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 100)
-ax2.set_xlabel('T ('+degree_sign+'C)')
-
+p1=ax2.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
+ax2.scatter(data_key2['T'], data_key2['INP'], s=14, color='red', zorder=1, label = 'Heated')
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
+#plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
 ax2.axes.get_yaxis().set_ticks([])
-plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
-plt.axvline(-20, linestyle ='dashed', color ='k')
-ax2.text(-29, 0.015, '(b)', fontsize = 12)
-
-ax2=plt.subplot(143)
-plt.scatter(midruns_heated_data[:,0], midruns_heated_data[:,1], color ='red')
-plt.scatter(midruns_unheated_data[:,0], midruns_unheated_data[:,1], color ='black')
-plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 100)
 ax2.set_xlabel('T ('+degree_sign+'C)')
-ax2.axes.get_yaxis().set_ticks([])
-plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
-plt.axvline(-20, linestyle ='dashed', color ='k')
-ax2.text(-29, 0.015, '(c)', fontsize = 12)
+xticks = ax2.xaxis.get_major_ticks()
+xticks[0].set_visible(False)
+plt.legend()
+plt.title('(b) Heated samples')
 
 
-ax3=plt.subplot(144)
-plt.scatter(highruns_heated_data[:,0], highruns_heated_data[:,1], color ='red')
-plt.scatter(highruns_unheated_data[:,0], highruns_unheated_data[:,1], color ='black')
-plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 100)
+ax3=plt.subplot(143)
+plt.scatter(lowruns_heated_data[:,0], lowruns_heated_data[:,1],s=14, color ='red', label = 'Heated')
+plt.scatter(lowruns_unheated_data[:,0], lowruns_unheated_data[:,1],s=14, color ='black', label ='Untreated')
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
 ax3.set_xlabel('T ('+degree_sign+'C)')
+
 ax3.axes.get_yaxis().set_ticks([])
-plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
+xticks = ax3.xaxis.get_major_ticks()
+xticks[0].set_visible(False)
+
+
 plt.axvline(-20, linestyle ='dashed', color ='k')
-ax3.text(-29, 0.015, '(d)', fontsize = 12)
+#ax3.text(-29, 0.015, '(c)', fontsize = 12)
+plt.legend()
+plt.title('(c) Small effect')
+
+ax4=plt.subplot(144)
+plt.scatter(highruns_heated_data[:,0], highruns_heated_data[:,1], s=14, color ='red', label = 'Heated')
+plt.scatter(highruns_unheated_data[:,0], highruns_unheated_data[:,1], s=14, color ='black', label ='Untreated')
+plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
+ax4.set_xlabel('T ('+degree_sign+'C)')
+ax4.axes.get_yaxis().set_ticks([])
+xticks = ax4.xaxis.get_major_ticks()
+xticks[0].set_visible(False)
+plt.legend()
+plt.title('(d) Large effect')
+
+plt.axvline(-20, linestyle ='dashed', color ='k')
+ax4.text(-29, 0.015, '(d)', fontsize = 12)
 
 subplots=[ax0, ax1, ax2, ax3]
 for ax in subplots:
