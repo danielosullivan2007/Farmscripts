@@ -15,7 +15,7 @@ import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 from matplotlib.ticker import LogFormatter 
 from matplotlib.ticker import LogFormatterMathtext 
-
+import myfuncs
 '''DATA MUST BE IN LOG BINS BY INP NUMBER'''
 
 import numpy as np
@@ -24,13 +24,15 @@ import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
 import socket
 host = socket.gethostname()
+
+
 ##############################################################################
 '''Changes to required directory'''
 if host == 'see4-234':
     #pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
     indir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
     picdir='C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
-    glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
+    glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\')
 elif host == 'Daniels-Air.home':
     pickdir = ('//Users//Daniel//Desktop//farmscripts//Pickels//')
     indir = ('//Users//Daniel//Desktop//farmscripts//')
@@ -118,7 +120,6 @@ end_day = datetime.date(2001, 10,31)
 data_key2=pd.read_csv (indir+'heatdata.csv', delimiter =',')
 felds=pd.read_csv(glodir+'INP_spectra_danny_feldspar.csv', delimiter =',', index_col='Temp')/1000
 
-
 #felds.drop(labels ='date', axis=1, inplace =True)
 day = list(felds.columns)
 
@@ -133,6 +134,11 @@ felds = felds.transpose()
 felds['date']=day
 feld_mask=  (felds['date'] > start_day) & (felds['date'] <=  end_day)
 feld_data=felds.loc[feld_mask]
+
+
+
+
+#found = av_between(start_day, end_day, felds, felds['date'])
 
 feld_data=felds.loc[feld_mask].T.reset_index()
 feld_data['T'] = feld_data['Temp']*-1
@@ -149,6 +155,30 @@ for i in range (len(list(feld_data.columns))):
 
 feld_data_stats = feld_data_stats.T
 feld_data_stats.index = feld_data_stats.index*-1
+
+
+#%%
+
+felds_int = pd.read_csv(glodir + 'INP_spectra_danny_m3_feldspar-Leeds_internally_mixed.csv',delimiter =',', index_col='Temp')/1000
+felds_int= felds_int.transpose()
+felds_int['date']=day
+
+felds_int_data = myfuncs.av_between(start_day, end_day, felds_int, felds_int['date']).T.reset_index()
+felds_int_data['T'] = felds_int_data['Temp']*-1
+felds_int_data=felds_int_data.T
+felds_int_data.columns=list(felds_int_data.loc['T'])
+felds_int_data.drop('Temp', inplace = True)
+felds_int_data.set_index('', inplace =True)
+felds_int_data.drop('', inplace =True)
+
+felds_int_stats = pd.DataFrame()
+for i in range (len(list(felds_int_data.columns))):
+    felds_int_stats[i]=pd.to_numeric(felds_int_data.iloc[:,i]).describe(percentiles=percent)
+
+felds_int_stats = felds_int_stats.T
+felds_int_stats.index = felds_int_stats.index*-1
+
+#%%
 
 marine=pd.read_csv(glodir+'INP_spectra_danny_marine.csv', delimiter =',', index_col='Temp')/1000
 marine=marine.transpose()
@@ -204,28 +234,37 @@ fig = plt.figure(figsize=(8, 4))
 #p2=ax2.plot(data2[:,0],data2[:,1], linewidth=0,marker="o", zorder =0 
 
 
-
+#%%
 
 
 '''*********************Feld with heat************************************************'''
 ax1 = fig.add_subplot(1,2,1)
 p2=ax1.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
-p2=plt.plot(feld_data_stats.index, feld_data_stats['20%'], linewidth =1.5, color = 'k')
-p2=plt.plot(feld_data_stats.index, feld_data_stats['80%'], linewidth =1.5, color = 'k')
+p2=plt.plot(feld_data_stats.index, feld_data_stats['20%'], linewidth =0.5, color = 'k')
+p2=plt.plot(feld_data_stats.index, feld_data_stats['80%'], linewidth =0.5, color = 'k')
+
+
+
 p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
-p2=plt.plot(marine_data_stats.index, marine_data_stats['20%'], linewidth =1.5, color = 'cyan')
-p2=plt.plot(marine_data_stats.index, marine_data_stats['80%'], linewidth =1.5, color = 'cyan')
+p2=plt.plot(marine_data_stats.index, marine_data_stats['20%'], linewidth =1, color = 'cyan')
+p2=plt.plot(marine_data_stats.index, marine_data_stats['80%'], linewidth =1, color = 'cyan')
 p2=plt.fill_between(feld_data_stats.index, feld_data_stats['20%'],feld_data_stats['80%'], alpha =0.4, 
                     color = 'black',
                     label = 'Feldspar')
-
+p2=plt.fill_between(felds_int_stats.index, felds_int_stats['20%'],felds_int_stats['80%'], alpha =0.4, 
+                    color = 'green',
+                    label = 'Feldspar Internally Mixed')
 p2=plt.fill_between(marine_data_stats.index, marine_data_stats['20%'],marine_data_stats['80%'],
                     label = 'Marine' , alpha = 0.7)
-blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
 
-gray_patch = mpatches.Patch(  alpha =0.85 , label='Feldspar', lw =1,edgecolor ='k' ,facecolor='gray')
+p2=plt.plot(felds_int_stats.index, felds_int_stats['20%'],linewidth =1.5, color = 'green')
+p2=plt.plot(felds_int_stats.index, felds_int_stats['80%'], linewidth =1.5, color = 'green')
+blue_patch = mpatches.Patch(alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
+
+gray_patch = mpatches.Patch(alpha =0.85 , label='Feldspar Ext.', lw =1,edgecolor ='k' ,facecolor='gray')
+green_patch = mpatches.Patch(alpha =0.85 , label='Feldspar Int.', lw =1,edgecolor ='green' ,facecolor='green')
 red_circle = mlines.Line2D(range(1), range(1), color="white", marker='o', markerfacecolor="red", label = 'heated')
-plt.legend(handles=[blue_patch, gray_patch, red_circle], prop={'size':8}, loc=3)
+plt.legend(handles=[blue_patch, gray_patch, green_patch, red_circle], prop={'size':8}, loc=3)
 
 
 #################
@@ -246,8 +285,8 @@ ttl1.set_position([.5, 1.05])
 '''*********************NIEMAND w/ heat************************************************'''
 ax3 = fig.add_subplot(1,2,2)
 p1=ax3.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
-p2=plt.plot(Nie_data_stats.index, Nie_data_stats['20%'], linewidth =1.5, color = 'k')
-p2=plt.plot(Nie_data_stats.index, Nie_data_stats['80%'], linewidth =1.5, color = 'k')
+p2=plt.plot(Nie_data_stats.index, Nie_data_stats['20%'], linewidth =0.5, color = 'k')
+p2=plt.plot(Nie_data_stats.index, Nie_data_stats['80%'], linewidth =0.5, color = 'k')
 p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
 p2=plt.fill_between(Nie_data_stats.index, Nie_data_stats['20%'],Nie_data_stats['80%'], alpha =0.4, color = 'black')
 blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
@@ -427,7 +466,7 @@ plt.title('(d) Large effect')
 plt.axvline(-20, linestyle ='dashed', color ='k')
 ax4.text(-29, 0.015, '(d)', fontsize = 12)
 
-subplots=[ax0, ax1, ax2, ax3]
+subplots=[ax1, ax2, ax3, ax4]
 for ax in subplots:
     ax.get_yaxis().set_tick_params(which='both', direction='out')
     ax.get_xaxis().set_tick_params(which='both', direction='out')
