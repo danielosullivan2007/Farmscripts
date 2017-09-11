@@ -16,3 +16,6 @@ def av_between(start_search, end_search, data, data_index):
     located = data.loc[mask]
     return located
 
+def impute(cols):
+    Age = 
+

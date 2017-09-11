@@ -349,7 +349,7 @@ for T in range (-25,-10, 5):
     #del t_stamp_INP_end,t_stamp_INP_start, timediff_end, timediff_start, 
 ###################################################################################################
 #DATA CORRELATION SECTION 
-
+    data['INP']=data['INP'].apply(np.log10)
     corr=data.corr()
 #==============================================================================
 # corr.drop(['Logger Temperature',
@@ -374,7 +374,7 @@ for T in range (-25,-10, 5):
        u'MAX_GUST_CTIME': ' Max Gust Ctime'}, inplace = True)
     
     
-    
+    data.to_csv(indir+"data at "+num2words[T]+".csv")
     corr.to_csv(indir+"corr at" + num2words[T]+".csv")
 
 
@@ -405,8 +405,8 @@ x = np.square(minus15.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 y = np.square(minus20.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 z = np.square(minus25.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 
-
-fig, ax = plt.subplots(figsize=(5, 5))
+#%%
+fig, ax = plt.subplots(figsize=(6, 5))
 ax= plt.subplot(111)
 
 
@@ -415,18 +415,18 @@ indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 index = minus15.index
 index = index[1:17]
 y_pos = np.arange(len(index))
-ax.bar(y_pos-0.1, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C')
-ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C')
-ax.bar(y_pos+0.1, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C')
+ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C', edgecolor='black')
+ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C', edgecolor='black')
+ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C', edgecolor='black')
 plt.xticks(y_pos,index, rotation = 90)
-plt.xlim(-1,17)
+plt.xlim(-1,16)
 plt.legend(loc=2, fontsize =10)
 plt.ylabel('Coefficient of determination $\mathregular{R^2}$')
 #plt.ylabel('Pearson R Coefficient')
 plt.ylim(0,1)
 plt.tight_layout()
 plt.savefig(indir+"\correlations")
-
+#%%
 #==============================================================================
 # 
 # index = corr.index[1:]
