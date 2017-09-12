@@ -7,13 +7,15 @@ Created on Tue Sep 12 13:22:25 2017
 import os 
 import pandas as pd
 from datetime import datetime
-os.chdir('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
+#os.chdir('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
+os.chdir('C:\\Users\\useradmin\\Desktop\\Farmscripts\\')
 from myfuncs import num2words
 import seaborn as sns
 
 
 df=pd.read_csv('observations.csv')
-picdir = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
+#picdir = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
+picdir = 'C:\\Users\\useradmin\\Desktop\\Farmscripts\\Pickels\\'
 
 fmt='%y%m%d'
 new_cols = ['date','Datestr',
@@ -50,7 +52,7 @@ processed.set_index('date', inplace =True)
 
 data ={i: pd.read_csv(picdir + "data at "+num2words[i]+".csv")for i in range(-25, -10, 5)}
     
-minus15=data[-25]   
+minus15=data[-20]   
 minus15['date']=pd.to_datetime(minus15['2'], box =False).dt.date
 minus15.set_index('date', inplace =True)
 
@@ -83,14 +85,34 @@ merged = merged[['2',
 merged.Agri_Tractor.fillna(0, inplace =True)
 final  = merged.dropna(axis =0, subset =['Agri_Tractor', 'INP'])
 import numpy as np
-sns.tsplot(final.INP[final.Agri_Tractor==1], interpolate=False, condition='Acitivy', color='r')
-sns.tsplot(final.INP[final.Agri_Tractor==0], interpolate=False, condition='no Acitivy')
+final['day']=final.index
+ax=final[final['Agri_Tractor'] ==0].INP.plot(marker='o', lw=0.1)
+ax=final[final['Agri_Tractor'] ==1].INP.plot(marker='o', lw=0.1, color ='r')
+
+#sns.tsplot(final.INP[final.Agri_Tractor==1], time =final.day[final.Agri_Tractor==1], interpolate=False, condition='Acitivy', color='r')
+#sns.tsplot(final.INP[final.Agri_Tractor==0], interpolate=False, condition='no Acitivy')
 
 #sns.tsplot(final.INP[final.Agri_Tractor==1], interpolate=False, condition='Acitivy')
 
 
+import matplotlib.dates as mdates
+myFmt = mdates.DateFormatter('%m/%d')
 
 
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+
+majorLocator = MultipleLocator(4)
+#majorFormatter = FormatStrFormatter('%d')
+minorLocator = MultipleLocator(5)
+
+ax.xaxis.set_major_locator(majorLocator)
+ax.xaxis.set_major_formatter(majorFormatter)
+
+# for the minor ticks, use no labels; default NullFormatter
+ax.xaxis.set_minor_locator(minorLocator)
+ax.set_ylabel('log10 [INP]')
+ax.xaxis.set_major_formatter(myFmt)
+ax.legend(['No activity','Agricultural activity'], loc = 'top right')
 
 
 
