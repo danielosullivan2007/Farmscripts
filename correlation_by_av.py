@@ -31,6 +31,7 @@ if host == "Daniels-Air.home":
     indir ="//Users//Daniel//Desktop//farmscripts//pickels//"
 elif host == 'see4-234':
     indir = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
+    indir2 = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\'
 elif host ==  'SEE-L10840':
     indir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\Pickels\\')
     indir2 = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\')
