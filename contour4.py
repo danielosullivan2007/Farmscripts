@@ -203,11 +203,13 @@ marine_data_stats = marine_data_stats.T
 marine_data_stats.index = marine_data_stats.index*-1
 
 
+
 Nie=pd.read_csv(glodir+'INP_spectra_danny_m3_Niemand.csv', delimiter =',', index_col='Temp')/1000
 Nie=Nie.transpose()
 Nie['date']=day
 Nie_mask=  (Nie['date'] > start_day) & (Nie['date'] <=  end_day)
 Nie_data=Nie.loc[Nie_mask]
+
 
 Nie_data=Nie.loc[Nie_mask].T.reset_index()
 Nie_data['T'] = Nie_data['Temp']*-1

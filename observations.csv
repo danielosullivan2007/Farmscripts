@@ -1,0 +1,13 @@
+Datestr,timestr,Comments,Agri_activitiy,Met,Haze,Fog
+160915,14:00,Tractor dust,Tractor,,,
+160921,,"windy, hazy",,Hazy,1,0
+1650922,,"clear, rained heavily night before",,"clear, rained heavily night before",,0
+160923,,Harvesting downwind,Tractor,,,0
+160930,14:45,Heaving downpour at 1445,,Heavy Rain,,0
+161003,,Tillage at 16:00,Tractor,,,0
+161004,11:00,Tillage,Tractor,,,0
+161011,11:42,Haze before 11:42,,Haze,1,0
+161014,,Fog,,Fog,,1
+161019,,Tillage in field next to container,Tractor,,,0
+161026,,Tractor,,,,0
+161031,,"Hazy, Tractor spraying",Tractor,Haze,1,0
