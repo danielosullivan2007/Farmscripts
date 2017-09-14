@@ -141,7 +141,7 @@ APS_cols=[u'Date',
 
 df_APS=df_APS[APS_cols]
 df_APS['Total'] = df_APS.loc[:,u'0.542':u'9.647'].sum(axis=1)
-df_APS['day']=df_APS.index.day
+
 df_APS.set_index('datetime', drop =True, inplace=True)
 
 APS = df_APS['Hour'] 
@@ -172,7 +172,7 @@ plt.minorticks_on()
 ax.xaxis.set_minor_locator(minorLocator)
 
 #%%
-#APS_topiv = df['APS']
 
+APS_topiv = df_APS.Date.date
 
 

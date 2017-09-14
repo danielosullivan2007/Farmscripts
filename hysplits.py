@@ -155,7 +155,7 @@ xticks = ax1.xaxis.get_major_ticks()
 xticks[0].label1.set_visible(False)
 #plt.title('[INPs] vs. major origin of back trajectory')
 plt.xlabel('T ('+degree_sign+'C)',fontsize =14)
-plt.ylabel('[INP] /L', fontsize=14)
+plt.ylabel('[INP] $\mathregular{L^{-1}}$', fontsize=14)
 #==============================================================================
 #             continue
 #         

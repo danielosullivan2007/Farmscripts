@@ -28,3 +28,25 @@ def av_between(start_search, end_search, data, data_index):
 def get_dates_in_column(dataframe_column, fmt):
 
     dataframe_column.apply(datetime.datetime.strptime(fmt))
+    
+def globber(topfolder, key_terms):
+    import os 
+    import glob as glob
+    found_files=[]
+    
+    os.chdir(topfolder)
+    a=glob.glob('*\\')
+    for ifolder in range(len(a)):
+        os.chdir(topfolder+ a[ifolder])
+        
+        #search for files containing keywords       
+        files_in_folder=glob.glob('*key_terms*.csv')
+       #print "found "+" files"
+        
+        for s in range(len(files_in_folder)):
+            if key_terms[0] in files_in_folder[s]:
+                
+        #        print "looking for phrase "+str(key_terms[0])+" in: "+files_in_folder[s]
+                found_files.append(files_in_folder[s])
+                
+    return found_files, a

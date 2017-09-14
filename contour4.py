@@ -275,13 +275,15 @@ ax1.set_yscale('log')
 ax1.set_xlim(-34,-5)
 ax1.set_ylim(0.005,90)
 ax1.set_xlabel('T ('+degree_sign+'C)')
-ax1.set_ylabel('[INP] /L')
+ax1.set_ylabel('[INPs] ($\mathregular{L^{-1}}$)')
 ax1.get_yaxis().set_tick_params(which='both', direction='out')
 ax1.get_xaxis().set_tick_params(which='both', direction='out')
 #ax1.set_title("Feldspar + Marine", fontsize=14)
 ttl1 = ax1.title
 ttl1.set_position([.5, 1.05])
-
+ax1.text(.9,.9,'(a)',
+    horizontalalignment='right',
+    transform=ax1.transAxes, fontsize =14)
 
 
 '''*********************NIEMAND w/ heat************************************************'''
@@ -300,6 +302,7 @@ ax3.set_yscale('log')
 ax3.set_xlim(-34,-5)
 ax3.set_ylim(0.005,90)
 ax3.set_xlabel('T ('+degree_sign+'C)')
+
 #ax0.set_ylabel('[INP] /L')
 ax3.get_yaxis().set_tick_params(which='both', direction='out')
 ax3.get_xaxis().set_tick_params(which='both', direction='out')
@@ -316,7 +319,9 @@ cb = fig.colorbar(p1, cax = cbaxes, label='% of Total Observations', format ='%0
 ticks =cb.locator()
 
 
-
+ax3.text(.9,.9,'(b)',
+    horizontalalignment='right',
+    transform=ax3.transAxes, fontsize =14)
 #p2 =ax2.scatter(x, y, c=z, s=40, edgecolor='', cmap='OrRd')
 
 #ax2.scatter(DMT_T,DMT_I, marker="x", color = "red")
@@ -408,7 +413,7 @@ p1=ax1.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
 plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
 #plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
 ax1.set_xlabel('T ('+degree_sign+'C)')
-ax1.set_ylabel('[INP] /L')
+ax1.set_ylabel('[INPs] ($\mathregular{L^{-1}}$)')
 #ax1.axes.get_yaxis().set_ticks([])
 
 xticks = ax1.xaxis.get_major_ticks()
@@ -425,50 +430,50 @@ cb = fig1.colorbar(p1, cax = cbaxes,ticks=ticks, label='% of Total Observations'
 #ax1.text(-29, 0.015, '(a)', fontsize = 12)
 
 
-ax2=plt.subplot(142)
-p1=ax2.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
-ax2.scatter(data_key2['T'], data_key2['INP'], s=14, color='red', zorder=1, label = 'Heated')
+ax5=plt.subplot(142)
+p1=ax5.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
+ax5.scatter(data_key2['T'], data_key2['INP'], s=14, color='red', zorder=1, label = 'Heated')
 plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
 #plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
-ax2.axes.get_yaxis().set_ticks([])
-ax2.set_xlabel('T ('+degree_sign+'C)')
-xticks = ax2.xaxis.get_major_ticks()
+ax5.axes.get_yaxis().set_ticks([])
+ax5.set_xlabel('T ('+degree_sign+'C)')
+xticks = ax5.xaxis.get_major_ticks()
 xticks[0].set_visible(False)
-plt.legend()
+plt.legend(fontsize =8)
 plt.title('(b) Heated samples')
 
 
-ax3=plt.subplot(143)
+ax6=plt.subplot(143)
 plt.scatter(lowruns_heated_data[:,0], lowruns_heated_data[:,1],s=14, color ='red', label = 'Heated')
 plt.scatter(lowruns_unheated_data[:,0], lowruns_unheated_data[:,1],s=14, color ='black', label ='Untreated')
 plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
-ax3.set_xlabel('T ('+degree_sign+'C)')
+ax6.set_xlabel('T ('+degree_sign+'C)')
 
-ax3.axes.get_yaxis().set_ticks([])
-xticks = ax3.xaxis.get_major_ticks()
+ax6.axes.get_yaxis().set_ticks([])
+xticks = ax6.xaxis.get_major_ticks()
 xticks[0].set_visible(False)
 
 
 plt.axvline(-20, linestyle ='dashed', color ='k')
 #ax3.text(-29, 0.015, '(c)', fontsize = 12)
-plt.legend()
+plt.legend(fontsize =8)
 plt.title('(c) Small effect')
 
-ax4=plt.subplot(144)
+ax7=plt.subplot(144)
 plt.scatter(highruns_heated_data[:,0], highruns_heated_data[:,1], s=14, color ='red', label = 'Heated')
 plt.scatter(highruns_unheated_data[:,0], highruns_unheated_data[:,1], s=14, color ='black', label ='Untreated')
 plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
-ax4.set_xlabel('T ('+degree_sign+'C)')
-ax4.axes.get_yaxis().set_ticks([])
-xticks = ax4.xaxis.get_major_ticks()
+ax7.set_xlabel('T ('+degree_sign+'C)')
+ax7.axes.get_yaxis().set_ticks([])
+xticks = ax7.xaxis.get_major_ticks()
 xticks[0].set_visible(False)
-plt.legend()
+plt.legend(fontsize =8)
 plt.title('(d) Large effect')
 
 plt.axvline(-20, linestyle ='dashed', color ='k')
-ax4.text(-29, 0.015, '(d)', fontsize = 12)
 
-subplots=[ax1, ax2, ax3, ax4]
+
+subplots=[ax1, ax5, ax6, ax7]
 for ax in subplots:
     ax.get_yaxis().set_tick_params(which='both', direction='out')
     ax.get_xaxis().set_tick_params(which='both', direction='out')

@@ -310,7 +310,7 @@ for i in range(len(match_word2.locations)):
                      label =core.loc[core_mask]['locations'].iloc[0])
         plt.yscale('log')
         plt.legend()
-        plt.savefig(figfold+str([i])+'.jpg')
+        #plt.savefig(figfold+str([i])+'.jpg')
 print 'matched {} runs'.format(counter)        
 #     4)PLOTS OUTPUT DATA, SAVES FIGURES   
         
@@ -319,7 +319,7 @@ ax_a= plt.scatter(data_key2['T'], data_key2['INP'],color='red',zorder=0)
 ax_b=plt.scatter(data_key1['T'], data_key1['INP'], color='blue')
 plt.yscale('log')
 plt.title('initial runs')
-plt.savefig(figfold+str('initial runs')+'.jpg')
+#plt.savefig(figfold+str('initial runs')+'.jpg')
     
 fig3=plt.figure()
 ax_c= plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=0)

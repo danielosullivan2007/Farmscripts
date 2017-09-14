@@ -401,6 +401,11 @@ minus15=pd.read_csv('corr atminus15.csv', index_col='Unnamed: 0')
 minus20=pd.read_csv('corr atminus20.csv', index_col='Unnamed: 0')
 minus25=pd.read_csv('corr atminus25.csv', index_col='Unnamed: 0')
 
+minus15.drop(' Max Gust Ctime', axis =1, inplace =True)
+
+minus20.drop(' Max Gust Ctime', axis =1, inplace =True)
+
+minus25.drop(' Max Gust Ctime', axis =1, inplace =True)
 
 x = np.square(minus15.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 y = np.square(minus20.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
