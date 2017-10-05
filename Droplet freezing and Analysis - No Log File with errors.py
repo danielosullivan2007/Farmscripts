@@ -5,7 +5,8 @@ Created on Mon Aug 17 18:13:19 2015
 @author: ed11gcep
 
 
-Code developed by J. Vergara Temprado & modified by A. Harrison, M. Adams and G. Porter
+Code developed by J. Vergara Temprado & modified by A. Harrison, M. Adams, G. Porter 
+and D. O'Sullivan
 Contact email eejvt@leeds.ac.uk and ed11gcep@leeds.ac.uk
 University of Leeds 2016
 
@@ -60,173 +61,190 @@ READ ME:
 """
 
 import numpy as np
-import cv2
+#import cv2
 from glob import glob
 import os
 import csv
+import pandas as pd
+
+def poisson_CI(INP_per_drop, n_drops):
+    err_plus = INP_per_drop + (1.96)**2/(4*n_drops) + 1.96 * (INP_per_drop/ n_drops)**0.5
+    err_minus = INP_per_drop + (1.96)**2/(4*n_drops) - 1.96 * (INP_per_drop/ n_drops)**0.5
+    return err_plus, err_minus
+
+def INPs(fraction, denom):
+    INPs = -np.log(1-(fraction))*(denom)
+    return INPs
+
+def INP_perdrop(fraction):
+    INP_perfrop = -np.log(1-(fraction))
+    return INP_perdrop
 
 
-folder='X:\\' # CHANGE THIS FOLDER - also see bottom of code to alter analysis for wash-off/drop-on
+folder='C:\\Users\\useradmin\\Desktop\\Farm\\Formatted correctly' # CHANGE THIS FOLDER - also see bottom of code to alter analysis for wash-off/drop-on
 os.chdir(folder)
 b=glob('*\\')
 b.sort()
-
-def getSec(s):
-    l = s.split(':')
-    return int(l[0]) * 3600 + int(l[1]) * 60 + int(l[2])
-
-def run_video(ini_speed=1,name='Cold Plate',delay=0,temp_frame=0,low_info=0):
-    cap = cv2.VideoCapture('run.avi')
-                
-    print cap.isOpened()
-    iframe=1
-    events=[]
-    speed=ini_speed#ms
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    ret, frame = cap.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    while(cap.isOpened()):
-        
-        cap.set(cv2.CAP_PROP_POS_FRAMES,iframe)
-        ret, frame = cap.read()
-        if not ret:
-            break
-        #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        #print 
-        '''
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        if iframe>save_frames:
-            for j in range(save_frames):
-                if j==0:
-                    olds[:,:,j]=frame
-                else:
-                    olds[:,:,j]=olds[:,:,j-1]
-        '''
-        color=(255,50,0)
-        st_events=str(events).strip('[]')
-        if not low_info:
-            cv2.putText(frame,name,(10,120), font, 1,color,2,cv2.LINE_AA)
-            if not isinstance(temp_frame,int):
-                cv2.putText(frame,'T= %1.2f C'%temp_frame[iframe],(900,200), font, 2,color,2,cv2.LINE_AA)            
-            cv2.putText(frame,'Pause: p - Back: b - Forward: n - Event: spacebar - Delete: d - Faster/play: h,f - Slower: s - 200ms speed: j',(10,25), font, 0.6,color,2,cv2.LINE_AA)
-            cv2.putText(frame,'50 frames back: 1 - 10 frames back: 2 - 10 frames forward: 3 - 50 frames forward: 4 - Low info: l',(10,75), font, 0.6,color,2,cv2.LINE_AA)
-            cv2.putText(frame,'Frame %i'%iframe,(10,200), font, 2,color,2,cv2.LINE_AA)
-            cv2.putText(frame,'Speed %i ms'%speed,(10,300), font, 1,color,2,cv2.LINE_AA)
-            cv2.putText(frame,'Events %i'%len(events),(10,400), font, 1,color,2,cv2.LINE_AA)
-        else:
-            cv2.putText(frame,'Fr %i'%iframe,(10,200), font, 1.5,color,2,cv2.LINE_AA)
-            cv2.putText(frame,'Sp %i'%speed,(10,300), font, 0.8,color,2,cv2.LINE_AA)
-            cv2.putText(frame,'Ev %i'%len(events),(10,400), font, 0.8,color,2,cv2.LINE_AA)
-        if len(st_events)<100:
-            cv2.putText(frame,'%s'%st_events,(10,700), font, 0.5,color,2,cv2.LINE_AA)
-        else:
-            cv2.putText(frame,'%s'%st_events[:100],(10,700), font, 0.5,color,2,cv2.LINE_AA)
-            cv2.putText(frame,'%s'%st_events[100:],(10,750), font, 0.5,color,2,cv2.LINE_AA)
-        cv2.imshow('Droplet freezing',frame)
-        #cv2.waitKey(speed)
-        #print iframe
-        k = cv2.waitKey(speed)
-        if k == 27:         # wait for ESC key to exit
-            
-            cv2.destroyAllWindows()
-            break
-        
-        elif k == ord(' '): # wait for 's' key to save and exit
-            events.append(iframe-delay)
-            continue
-
-#            cv2.waitKey(speed)
-            
-
-    #    if cv2.waitKey(1) & 0xFF == ord('q'):
-    #        break
-        elif k == ord('l'):
-            low_info=int(np.logical_not(low_info))
-            continue
-        elif k == ord('s'):
-            speed=speed*2
-            cv2.waitKey(speed)
-        elif k == ord('f'):
-            speed=speed/2
-            if speed==0:
-                speed=1
-            cv2.waitKey(speed)
-        elif k == ord('h'):
-            speed=speed/2
-            if speed==0:
-                speed=1
-            cv2.waitKey(speed)        
-        elif k == ord('j'):
-            speed=200
-        elif k == ord('d'):
-            if len(events)!=0:
-                
-                events.pop()
-                continue
-            #cv2.waitKey(speed)
-
-        elif k == ord('p'):
-            
-            cv2.waitKey(0)
-        elif k == ord('1'):
-            iframe=iframe-50
-            continue
-        elif k == ord('2'):
-            iframe=iframe-10
-            continue
-        elif k == ord('3'):
-            iframe=iframe+10
-            continue
-        elif k == ord('4'):
-            iframe=iframe+50
-            continue
-            
-            
-            cv2.waitKey(0)
-        elif k == ord('b'):
-            iframe=iframe-1
-            speed=0
-            continue
-        '''
-        elif k == ord('r'):
-            iframe=iframe-save_frames
-            for iold in range(save_frames):
-                cv2.putText(olds[:,:,save_frames-iold-1],name,(10,100), font, 1,color,2,cv2.LINE_AA)
-    
-                cv2.putText(olds[:,:,save_frames-iold-1],'Frame %i'%iframe,(10,200), font, 1,color,2,cv2.LINE_AA)
-                cv2.putText(olds[:,:,save_frames-iold-1],'Speed %i ms'%speed,(10,300), font, 1,color,2,cv2.LINE_AA)
-                cv2.putText(olds[:,:,save_frames-iold-1],'Events %i'%len(events),(10,400), font, 0.5,color,2,cv2.LINE_AA)
-                if len(st_events)<10:
-                    cv2.putText(olds[:,:,save_frames-iold-1],'%s'%st_events,(10,500), font, 0.5,color,2,cv2.LINE_AA)
-                else:
-                    cv2.putText(olds[:,:,save_frames-iold-1],'%s'%st_events[:10],(10,500), font, 0.5,color,2,cv2.LINE_AA)
-                    cv2.putText(olds[:,:,save_frames-iold-1],'%s'%st_events[10:],(10,600), font, 0.5,color,2,cv2.LINE_AA)
-                    
-                cv2.imshow('Droplet freezing',olds[:,:,save_frames-iold-1])
-                k = cv2.waitKey(500)
-                if k == 27:         # wait for ESC key to exit
-                    
-                    cv2.destroyAllWindows()
-                    break
-                
-                elif k == ord(' '): # wait for 's' key to save and exit
-                    events.append(iframe-delay)
-                    if first_time:
-                        speed=200
-                        first_time=0
-                    cv2.waitKey(speed)
-                iframe=iframe+1
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-            '''
-
-        
-        iframe=iframe+1
-    print 
-    cap.release()
-    cv2.destroyAllWindows()
-    return events
-
+outdata=pd.DataFrame()
+counter =0
+#==============================================================================
+# def getSec(s):
+#     l = s.split(':')
+#     return int(l[0]) * 3600 + int(l[1]) * 60 + int(l[2])
+# 
+# def run_video(ini_speed=1,name='Cold Plate',delay=0,temp_frame=0,low_info=0):
+#     cap = cv2.VideoCapture('run.avi')
+#                 
+#     print cap.isOpened()
+#     iframe=1
+#     events=[]
+#     speed=ini_speed#ms
+#     font = cv2.FONT_HERSHEY_SIMPLEX
+#     ret, frame = cap.read()
+#     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#     while(cap.isOpened()):
+#         
+#         cap.set(cv2.CAP_PROP_POS_FRAMES,iframe)
+#         ret, frame = cap.read()
+#         if not ret:
+#             break
+#         #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#         #print 
+#         '''
+#         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#         if iframe>save_frames:
+#             for j in range(save_frames):
+#                 if j==0:
+#                     olds[:,:,j]=frame
+#                 else:
+#                     olds[:,:,j]=olds[:,:,j-1]
+#         '''
+#         color=(255,50,0)
+#         st_events=str(events).strip('[]')
+#         if not low_info:
+#             cv2.putText(frame,name,(10,120), font, 1,color,2,cv2.LINE_AA)
+#             if not isinstance(temp_frame,int):
+#                 cv2.putText(frame,'T= %1.2f C'%temp_frame[iframe],(900,200), font, 2,color,2,cv2.LINE_AA)            
+#             cv2.putText(frame,'Pause: p - Back: b - Forward: n - Event: spacebar - Delete: d - Faster/play: h,f - Slower: s - 200ms speed: j',(10,25), font, 0.6,color,2,cv2.LINE_AA)
+#             cv2.putText(frame,'50 frames back: 1 - 10 frames back: 2 - 10 frames forward: 3 - 50 frames forward: 4 - Low info: l',(10,75), font, 0.6,color,2,cv2.LINE_AA)
+#             cv2.putText(frame,'Frame %i'%iframe,(10,200), font, 2,color,2,cv2.LINE_AA)
+#             cv2.putText(frame,'Speed %i ms'%speed,(10,300), font, 1,color,2,cv2.LINE_AA)
+#             cv2.putText(frame,'Events %i'%len(events),(10,400), font, 1,color,2,cv2.LINE_AA)
+#         else:
+#             cv2.putText(frame,'Fr %i'%iframe,(10,200), font, 1.5,color,2,cv2.LINE_AA)
+#             cv2.putText(frame,'Sp %i'%speed,(10,300), font, 0.8,color,2,cv2.LINE_AA)
+#             cv2.putText(frame,'Ev %i'%len(events),(10,400), font, 0.8,color,2,cv2.LINE_AA)
+#         if len(st_events)<100:
+#             cv2.putText(frame,'%s'%st_events,(10,700), font, 0.5,color,2,cv2.LINE_AA)
+#         else:
+#             cv2.putText(frame,'%s'%st_events[:100],(10,700), font, 0.5,color,2,cv2.LINE_AA)
+#             cv2.putText(frame,'%s'%st_events[100:],(10,750), font, 0.5,color,2,cv2.LINE_AA)
+#         cv2.imshow('Droplet freezing',frame)
+#         #cv2.waitKey(speed)
+#         #print iframe
+#         k = cv2.waitKey(speed)
+#         if k == 27:         # wait for ESC key to exit
+#             
+#             cv2.destroyAllWindows()
+#             break
+#         
+#         elif k == ord(' '): # wait for 's' key to save and exit
+#             events.append(iframe-delay)
+#             continue
+# 
+# #            cv2.waitKey(speed)
+#             
+# 
+#     #    if cv2.waitKey(1) & 0xFF == ord('q'):
+#     #        break
+#         elif k == ord('l'):
+#             low_info=int(np.logical_not(low_info))
+#             continue
+#         elif k == ord('s'):
+#             speed=speed*2
+#             cv2.waitKey(speed)
+#         elif k == ord('f'):
+#             speed=speed/2
+#             if speed==0:
+#                 speed=1
+#             cv2.waitKey(speed)
+#         elif k == ord('h'):
+#             speed=speed/2
+#             if speed==0:
+#                 speed=1
+#             cv2.waitKey(speed)        
+#         elif k == ord('j'):
+#             speed=200
+#         elif k == ord('d'):
+#             if len(events)!=0:
+#                 
+#                 events.pop()
+#                 continue
+#             #cv2.waitKey(speed)
+# 
+#         elif k == ord('p'):
+#             
+#             cv2.waitKey(0)
+#         elif k == ord('1'):
+#             iframe=iframe-50
+#             continue
+#         elif k == ord('2'):
+#             iframe=iframe-10
+#             continue
+#         elif k == ord('3'):
+#             iframe=iframe+10
+#             continue
+#         elif k == ord('4'):
+#             iframe=iframe+50
+#             continue
+#             
+#             
+#             cv2.waitKey(0)
+#         elif k == ord('b'):
+#             iframe=iframe-1
+#             speed=0
+#             continue
+#         '''
+#         elif k == ord('r'):
+#             iframe=iframe-save_frames
+#             for iold in range(save_frames):
+#                 cv2.putText(olds[:,:,save_frames-iold-1],name,(10,100), font, 1,color,2,cv2.LINE_AA)
+#     
+#                 cv2.putText(olds[:,:,save_frames-iold-1],'Frame %i'%iframe,(10,200), font, 1,color,2,cv2.LINE_AA)
+#                 cv2.putText(olds[:,:,save_frames-iold-1],'Speed %i ms'%speed,(10,300), font, 1,color,2,cv2.LINE_AA)
+#                 cv2.putText(olds[:,:,save_frames-iold-1],'Events %i'%len(events),(10,400), font, 0.5,color,2,cv2.LINE_AA)
+#                 if len(st_events)<10:
+#                     cv2.putText(olds[:,:,save_frames-iold-1],'%s'%st_events,(10,500), font, 0.5,color,2,cv2.LINE_AA)
+#                 else:
+#                     cv2.putText(olds[:,:,save_frames-iold-1],'%s'%st_events[:10],(10,500), font, 0.5,color,2,cv2.LINE_AA)
+#                     cv2.putText(olds[:,:,save_frames-iold-1],'%s'%st_events[10:],(10,600), font, 0.5,color,2,cv2.LINE_AA)
+#                     
+#                 cv2.imshow('Droplet freezing',olds[:,:,save_frames-iold-1])
+#                 k = cv2.waitKey(500)
+#                 if k == 27:         # wait for ESC key to exit
+#                     
+#                     cv2.destroyAllWindows()
+#                     break
+#                 
+#                 elif k == ord(' '): # wait for 's' key to save and exit
+#                     events.append(iframe-delay)
+#                     if first_time:
+#                         speed=200
+#                         first_time=0
+#                     cv2.waitKey(speed)
+#                 iframe=iframe+1
+#             if cv2.waitKey(1) & 0xFF == ord('q'):
+#                 break
+#             '''
+# 
+#         
+#         iframe=iframe+1
+#     print 
+#     cap.release()
+#     cv2.destroyAllWindows()
+#     return events
+# 
+#==============================================================================
 
 #%%
 #fig=plt.figure()
@@ -308,6 +326,7 @@ if ans=='1':
             if awnser=='1':
                 
                 events=run_video(name=a[ifile][12:][:-1],temp_frame=temp_frame)
+                
                 np.savetxt('events_frame.csv',events,delimiter=',')
                 print '\'events_frame.csv\' saved/overwritted \n \n'
             if awnser=='2':
@@ -321,9 +340,11 @@ if ans=='1':
                     print"No Values Entered! \n"
                     continue
             events=np.sort(events)
-
+            
+            
             np.savetxt('events_frame.csv',events,delimiter=',')
             particles=len(events)
+            
             frezz_events=np.linspace(0,len(events),len(events))
             ff=frezz_events/float(particles)
             temps=np.zeros(len(events))
@@ -545,7 +566,7 @@ if ans=='1':
                 INP_DoF=np.sort(-np.log(1-ff)*(R_filter**2/Rd**2)/volume) #This is the INP calculation for the droplet on filter method
     
                 """Wash off method"""
-              
+             
                 Fu =np.sort((events - np.linspace(1,events,events))/float(events)) #This is the ff equivalent for the wash off method
                 Fu=(np.linspace(1,events,events))/float(events)
                 ind=e[ifile].find("ml")
@@ -566,7 +587,7 @@ if ans=='1':
                 data[:,0]=temperatures
                 data[:,2]=ff
                 data[:,3]=Kval
-    
+                
             except NameError:
                 print"\n Your folders are not ordered correctly or your file names are wrong! \n \n"
                 continue
@@ -575,21 +596,25 @@ if ans=='1':
             #INP Graph washoff
     
                 
-            if ffpc_data:
-    
-                #FF Graph washoff
-                plt.figure(1)
-                np.savetxt(folder+'\\'+d[ifolder]+'Data '+e[ifile][:-1]+'.csv',data,header=header,delimiter=',')
-                if 'Blan'==inlet:
-                    plt.plot(temperatures,Fu,'d',label=(e[ifile][:-1]),c='w')
-                else:
-                    plt.plot(temperatures,Fu,'d',label=(e[ifile][:-1]),c='#%02X%02X%02X' % (r(),r(),r()))
-                plt.title('Fraction Frozen Curves for Wash-off Technique')
-                plt.legend(loc=9,bbox_to_anchor=(1.8,1.025))
-                plt.xlabel('Temperature  ($^\circ$C)')
-                plt.ylabel('Fraction Frozen')
-                plt.savefig(folder+'FF_washoff_plot.png',dpi = 'figure', transparent = True, bbox_inches ='tight')
-                print"FF Graph Plotted PC"
+#==============================================================================
+#             if ffpc_data:
+#     
+#                 #FF Graph washoff
+#                 plt.figure(1)
+#                 #np.savetxt(folder+'\\'+d[ifolder]+'Data '+e[ifile][:-1]+'.csv',data,header=header,delimiter=',')
+#                 if 'Blan'==inlet:
+#                     plt.plot(temperatures,Fu,'d',label=(e[ifile][:-1]),c='w')
+#                 else:
+#                     plt.plot(temperatures,Fu,'d',label=(e[ifile][:-1]),c='#%02X%02X%02X' % (r(),r(),r()))
+#                 plt.title('Fraction Frozen Curves for Wash-off Technique')
+#                 plt.legend(loc=9,bbox_to_anchor=(1.8,1.025))
+#                 plt.xlabel('Temperature  ($^\circ$C)')
+#                 plt.ylabel('Fraction Frozen')
+#                 plt.savefig(folder+'FF_washoff_plot.png',dpi = 'figure', transparent = True, bbox_inches ='tight')
+#                 print"FF Graph Plotted PC"
+#                 
+#==============================================================================
+
             
             if ffte_data:
     
@@ -607,16 +632,18 @@ if ans=='1':
             if inpc_data:
                 #INP Graph Washoff
                 data[:,1]=INP_WO
-                plt.figure(3)
-                np.savetxt(folder+'\\'+d[ifolder]+'Data '+e[ifile][:-1]+'.csv',data,header=header,delimiter=',')     
-                plt.plot(temperatures,INP_WO,'o',label=(e[ifile][:-1]),c='#%02X%02X%02X' % (r(),r(),r()))
-                plt.title('INP concentrations for Wash-off Technique')
-                plt.legend(loc=9, bbox_to_anchor=(1.8,1.025))
-                plt.xlabel('Temperature  ($^\circ$C)')
-                plt.ylabel('$INP  (L^{-1})$')
-                plt.yscale('log')
-                plt.savefig(folder+'INP_washoff_plot.png', dpi = 'figure', transparent = True, bbox_inches = 'tight')
-                print "INP Graph plotted PC"
+#==============================================================================
+#                 plt.figure(3)
+#                 np.savetxt(folder+'\\'+d[ifolder]+'Data '+e[ifile][:-1]+'.csv',data,header=header,delimiter=',')     
+#                 plt.plot(temperatures,INP_WO,'o',label=(e[ifile][:-1]),c='#%02X%02X%02X' % (r(),r(),r()))
+#                 plt.title('INP concentrations for Wash-off Technique')
+#                 plt.legend(loc=9, bbox_to_anchor=(1.8,1.025))
+#                 plt.xlabel('Temperature  ($^\circ$C)')
+#                 plt.ylabel('$INP  (L^{-1})$')
+#                 plt.yscale('log')
+#                 plt.savefig(folder+'INP_washoff_plot.png', dpi = 'figure', transparent = True, bbox_inches = 'tight')
+#                 print "INP Graph plotted PC"
+#==============================================================================
                 
             if inte_data:    
                 #INP Graph dropon
@@ -631,22 +658,24 @@ if ans=='1':
                 plt.yscale('log')
                 plt.savefig(folder+'INP_dropon_plot.png', dpi = 'figure', transparent = True, bbox_inches = 'tight')
                 print "INP Graph plotted TE"
-            if k:    
-                #INP Graph dropon
-                data[:,3]=Kval 
-                plt.figure(7)
-                np.savetxt(folder+'\\'+d[ifolder]+'Data '+e[ifile][:-1]+'.csv',data,header=header,delimiter=',')    
-                if 'Blan'==inlet:
-                    plt.plot(temperatures,Kval,'o',label=(e[ifile][:-1]),c='w')
-                else:
-                    plt.plot(temperatures,Kval,'o',label=(e[ifile][:-1]),c='#%02X%02X%02X' % (r(),r(),r()))
-                plt.title('K Values for fraction frozen')
-                plt.legend(loc=9, bbox_to_anchor=(1.8,1.025))
-                plt.xlabel('Temperature  ($^\circ$C)')
-                plt.ylabel('$K  (cm^{-3})$')
-                plt.yscale('log')
-                plt.savefig(folder+'K_plot.png', dpi = 'figure', transparent = True, bbox_inches = 'tight')
-                print "K Graph plotted"     
+#==============================================================================
+#             if k:    
+#                 #INP Graph dropon
+#                 data[:,3]=Kval 
+#                 plt.figure(7)
+#                 np.savetxt(folder+'\\'+d[ifolder]+'Data '+e[ifile][:-1]+'.csv',data,header=header,delimiter=',')    
+#                 if 'Blan'==inlet:
+#                     plt.plot(temperatures,Kval,'o',label=(e[ifile][:-1]),c='w')
+#                 else:
+#                     plt.plot(temperatures,Kval,'o',label=(e[ifile][:-1]),c='#%02X%02X%02X' % (r(),r(),r()))
+#                 plt.title('K Values for fraction frozen')
+#                 plt.legend(loc=9, bbox_to_anchor=(1.8,1.025))
+#                 plt.xlabel('Temperature  ($^\circ$C)')
+#                 plt.ylabel('$K  (cm^{-3})$')
+#                 plt.yscale('log')
+#                 plt.savefig(folder+'K_plot.png', dpi = 'figure', transparent = True, bbox_inches = 'tight')
+#                 print "K Graph plotted"     
+#==============================================================================
                 
             
             if isbigdata:
@@ -655,6 +684,47 @@ if ans=='1':
                 totaldata.writerows(data)
                 totaldatafile.close()
                 print 'file written'
- 
+                
+            if ffpc_data:
+                if 'Blan'==inlet:
+                    pass
+                else:
+                    counter+=1
+                    denom = float(washvol)/(0.001*volume)
+                    dupes_gone = pd.DataFrame(data)
+                    dupes_gone  = dupes_gone[0:len(dupes_gone)-1]
+                    dupes_gone.columns=pd.Index(np.arange(0, len(dupes_gone.columns +2))).astype(str)
+                    dupes_gone.columns =['T', 'INPs_perL', 'F', 'K']
+                    dupes_gone.drop_duplicates(subset = 'T', keep = 'last', inplace =True)
+                    
+                    dupes_gone['INPs_perdrop']=dupes_gone['INPs_perL']/denom
+                    errs = dupes_gone['INPs_perdrop'].apply(poisson_CI, n_drops =len(data))
+                    dupes_gone['INPerr_pos']=zip(*errs)[0]
+                    dupes_gone.INPerr_pos=dupes_gone.INPerr_pos*denom
+                    dupes_gone['INPerr_neg']=zip(*errs)[1]
+                    dupes_gone.INPerr_neg=dupes_gone.INPerr_neg*denom
+                    
+                    
+                    dupes_gone['delta_INP_pos'] = dupes_gone['INPerr_pos'] - dupes_gone['INPs_perL']
+                    dupes_gone['delta_INP_neg'] = dupes_gone['INPs_perL'] - dupes_gone['INPerr_neg']
+                    
+                    dupes_gone.to_csv(folder+'\\'+d[ifolder]+'Data '+e[ifile][:-1]+'.csv', index =False, index_label = False)
+                    dupes_gone.drop(['INPs_perdrop', 'INPerr_pos','INPerr_neg'],axis =1, inplace =True)
+                    outdata = outdata.append(dupes_gone)
+                    
+                    newfig  = plt.figure(7)
+                    #ax= plt.scatter(dupes_gone['T'], dupes_gone['INP'])
+                    plt.yscale('log')
+                        
+                    assymetric_error = [dupes_gone['delta_INP_neg'],dupes_gone['delta_INP_pos']]
+                    
+                    plt.errorbar(dupes_gone['T'], dupes_gone['INPs_perL'], yerr=assymetric_error, fmt = 'o')
+                    plt.legend(loc=9, bbox_to_anchor=(1.8,1.025))
+                    plt.xlabel('Temperature  ($^\circ$C)')
+                    plt.ylabel('$INP  (L^{-1})$')
+                    plt.yscale('log')
+
+
 if ans==0:
     print"Try again!"
+outdata.to_csv(folder +'\\all_data.csv')

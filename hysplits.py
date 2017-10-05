@@ -28,7 +28,7 @@ if host == 'see4-234':
     #pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
     indir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
 
-    
+indir = indir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\')    
 os.chdir(indir)
 hysplit=pd.read_excel('hysplits.xlsx', converters={'Date':str,'Time':str})
 hysplit['Time']=hysplit['Time'].str.strip('  ')
@@ -142,8 +142,8 @@ ax1 = fig.add_subplot(111)
 line1 = plt.scatter(east_data['T'], east_data['INP'], color = 'k', label = 'East')
 line2 = plt.scatter(west_data['T'], west_data['INP'], color = 'red', label = 'West')
 line3 = plt.scatter(north_data['T'], north_data['INP'], color = 'green', label = 'North')
-line4= plt.scatter(south_data['T'], south_data['INP'], color= 'b', label ='South')
-ax1.yaxis.set_label_position("right")
+#line4= plt.scatter(south_data['T'], south_data['INP'], color= 'b', label ='South')
+ax1.yaxis.set_label_position("Left")
 ax1.yaxis.tick_right()
 #ax4 = plt.scatter(south_data['T'], south_data['INP'], color = 'b', label = 'South')
 

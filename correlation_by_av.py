@@ -21,9 +21,9 @@ a= float(0.0000594)
 b=float(3.33)
 c=float(0.0264)
 d=float(0.0033)
+import seaborn as sns
 
-
-
+sns.set_context("paper", rc={"font.size":12,"axes.titlesize":12,"axes.labelsize":12}) 
 degree_sign= u'\N{DEGREE SIGN}'
 import socket
 host = socket.gethostname()
@@ -421,17 +421,22 @@ indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 index = minus15.index
 index = index[1:17]
 y_pos = np.arange(len(index))
-ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C', edgecolor='black')
-ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C', edgecolor='black')
-ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C', edgecolor='black')
-plt.xticks(y_pos,index, rotation = 90)
+#ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C', edgecolor='black')
+ax.bar(y_pos, y, align = 'center',width=0.2, color = 'b', label ='-20 '+degree_sign+'C', edgecolor='black')
+#ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C', edgecolor='black')
+plt.xticks(y_pos,index, rotation = 45, fontsize =11)
+plt.yticks(fontsize =11)
+ax.set_ylim(0,1)
+ax.yaxis.grid()
 plt.xlim(-1,16)
-plt.legend(loc=2, fontsize =10)
-plt.ylabel('Coefficient of determination $\mathregular{R^2}$')
+#plt.legend(loc=2, fontsize =10)
+plt.ylabel('Coefficient of determination $\mathregular{R^2}$', fontsize =12)
+plt.xlabel(fontsize = 12)
 #plt.ylabel('Pearson R Coefficient')
-plt.ylim(0,1)
+plt.title('Correlations between particle no. and meteorological variables')
 plt.tight_layout()
 plt.savefig(indir+"\correlations")
+
 #%%
 #==============================================================================
 # 

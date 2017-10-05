@@ -9,7 +9,9 @@ import pandas as pd
 import os
 import numpy as np
 
-os.chdir('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
+#os.chdir('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
+os.chdir ('C:\\Users\\useradmin\\Desktop\\Farmscripts')
+
 data =pd.read_excel('poisson.xlsx',sheetname = 'Sheet2',
                     header =0)
 n_drops=data.events.iloc[-1]
@@ -36,10 +38,10 @@ ns_df['ns_plus'] =  data['Fpos'].apply(ns)-ns_df.ns
 ns_df['ns_neg'] = ns_df.ns - data['Fneg'].apply(ns)
 ns_df.drop(ns_df.index[len(ns_df) - 1], inplace =True)
 import matplotlib.pyplot as plt
-figr = plt.figure()
+fig = plt.figure()
 ax= plt.scatter(ns_df.Temp, ns_df.ns)
 plt.yscale('log')
 
 
-assymetric_error = (ns_df.ns_plus, ns_df.ns_neg)
-plt.errorbar(ns_df.Temp, ns_df.ns, yerr=assymetric_error)
+assymetric_error = [ ns_df.ns_neg.values.tolist(),ns_df.ns_plus.values.tolist()]
+plt.errorbar(ns_df.Temp, ns_df.ns, yerr=assymetric_error, fmt = 'o')

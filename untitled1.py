@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Tue Sep 26 14:30:14 2017
+
+@author: useradmin
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Wed Feb 01 12:10:42 2017
 @author: eardo
 """
@@ -72,7 +79,7 @@ pdownINP=pettersdown[:,1]
 pdownINP= pdownINP[np.logical_not(np.isnan(pupINP))]'''
 
 
-indata= np.genfromtxt('all_data.csv', delimiter = ',')
+indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 inx= indata[:,0]*-1
 iny=indata[:,1]
 inxy=np.stack([inx,iny])
@@ -240,7 +247,7 @@ fig = plt.figure(figsize=(8, 4))
 
 
 '''*********************Feld with heat************************************************'''
-ax1 = fig.add_subplot(1,2,1)
+ax1 = fig.add_subplot(1,2,2)
 p2=ax1.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
 p2=plt.plot(feld_data_stats.index, feld_data_stats['20%'], linewidth =0.5, color = 'k')
 p2=plt.plot(feld_data_stats.index, feld_data_stats['80%'], linewidth =0.5, color = 'k')
@@ -287,10 +294,11 @@ ax1.text(.9,.9,'(a)',
 
 
 '''*********************NIEMAND w/ heat************************************************'''
-ax3 = fig.add_subplot(1,2,2)
-p1=ax3.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
+ax3 = fig.add_subplot(1,2,1)
+#p1=ax3.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['20%'], linewidth =0.5, color = 'k')
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['80%'], linewidth =0.5, color = 'k')
+data_key2=data_key2['T'] <<-20 
 p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
 p2=plt.fill_between(Nie_data_stats.index, Nie_data_stats['20%'],Nie_data_stats['80%'], alpha =0.4, color = 'black')
 blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
@@ -299,6 +307,7 @@ gray_patch = mpatches.Patch(  alpha =0.85 , label='Niemand', lw =1,edgecolor ='k
 
 plt.legend(handles=[ gray_patch, red_circle], prop={'size':8},loc=3)
 ax3.set_yscale('log')
+ax3.set_ylabel('# cloud-modifying particles ($\mathregular{L^{-1}}$)')
 ax3.set_xlim(-34,-5)
 ax3.set_ylim(0.005,90)
 ax3.set_xlabel('T ('+degree_sign+'C)')
@@ -319,9 +328,9 @@ cb = fig.colorbar(p1, cax = cbaxes, label='% of Total Observations', format ='%0
 ticks =cb.locator()
 
 
-ax3.text(.9,.9,'(b)',
-    horizontalalignment='right',
-    transform=ax3.transAxes, fontsize =14)
+#ax3.text(.9,.9,'(b)',
+    #horizontalalignment='right',
+    #transform=ax3.transAxes, fontsize =14)
 #p2 =ax2.scatter(x, y, c=z, s=40, edgecolor='', cmap='OrRd')
 
 #ax2.scatter(DMT_T,DMT_I, marker="x", color = "red")

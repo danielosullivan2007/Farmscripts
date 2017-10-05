@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 degree_sign= u'\N{DEGREE SIGN}'
 
 
-infolder = "C:\Users\eardo\Desktop\Farmscripts\MetData"
+infolder = indir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\MetData')
 os.chdir(infolder)
 data15=pd.read_excel("15corr.xlsx", header = 0)
 data20=pd.read_excel("20corr.xlsx", header = 0)
@@ -30,9 +30,9 @@ z = corr25.loc['Time':'Mean Wind Speed',['LogINP']].values
 index = corr15.index
 index = index[1:12]
 y_pos = np.arange(len(index))
-ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C')
+#ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C')
 ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C')
-ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C')
+#ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C')
 plt.xticks(y_pos,index, rotation = 90)
 plt.xlim(-0.5,10.5)
 plt.legend(loc=2, fontsize =10)
