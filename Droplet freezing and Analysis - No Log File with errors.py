@@ -81,7 +81,7 @@ def INP_perdrop(fraction):
     return INP_perdrop
 
 
-folder='C:\\Users\\useradmin\\Desktop\\Farm\\Formatted correctly' # CHANGE THIS FOLDER - also see bottom of code to alter analysis for wash-off/drop-on
+folder='X:\\' # CHANGE THIS FOLDER - also see bottom of code to alter analysis for wash-off/drop-on
 os.chdir(folder)
 b=glob('*\\')
 b.sort()
@@ -727,4 +727,4 @@ if ans=='1':
 
 if ans==0:
     print"Try again!"
-outdata.to_csv(folder +'\\all_data.csv')
+#outdata.to_csv(folder +'\\all_data.csv')

@@ -83,9 +83,9 @@ filelist=[]
 out1=np.empty(shape=(1,2))
 out2=np.empty(shape=(1,2))
 out3=np.empty(shape=(1,2))
-all_data_corresp=np.empty(shape=(1,4))
-highruns_unheated_data=np.empty(shape=(1,4))
-highruns_heated_data=np.empty(shape=(1,4))
+all_data_corresp=np.empty(shape=(1,9))
+highruns_unheated_data=np.empty(shape=(1,9))
+highruns_heated_data=np.empty(shape=(1,9))
 
 out1[:] = np.NAN
 out2[:] = np.NAN
@@ -207,7 +207,7 @@ del data, dfend1, dfend2
 #                
 bulk_indir= "W:\\"
 #os.chdir(bulk_indir)
-out_bulk=np.empty(shape=(1,4))
+out_bulk=np.empty(shape=(1,9))
 
 out_bulk[:] = np.NAN
 bulk_files, bulk_folders = globber(bulk_indir, 'Data' )
@@ -240,17 +240,22 @@ for i in range(len(bulk_folders)):
             a= (q - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
             b=(r - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
             bulk_run_start.append(datetime.datetime.utcfromtimestamp(a)), bulk_run_end.append(datetime.datetime.utcfromtimestamp(b))
-            frame=np.genfromtxt(bulk_data_list[csv], delimiter=',')
-            for i in range (len(frame)):
-                x,y, =get_datetimes(file_info)
+            if 'PC' in bulk_data_list[csv]:
                 
-                bulk_elements_starttimes.extend(x)
-                bulk_elements_endtimes.extend(y)
-                
-            #print bulk_data_list[csv]
-            out_bulk = np.concatenate([out_bulk, frame], axis =0)
-    else:
-        continue
+                frame=np.genfromtxt(bulk_data_list[csv], delimiter=',')
+                shape =np.shape(frame)
+                if int(str(shape[1])[0]) ==9:
+                    for i in range (len(frame)):
+                        
+                        x,y, =get_datetimes(file_info)
+                        
+                        bulk_elements_starttimes.extend(x)
+                        bulk_elements_endtimes.extend(y)
+                    out_bulk = np.concatenate([out_bulk, frame], axis =0)
+                else:
+                     continue
+        else:
+            continue
 bulk_run_loc=[(i + j) for i, j in zip(bulk_run_folderloc, bulk_run_fileloc)]       
 bulk_dataframe= pd.DataFrame(out_bulk)
 bulk_elements_starttimes.insert(0, np.nan)
@@ -295,12 +300,18 @@ for i in range(len(match_word2.locations)):
         data_heat=np.genfromtxt(match_word2['locations'][i], delimiter =',')
         #print core.loc[core_mask]['locations']
         data_corresp=np.genfromtxt(core.loc[core_mask]['locations'].iloc[0],delimiter =',')
+        shape_1 = np.shape(data_corresp)
+        
+        if int(str(shape_1[1])[0]) ==9:
+            all_data_corresp=np.concatenate([ all_data_corresp, data_corresp])
+        else:
+            print 'problem with {}'.format(match_word2.locations[i])
         
         pulled_from_bulk.append(core.loc[core_mask]['locations'].iloc[0])
         
         
         #print core.loc[core_mask]['locations'].iloc[0]  
-        all_data_corresp=np.concatenate([ all_data_corresp, data_corresp])
+        
         
         
         fig2=plt.figure()
@@ -326,7 +337,7 @@ ax_c= plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=0)
 ax_d=plt.scatter( all_data_corresp[:,0],  all_data_corresp[:,1], color ='blue',zorder=1)
 plt.yscale('log')
 plt.title('')
-plt.savefig(figfold+str('with updated runs')+'.jpg')
+#plt.savefig(figfold+str('with updated runs')+'.jpg')
 
 del bulk_run_fileloc, bulk_run_folderloc, i, j, match_word2_run_start,match_word2_run_end, q, r, key
 del a, b, bulk_elements_endtimes, bulk_elements_starttimes, bulk_folders,  bulk_indir
@@ -338,7 +349,7 @@ match_word2_locations = match_word2.as_matrix()
 
 #%% LOWRUNS UNHEATED
 
-lowruns_unheated_data=np.empty(shape=(1,4))
+lowruns_unheated_data=np.empty(shape=(1,9))
 indices=[]
 lowruns = ['161020_MFC3_1345_1600','161013_MFC2_1041_1442','161031_MFC3_1017_1730']
 for i in range(len(lowruns)):
@@ -356,7 +367,7 @@ for i in range(len(lowruns_unheated_list)):
     
 #%% LOWRUNS HEATED
 
-lowruns_heated_data=np.empty(shape=(1,4))
+lowruns_heated_data=np.empty(shape=(1,9))
 indices=[]
 for i in range(len(lowruns)):
 	print indices
@@ -374,7 +385,7 @@ for i in range(len( lowruns_heated_list)):
   #### ####
 #%% MidRUNS UNHEATED
 
-midruns_unheated_data=np.empty(shape=(1,4))
+midruns_unheated_data=np.empty(shape=(1,9))
 indices=[]
 midruns = ['161014_MFC2_1039_1219', '161007_MFC2_1041_1241', '161005_MFC2_1339_1439']
 for i in range(len(midruns)):
@@ -392,7 +403,7 @@ for i in range(len(midruns_unheated_list)):
     
 #%% LOWRUNS HEATED
 
-midruns_heated_data=np.empty(shape=(1,4))
+midruns_heated_data=np.empty(shape=(1,9))
 indices=[]
 for i in range(len(lowruns)):
 	print indices
@@ -413,7 +424,7 @@ for i in range(len( midruns_heated_list)):
 # indices=[]
 # highruns = ['161018_Port_1045_1352','160928_Port_1334_1540','161011_MFC2_1410_1624']
 
-highruns_unheated_data=np.empty(shape=(1,4))
+highruns_unheated_data=np.empty(shape=(1,9))
 indices=[]
 highruns = ['160928_Port_1334_1540','161011_MFC2_1410_1624', '161021_MFC3_1442_1636']
 for i in range(len(highruns)):
@@ -431,7 +442,7 @@ for i in range(len(highruns_unheated_list)):
     
 #%% 
 
-highruns_heated_data=np.empty(shape=(1,4))
+highruns_heated_data=np.empty(shape=(1,9))
 indices=[]
 for i in range(len(highruns)):
     #print highruns[i]
@@ -450,43 +461,45 @@ for i in range(len(highruns_heated_list)):
 
 #%%
 
-all_data=np.genfromtxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\all data_1.csv',  delimiter=',')
+all_data=np.genfromtxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\all_data.csv',  delimiter=',')
 
-fig1=plt.figure(figsize=(10,3))
-ax0=plt.subplot(141)
-plt.scatter(all_data[:,0], all_data[:,1], color ='k')
-ax0.set_ylabel('[INP] /L')
-degree_sign= u'\N{DEGREE SIGN}'
-ax0.set_xlabel('T ('+degree_sign+'C)')
-
-
-plt.yscale('log')
-plt.xlim(-30,-5)
-plt.ylim(0.01, 50)
-
-ax1=plt.subplot(142)
-plt.scatter(lowruns_heated_data[:,0], lowruns_heated_data[:,1], color ='red')
-plt.scatter(lowruns_unheated_data[:,0], lowruns_unheated_data[:,1], color ='k')
-
-plt.yscale('log')
-plt.xlim(-30,-5)
-plt.ylim(0.01, 50)
-ax1.axes.get_yaxis().set_ticks([])
-ax1.set_xlabel('T ('+degree_sign+'C)')
-
-ax2=plt.subplot(143)
-plt.scatter(highruns_heated_data[:,0], highruns_heated_data[:,1], color ='red')
-plt.scatter(highruns_unheated_data[:,0], highruns_unheated_data[:,1], color ='k')
-
-
-plt.yscale('log')
-plt.xlim(-30,-5)
-plt.ylim(0.01, 50)
-ax2.axes.get_yaxis().set_ticks([])
-ax2.set_xlabel('T ('+degree_sign+'C)')
-
-ax0.get_yaxis().set_tick_params(which='both', direction='out')
-ax0.get_xaxis().set_tick_params(which='both', direction='out')
+# =============================================================================
+# fig1=plt.figure(figsize=(10,3))
+# ax0=plt.subplot(141)
+# plt.scatter(all_data[:,0], all_data[:,1], color ='k')
+# ax0.set_ylabel('[INP] /L')
+# degree_sign= u'\N{DEGREE SIGN}'
+# ax0.set_xlabel('T ('+degree_sign+'C)')
+# 
+# 
+# plt.yscale('log')
+# plt.xlim(-30,-5)
+# plt.ylim(0.01, 50)
+# 
+# ax1=plt.subplot(142)
+# plt.scatter(lowruns_heated_data[:,0], lowruns_heated_data[:,1], color ='red')
+# plt.scatter(lowruns_unheated_data[:,0], lowruns_unheated_data[:,1], color ='k')
+# 
+# plt.yscale('log')
+# plt.xlim(-30,-5)
+# plt.ylim(0.01, 50)
+# ax1.axes.get_yaxis().set_ticks([])
+# ax1.set_xlabel('T ('+degree_sign+'C)')
+# 
+# ax2=plt.subplot(143)
+# plt.scatter(highruns_heated_data[:,0], highruns_heated_data[:,1], color ='red')
+# plt.scatter(highruns_unheated_data[:,0], highruns_unheated_data[:,1], color ='k')
+# 
+# 
+# plt.yscale('log')
+# plt.xlim(-30,-5)
+# plt.ylim(0.01, 50)
+# ax2.axes.get_yaxis().set_ticks([])
+# ax2.set_xlabel('T ('+degree_sign+'C)')
+# 
+# ax0.get_yaxis().set_tick_params(which='both', direction='out')
+# ax0.get_xaxis().set_tick_params(which='both', direction='out')
+# =============================================================================
 
 np.savetxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\lowruns_heated_data.csv',
            lowruns_heated_data, delimiter=',')

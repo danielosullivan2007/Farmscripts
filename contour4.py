@@ -72,7 +72,8 @@ pdownINP=pettersdown[:,1]
 pdownINP= pdownINP[np.logical_not(np.isnan(pupINP))]'''
 
 
-indata= np.genfromtxt('all_data.csv', delimiter = ',')
+indata= np.genfromtxt('all_data.csv', delimiter = ',', skip_header=1)[:,1:]
+indata = np.delete(indata, 1, 0)
 inx= indata[:,0]*-1
 iny=indata[:,1]
 inxy=np.stack([inx,iny])
@@ -95,7 +96,7 @@ sum1=np.sum(H)
 H=H/sum1*100
 z=np.transpose(H)
 degree_sign= u'\N{DEGREE SIGN}'
-indata= np.genfromtxt('all data_1.csv', delimiter = ',')
+
 
 
 T=inx
@@ -105,7 +106,7 @@ x,y=np.meshgrid(xedges[0:-1]*-1,yedges[0:-1])
 
 
 
-data2=np.genfromtxt('all data_1.csv',  delimiter=',')
+#data2=np.genfromtxt('all data_1.csv',  delimiter=',')
 '''#Change Figure size'''
 fig=plt.figure(figsize= (8,4))
 
@@ -386,7 +387,7 @@ highruns_heated_data = np.genfromtxt(picdir+'highruns_heated_data.csv', delimite
 lowruns_unheated_data = np.genfromtxt(picdir+'lowruns_unheated_data.csv', delimiter =',')
 midruns_unheated_data = np.genfromtxt(picdir+'midruns_unheated_data.csv', delimiter =',')
 highruns_unheated_data = np.genfromtxt(picdir+'highruns_unheated_data.csv', delimiter =',')
-all_data=np.genfromtxt(indir+'all data_1.csv',  delimiter=',')
+#all_data=np.genfromtxt(indir+'all_data.csv',  delimiter=',')
 
 fig1=plt.figure(figsize=(10,3))
 #==============================================================================

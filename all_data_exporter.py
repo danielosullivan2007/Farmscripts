@@ -39,6 +39,6 @@ for ifolder in range(len(a)):
             df_heat = pd.read_csv(files_in_folder[s])
         
 unheated_data.drop(['K', 'INPs_perdrop','INPerr_pos', 'INPerr_neg'], axis =1, inplace =True)
-unheated_data.to_csv('C:\\Users\\eardo\\Desktop\\Farmscripts\\'+'all_data.csv')
+unheated_data.to_csv('C:\\Users\\eardo\\Desktop\\Farmscripts\\='+'all_data.csv')
                        
 
