@@ -24,7 +24,9 @@ import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
 import socket
 host = socket.gethostname()
-
+highruns_unheated_df =pd.DataFrame(columns = ['T', 'INPs_perL', 'F', 'K', 'INPs_perdrop', 
+                             'INPerr_pos', 'INPerr_neg', 'delta_INP_pos',
+                             'delta_INP_neg'])
 
 ##############################################################################
 '''Changes to required directory'''
@@ -118,7 +120,7 @@ zero_day = datetime.date(2001,1,1)
 start_day = datetime.date(2001, 9, 15)
 end_day = datetime.date(2001, 10,31)
 
-data_key2=pd.read_csv (indir+'heatdata.csv', delimiter =',')
+data_key2=pd.read_csv (indir+'all_heated_data.csv', delimiter =',')
 felds=pd.read_csv(glodir+'INP_spectra_danny_feldspar.csv', delimiter =',', index_col='Temp')/1000
 
 #felds.drop(labels ='date', axis=1, inplace =True)
@@ -248,7 +250,7 @@ p2=plt.plot(feld_data_stats.index, feld_data_stats['80%'], linewidth =0.5, color
 
 
 
-p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
+p2=plt.scatter(data_key2['T'], data_key2['INPs_perL'], color='red', zorder=1)
 p2=plt.plot(marine_data_stats.index, marine_data_stats['20%'], linewidth =1, color = 'cyan')
 p2=plt.plot(marine_data_stats.index, marine_data_stats['80%'], linewidth =1, color = 'cyan')
 p2=plt.fill_between(feld_data_stats.index, feld_data_stats['20%'],feld_data_stats['80%'], alpha =0.4, 
@@ -292,7 +294,7 @@ ax3 = fig.add_subplot(1,2,2)
 p1=ax3.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['20%'], linewidth =0.5, color = 'k')
 p2=plt.plot(Nie_data_stats.index, Nie_data_stats['80%'], linewidth =0.5, color = 'k')
-p2=plt.scatter(data_key2['T'], data_key2['INP'], color='red', zorder=1)
+p2=plt.scatter(data_key2['T'], data_key2['INPs_perL'], color='red', zorder=1)
 p2=plt.fill_between(Nie_data_stats.index, Nie_data_stats['20%'],Nie_data_stats['80%'], alpha =0.4, color = 'black')
 blue_patch = mpatches.Patch(  alpha =0.85 , label='Marine', lw =1.5,edgecolor ='cyan' ,facecolor='blue')
 gray_patch = mpatches.Patch(  alpha =0.85 , label='Niemand', lw =1,edgecolor ='k' ,facecolor='gray')
@@ -381,12 +383,46 @@ plt.show()
 '''
 
 
-lowruns_heated_data = np.genfromtxt(picdir+'lowruns_heated_data.csv', delimiter =',')
-midruns_heated_data = np.genfromtxt(picdir+'midruns_heated_data.csv', delimiter =',')
-highruns_heated_data = np.genfromtxt(picdir+'highruns_heated_data.csv', delimiter =',')
-lowruns_unheated_data = np.genfromtxt(picdir+'lowruns_unheated_data.csv', delimiter =',')
-midruns_unheated_data = np.genfromtxt(picdir+'midruns_unheated_data.csv', delimiter =',')
-highruns_unheated_data = np.genfromtxt(picdir+'highruns_unheated_data.csv', delimiter =',')
+lowruns_heated_data = pd.read_csv(picdir+'lowruns_heated_data.csv',names = ['T', 'INPs_perL', 'F', 'K', 'INPs_perdrop', 
+                             'INPerr_pos', 'INPerr_neg', 'delta_INP_pos',
+                             'delta_INP_neg']).dropna(axis =0)
+    
+#FILTER   
+lowruns_heated_data['neg_mag'] = lowruns_heated_data.loc[:,'INPerr_neg'].apply(np.log10)-lowruns_heated_data.loc[:,'INPs_perL'].apply(np.log10)
+lowruns_heated_data['neg_mag'] = lowruns_heated_data.loc[:,'neg_mag'].apply(np.absolute)
+lowruns_heated_data = lowruns_heated_data [lowruns_heated_data.loc[:,'neg_mag']<1]
+
+####################################################################
+
+highruns_heated_data = pd.read_csv(picdir+'highruns_heated_data.csv',names = ['T', 'INPs_perL', 'F', 'K', 'INPs_perdrop', 
+                             'INPerr_pos', 'INPerr_neg', 'delta_INP_pos',
+                             'delta_INP_neg']).dropna(axis =0)
+highruns_heated_data['neg_mag'] = highruns_heated_data.loc[:,'INPerr_neg'].apply(np.log10)-highruns_heated_data.loc[:,'INPs_perL'].apply(np.log10)
+highruns_heated_data['neg_mag'] = highruns_heated_data.loc[:,'neg_mag'].apply(np.absolute)
+highruns_heated_data = highruns_heated_data [highruns_heated_data.loc[:,'neg_mag']<1]
+  
+    
+####################################################################
+lowruns_unheated_data = pd.read_csv(picdir+'lowruns_unheated_data.csv',names = ['T', 'INPs_perL', 'F', 'K', 'INPs_perdrop', 
+                             'INPerr_pos', 'INPerr_neg', 'delta_INP_pos',
+                             'delta_INP_neg']).dropna(axis =0)
+    
+    
+lowruns_unheated_data['neg_mag'] = lowruns_unheated_data.loc[:,'INPerr_neg'].apply(np.log10)-lowruns_unheated_data.loc[:,'INPs_perL'].apply(np.log10)
+lowruns_unheated_data['neg_mag'] = lowruns_unheated_data.loc[:,'neg_mag'].apply(np.absolute)
+lowruns_unheated_data = lowruns_unheated_data [lowruns_unheated_data.loc[:,'neg_mag']<1]
+
+####################################################################
+
+
+highruns_unheated_data = pd.read_csv(picdir+'highruns_unheated_data.csv',names = ['T', 'INPs_perL', 'F', 'K', 'INPs_perdrop', 
+                             'INPerr_pos', 'INPerr_neg', 'delta_INP_pos',
+                             'delta_INP_neg']).dropna(axis =0)
+    
+    
+highruns_unheated_data['neg_mag'] = highruns_unheated_data.loc[:,'INPerr_neg'].apply(np.log10)-highruns_unheated_data.loc[:,'INPs_perL'].apply(np.log10)
+highruns_unheated_data['neg_mag'] = highruns_unheated_data.loc[:,'neg_mag'].apply(np.absolute)
+highruns_unheated_data = highruns_unheated_data [highruns_unheated_data.loc[:,'neg_mag']<1]
 #all_data=np.genfromtxt(indir+'all_data.csv',  delimiter=',')
 
 fig1=plt.figure(figsize=(10,3))
@@ -433,7 +469,7 @@ cb = fig1.colorbar(p1, cax = cbaxes,ticks=ticks, label='% of Total Observations'
 
 ax5=plt.subplot(142)
 p1=ax5.contourf(x,y,z, levels = levels, extend = 'max', cmap ='jet', alpha =1 )
-ax5.scatter(data_key2['T'], data_key2['INP'], s=14, color='red', zorder=1, label = 'Heated')
+ax5.scatter(data_key2['T'], data_key2['INPs_perL'], s=14, color='red', zorder=1, label = 'Heated')
 plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
 #plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)
 ax5.axes.get_yaxis().set_ticks([])
@@ -443,10 +479,17 @@ xticks[0].set_visible(False)
 plt.legend(fontsize =8)
 plt.title('(b) Heated samples')
 
-
+markersize ='4'
+elinewidth = '0.3'
 ax6=plt.subplot(143)
-plt.scatter(lowruns_heated_data[:,0], lowruns_heated_data[:,1],s=14, color ='red', label = 'Heated')
-plt.scatter(lowruns_unheated_data[:,0], lowruns_unheated_data[:,1],s=14, color ='black', label ='Untreated')
+yerr = (lowruns_heated_data['delta_INP_neg'],lowruns_heated_data['delta_INP_pos'])
+plt.errorbar(lowruns_heated_data['T'], lowruns_heated_data['INPs_perL'], yerr=yerr, fmt ='o',
+             color ='red', elinewidth = elinewidth,markersize= markersize, label = 'Heated')
+
+yerr = (lowruns_unheated_data['delta_INP_neg'],lowruns_unheated_data['delta_INP_pos'])
+plt.errorbar(lowruns_unheated_data['T'], lowruns_unheated_data['INPs_perL'], yerr=yerr, 
+             fmt ='o',elinewidth = elinewidth, markersize = markersize, label ='Unheated')
+
 plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
 ax6.set_xlabel('T ('+degree_sign+'C)')
 
@@ -461,8 +504,16 @@ plt.legend(fontsize =8)
 plt.title('(c) Small effect')
 
 ax7=plt.subplot(144)
-plt.scatter(highruns_heated_data[:,0], highruns_heated_data[:,1], s=14, color ='red', label = 'Heated')
-plt.scatter(highruns_unheated_data[:,0], highruns_unheated_data[:,1], s=14, color ='black', label ='Untreated')
+#plt.scatter(highruns_heated_data[:,0], highruns_heated_data[:,1], s=14, color ='red', label = 'Heated')
+#plt.scatter(highruns_unheated_data[:,0], highruns_unheated_data[:,1], s=14, color ='black', label ='Untreated')
+yerr = (highruns_heated_data['delta_INP_neg'],highruns_heated_data['delta_INP_pos'])
+plt.errorbar(highruns_heated_data['T'], highruns_heated_data['INPs_perL'], 
+             elinewidth = elinewidth, yerr=yerr, fmt ='o', color = 'red',markersize=markersize, label ='Heated')
+
+yerr = (highruns_unheated_data['delta_INP_neg'],highruns_unheated_data['delta_INP_pos'])
+plt.errorbar(highruns_unheated_data['T'], highruns_unheated_data['INPs_perL'], yerr=yerr, fmt ='o',
+             elinewidth = elinewidth,markersize=markersize, label ='Unheated')
+
 plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
 ax7.set_xlabel('T ('+degree_sign+'C)')
 ax7.axes.get_yaxis().set_ticks([])
