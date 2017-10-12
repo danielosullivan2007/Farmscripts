@@ -19,7 +19,8 @@ import pysplit
 
 trajgroup_N = pysplit.make_trajectorygroup(r'C:\\hysplit4\\working\\Test\\N\\*fdump*')
 trajgroup_S = pysplit.make_trajectorygroup(r'C:\\hysplit4\\working\\Test\\S\\*fdump*')
-
+trajgroup_E = pysplit.make_trajectorygroup(r'C:\\hysplit4\\working\\Test\\E\\*fdump*')
+trajgroup_W = pysplit.make_trajectorygroup(r'C:\\hysplit4\\working\\Test\\W\\*fdump*')
 """
 Basemaps and MapDesign
 ----------------------
@@ -48,7 +49,7 @@ Once the ``MapDesign`` is initialized it can be used to draw a map:
      #       resolution ='l',area_thresh=1000.)
 #bmap = Basemap(projection='ortho',lon_0=-20,lat_0=60,resolution='l')
 
-bmap = Basemap(llcrnrlon=-50.,llcrnrlat=30.,urcrnrlon=40.,urcrnrlat=70.,\
+bmap = Basemap(llcrnrlon=-60.,llcrnrlat=20.,urcrnrlon=60.,urcrnrlat=80.,\
             rsphere=(6378137.00,6356752.3142),\
             resolution='l',projection='merc',\
             lat_0=40.,lon_0=-20.,lat_ts=20.)    
@@ -68,7 +69,7 @@ for traj in trajgroup_N:
     altitude0 = traj.data.geometry.apply(lambda p: p.z)[0]
     traj.trajcolor = color_dict_N[altitude0]
 
-color_dict_S = {100.0 : 'red',
+color_dict_S = {100.0 : 'green',
               1000.0 : 'orange',
               1500.0 : 'black'}
 
@@ -76,6 +77,21 @@ for traj in trajgroup_S:
     altitude0 = traj.data.geometry.apply(lambda p: p.z)[0]
     traj.trajcolor = color_dict_S[altitude0]
 
+color_dict_W = {100.0 : 'red',
+              1000.0 : 'orange',
+              1500.0 : 'black'}
+
+for traj in trajgroup_W:
+    altitude0 = traj.data.geometry.apply(lambda p: p.z)[0]
+    traj.trajcolor = color_dict_W[altitude0]
+
+color_dict_E = {100.0 : 'purple',
+              1000.0 : 'orange',
+              1500.0 : 'black'}
+
+for traj in trajgroup_E:
+    altitude0 = traj.data.geometry.apply(lambda p: p.z)[0]
+    traj.trajcolor = color_dict_E[altitude0]
 
 
 """
@@ -85,11 +101,18 @@ lons are obtained by unpacking the ``Trajectory.Path``
 """
 
 #%%
-for traj in trajgroup_N[::1]:
+fig =plt.figure (figsize =(8,8))
+for traj in trajgroup_N[::2]:
     bmap.plot(*traj.path.xy, c=traj.trajcolor, latlon=True, zorder=20)
     
-for traj in trajgroup_S[::1]:
+for traj in trajgroup_S[::2]:
     bmap.plot(*traj.path.xy, c=traj.trajcolor, latlon=True, zorder=20)  
+
+for traj in trajgroup_E[::2]:
+    bmap.plot(*traj.path.xy, c=traj.trajcolor, latlon=True, zorder=20) 
+    
+for traj in trajgroup_W[::2]:
+    bmap.plot(*traj.path.xy, c=traj.trajcolor, latlon=True, zorder=20) 
 
 bmap.drawmapboundary(fill_color='black', zorder =0) # fill to edge
 bmap.drawcountries()
