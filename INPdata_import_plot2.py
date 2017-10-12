@@ -341,7 +341,7 @@ plt.title('')
 
 del bulk_run_fileloc, bulk_run_folderloc, i, j, match_word2_run_start,match_word2_run_end, q, r, key
 del a, b, bulk_elements_endtimes, bulk_elements_starttimes, bulk_folders,  bulk_indir
-bulk_dataframe.to_csv('C:\\Users\\eardo\\Desktop\\Farmscripts\\alldata_withdates.csv')
+#bulk_dataframe.to_csv('C:\\Users\\eardo\\Desktop\\Farmscripts\\alldata_withdates.csv')
 data_key2.to_csv('C:\\Users\\eardo\\Desktop\\Farmscripts\\heatdata.csv')
 match_word2_locations = match_word2.locations
 match_word2_locations = match_word2.as_matrix()
