@@ -351,6 +351,7 @@ for T in range (-25,-10, 5):
 ###################################################################################################
 #DATA CORRELATION SECTION 
     data['INP']=data['INP'].apply(np.log10)
+    data.drop([0L, 1L, 2L], inplace=True, axis =1)
     corr=data.corr()
 #==============================================================================
 # corr.drop(['Logger Temperature',
@@ -395,17 +396,19 @@ minus20=pd.read_csv('corr atminus20.csv', index_col='Unnamed: 0')
 minus25=pd.read_csv('corr atminus25.csv', index_col='Unnamed: 0')
 
 
-
-
 minus15=pd.read_csv('corr atminus15.csv', index_col='Unnamed: 0')
 minus20=pd.read_csv('corr atminus20.csv', index_col='Unnamed: 0')
 minus25=pd.read_csv('corr atminus25.csv', index_col='Unnamed: 0')
 
-minus15.drop(' Max Gust Ctime', axis =1, inplace =True)
+minus15.drop([' Max Gust Ctime', 'Max gust direction'], axis =1, inplace =True)
+minus20.drop([' Max Gust Ctime','Max gust direction'], axis =1, inplace =True)
+minus25.drop([' Max Gust Ctime','Max gust direction'], axis =1, inplace =True)
 
-minus20.drop(' Max Gust Ctime', axis =1, inplace =True)
+minus15.drop([' Max Gust Ctime', 'Max gust direction'], axis =0, inplace =True)
 
-minus25.drop(' Max Gust Ctime', axis =1, inplace =True)
+minus20.drop([' Max Gust Ctime','Max gust direction'], axis =0, inplace =True)
+
+minus25.drop([' Max Gust Ctime','Max gust direction'], axis =0, inplace =True)
 
 x = np.square(minus15.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 y = np.square(minus20.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
@@ -419,21 +422,22 @@ ax= plt.subplot(111)
 indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 
 index = minus15.index
-index = index[1:17]
+index = index[1:13]
 y_pos = np.arange(len(index))
-#ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C', edgecolor='black')
-ax.bar(y_pos, y, align = 'center',width=0.2, color = 'b', label ='-20 '+degree_sign+'C', edgecolor='black')
-#ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C', edgecolor='black')
-plt.xticks(y_pos,index, rotation = 45, fontsize =11)
+ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C', edgecolor='black')
+ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C', edgecolor='black')
+ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C', edgecolor='black')
+plt.xticks(y_pos,index, rotation = 90, fontsize =11)
 plt.yticks(fontsize =11)
 ax.set_ylim(0,1)
 ax.yaxis.grid()
-plt.xlim(-1,16)
+plt.xlim(-1,12)
+plt.legend()
 #plt.legend(loc=2, fontsize =10)
 plt.ylabel('Coefficient of determination $\mathregular{R^2}$', fontsize =12)
-plt.xlabel(fontsize = 12)
+#plt.xlabel()
 #plt.ylabel('Pearson R Coefficient')
-plt.title('Correlations between particle no. and meteorological variables')
+#plt.title('Correlations between particle no. and meteorological variables')
 plt.tight_layout()
 plt.savefig(indir+"\correlations")
 
