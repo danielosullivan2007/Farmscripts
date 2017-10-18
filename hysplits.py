@@ -162,6 +162,44 @@ xticks[0].label1.set_visible(False)
 #plt.title('[INPs] vs. major origin of back trajectory')
 plt.xlabel('T ('+degree_sign+'C)',fontsize =14)
 plt.ylabel('[INP] $\mathregular{L^{-1}}$', fontsize=14)
+
+unstacked = merged.pivot(columns='avdir')
+frames=[south_data, east_data, west_data, north_data]
+merged =pd.concat(frames).drop(['Datetime', 'end_datetime', 'start_datetime', 'date', 'Unnamed: 0'],
+                 axis =1)
+N = merged[merged['avdir'] == 'N'].drop('avdir', axis =1)
+S = merged[merged['avdir'] == 'S'].drop('avdir', axis =1)
+E = merged[merged['avdir'] == 'E'].drop('avdir', axis =1)
+W = merged[merged['avdir'] == 'W'].drop('avdir', axis =1)
+
+
+N_20 = N['INP'][N['T']==-20].apply(np.log10)
+S_20 = S['INP'][S['T']==-20].apply(np.log10)
+E_20 = E['INP'][E['T']==-20].apply(np.log10)
+W_20 = W['INP'][W['T']==-20].apply(np.log10)
+
+N_15 = N['INP'][N['T']==-15].apply(np.log10)
+S_15 = S['INP'][S['T']==-15].apply(np.log10)
+E_15 = E['INP'][E['T']==-15].apply(np.log10)
+W_15 = W['INP'][W['T']==-15].apply(np.log10)
+
+N_25 = N['INP'][N['T']==-25].apply(np.log10)
+S_25 = S['INP'][S['T']==-25].apply(np.log10)
+E_25 = E['INP'][E['T']==-25].apply(np.log10)
+W_25 = W['INP'][W['T']==-25].apply(np.log10)
+
+
+
+from scipy import stats as stats
+
+S_20.values,
+values_20 = [N_20.values, E_20.values, W_20.values]
+values_25 = [N_25.values, E_25.values, W_25.values]
+values_15 = [N_15.values, E_15.values, W_15.values]
+
+stats.bartlett(*Values_20)
+stats.bartlett(*Values_15)
+stats.bartlett(*Values_25)
 #==============================================================================
 #             continue
 #         

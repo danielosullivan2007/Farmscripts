@@ -15,12 +15,18 @@ For this example we'll initialize only the January trajectories created in
 ``bulk_trajgen_example.py``.
 """
 import pysplit
+from mpl_toolkits.basemap import Basemap
+import matplotlib.pyplot as plt
+import numpy as np
+import os
 
-
+figdir = 'C:\\Users\\useradmin\\Desktop\\Farmscripts\\Figures\\'
 trajgroup_N = pysplit.make_trajectorygroup(r'C:\\hysplit4\\working\\Test\\N\\*fdump*')
 trajgroup_S = pysplit.make_trajectorygroup(r'C:\\hysplit4\\working\\Test\\S\\*fdump*')
 trajgroup_E = pysplit.make_trajectorygroup(r'C:\\hysplit4\\working\\Test\\E\\*fdump*')
 trajgroup_W = pysplit.make_trajectorygroup(r'C:\\hysplit4\\working\\Test\\W\\*fdump*')
+
+
 """
 Basemaps and MapDesign
 ----------------------
@@ -120,4 +126,4 @@ bmap.drawcountries()
 bmap.drawcoastlines()
 #bmap.drawcontinents(fill_color ='green')
 bmap.fillcontinents(color='white',lake_color='black',zorder=20)
-
+plt.savefig(figdir+'hysplits')
