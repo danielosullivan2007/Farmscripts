@@ -7,11 +7,20 @@ Created on Wed Oct 18 14:10:58 2017
 import numpy as np
 import pandas as pd
 import seaborn as sns
-picdir = 'C:\\Users\\useradmin\\Desktop\\Farmscripts\\Pickels\\'
-#figdir =  
 import os
 import glob as glob
+from sklearn import preprocessing
+min_max_scaler = preprocessing.MinMaxScaler()
+#from bokeh import mpl
+from bokeh.plotting import figure
+from bokeh.charts import TimeSeries, output_file, show
+import matplotlib.pyplot as plt
+
+picdir = 'C:\\Users\\useradmin\\Desktop\\Farmscripts\\Pickels\\'
+figdir = 'C:\\Users\\useradmin\\Desktop\\Farmscripts\\Figures\\'
 os.chdir(picdir)
+#figdir =  
+
 to_import  = glob.glob('*data at minus*.csv')
 names = ['Temp','Unnamed: 0',
  'INP',
@@ -61,12 +70,61 @@ df = df[['3','Temp', 'INP',
 
 
 df.drop( ['MAX_GUST_CTIME','MAX_GUST_DIR', 'demott','10cm Soil Temperature'])
-df_15 = df[df['Temp']==-20]
-df_apstrim = df_15[df_15['APS Total']<10000]
-df_apstrim.reset_index(drop = True, inplace =True)
-df_apstrim['log_APS'] = df_apstrim['APS Total'].apply(np.log10)
-sns.pairplot(data =df_apstrim, y_vars=['INP'],
-             x_vars= ['Humidity','Dry Bulb Temperature' ,'MEAN_WIND_SPEED','Rainfall Total since 0900'])   
-sns.pairplot(data =df_apstrim, y_vars=['INP'],
-             x_vars= ['SMPS Total','log_APS'])   
-#sns.residplot('INP', 'log_APS', data =df_apstrim)
+df.Date= pd.to_datetime(df['Date'])
+df.reset_index(inplace =True, drop =True)
+df.dropna(inplace =True)
+df.set_index('Date')
+df = df[df['APS Total']<10000]
+
+df['log_APS'] = df['APS Total'].apply(np.log10)
+
+T = -25
+df_T = df[df['Temp']== T].reset_index(drop=True)
+
+#removing high APS points, normalize
+df_plot = df_T[df_T['APS Total']<10000]
+df_plot.reset_index(drop = True, inplace =True)
+
+
+df_tonorm=df_plot.loc[:,'INP':]
+cols=df_plot.loc[:,'INP':].columns.values
+min_max_scaler = preprocessing.MinMaxScaler()
+np_scaled = min_max_scaler.fit_transform(df_tonorm)
+df_normalized = pd.DataFrame(np_scaled)
+df_normalized.columns = cols
+df_normalized =pd.concat([df_normalized, df_T['Date']])
+df_normalized['Date']=df_T['Date']
+#==============================================================================
+# sns.pairplot(data =df_apstrim, y_vars=['INP'],
+#              x_vars= ['Humidity','Dry Bulb Temperature' ,'MEAN_WIND_SPEED','Rainfall Total since 0900'])   
+# sns.pairplot(data =df_apstrim, y_vars=['INP'],
+#              x_vars= ['SMPS Total','log_APS'])   
+# #sns.residplot('INP', 'log_APS', data =df_apstrim)
+# 
+# 
+#==============================================================================
+cols= df_plot.columns.values.tolist()
+x=[i for i in enumerate(cols)]
+sns.jointplot(x=cols[9], y ='INP', data = df_normalized)
+
+
+p1 = figure(x_axis_type="datetime",x_axis_label = 'Date', y_axis_label = 'Min_Max Normalized Variable',
+            title="Time Series for T = {}".format(T),plot_width=1000)
+#p1.scatter(x= df_normalized['Date'], y=df_normalized['SMPS Total'], legend ='SMPS Total')
+p1.line(x= df_normalized['Date'], y=df_normalized[cols[2]],color ='red', legend = cols[2], alpha =0.2)
+p1.scatter(x= df_normalized['Date'], y=df_normalized[cols[2]],color ='red', legend = cols[2])
+#
+#p1.scatter(x= df_normalized['Date'], y=df_normalized[cols[18]],color = 'black', legend = cols[18])
+#p1.line(x= df_normalized['Date'], y=df_normalized[cols[18]],color = 'black', legend = cols[18], alpha =0.2)
+
+p1.scatter(x= df_normalized['Date'], y=df_normalized[cols[9]],color = 'black', legend = cols[9])
+p1.line(x= df_normalized['Date'], y=df_normalized[cols[9]],color = 'black', legend = cols[9], alpha =0.2)
+
+#p1.scatter(x= df_normalized['Date'], y=df_normalized[cols[9]],color = 'blue', legend = cols[9])
+#p1.line(x= df_normalized['Date'], y=df_normalized[cols[9]],color = 'blue', legend = cols[9], alpha =0.2)
+
+output_file(figdir+'timeseries.html')
+show(p1)
+
+
+
