@@ -137,8 +137,14 @@ aps['datetimes']=aps.datetime
 aps = aps.reset_index(drop = True)
 INPs =pd.read_pickle(indir+"INPs.p")
 met = pd.read_pickle(indir+ "met.p")
+
 met.reset_index(inplace=True)
 met.rename(columns ={'Datetime':'datetimes'}, inplace =True)
+met['rain_past_hour']=met['Rainfall Total since 0900'].diff(periods=1)
+for i in range(len(met)):
+    if met['Time'][i] == '09:00':
+        met.rain_past_hour[i] = np.nan
+
 
 
 wind = pd.read_pickle(indir+ "wind.p")
@@ -151,8 +157,8 @@ smps = pd.read_pickle(indir+"SMPS.p")
 
 smps = smps.rename(columns ={'index':'datetime'})
 
-for T in range (-25,-10, 5):
-    len_T=len(range(-25,-10, 5))
+for T in range (-25,-14, 1):
+    len_T=len(range(-25,-14, 1))
     
 
     df_INP = INPs.loc[INPs['T'] == T]
@@ -422,7 +428,7 @@ ax= plt.subplot(111)
 indata= np.genfromtxt('all data_1.csv', delimiter = ',')
 
 index = minus15.index
-index = index[1:13]
+index = index[1:14]
 y_pos = np.arange(len(index))
 ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C', edgecolor='black')
 ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C', edgecolor='black')
@@ -431,7 +437,7 @@ plt.xticks(y_pos,index, rotation = 90, fontsize =11)
 plt.yticks(fontsize =11)
 ax.set_ylim(0,1)
 ax.yaxis.grid()
-plt.xlim(-1,12)
+plt.xlim(-1,14)
 plt.legend()
 #plt.legend(loc=2, fontsize =10)
 plt.ylabel('Coefficient of determination $\mathregular{R^2}$', fontsize =12)
