@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Tue Oct 24 14:12:16 2017
+
+@author: eardo
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Tue Oct 10 13:58:04 2017
 
 @author: eardo
@@ -12,14 +19,15 @@ import matplotlib.pyplot as plt
 from directories import farmdirs
 
 ##for heated files, 
-topfolder = 'W:\\'
+topfolder = 'x:\\'
 
 
 no_heat_files=[]
 match_files=[]
 all_files=[]
 files_without_key=[]
-skip_list = ['Moud', 'heat', 'heated', 'Heat', 'HEAT']
+keep_list = [ 'heat', 'heated', 'Heat', 'HEAT']
+ 
 
 os.chdir(topfolder)
 a=glob('*\\')
@@ -46,9 +54,9 @@ def getdata_on_keyword(folders_list):
             #Watch the in/not in clause in the next step!
             #to get heat remove the NOT!!!
             #print files_in_folder[s]
-            if any(word in files_in_folder[s] for word in skip_list):
+            if not any(word in files_in_folder[s] for word in skip_list):
                 continue
-                print ('heat in {}'.format(files_in_folder[s]))
+                
             elif 'PC' in files_in_folder[s]:
                 #print files_in_folder[s]
                 exported_files.append(files_in_folder[s])
@@ -59,7 +67,7 @@ def getdata_on_keyword(folders_list):
                    # print '{} not updated to include errors'.format(files_in_folder[s])
                     continue
                 else:
-                    print files_in_folder[s]
+                    print ('heat found in {}'.format(files_in_folder[s]))
                     exported_data = exported_data.append(df)
 
                 

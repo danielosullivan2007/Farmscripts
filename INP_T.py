@@ -17,32 +17,25 @@ import datetime
 import pandas as pd
 import matplotlib.patches as mpatches
 import socket
-
+from directories import farmdirs
 
 host=socket.gethostname()
-if host == 'see4-234':
-    pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
-    indir2 = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
-    glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
-    day_folder ='W:\\'
-    out_folder =indir2
-    
-elif host == 'Daniels-MacBook-Air.local':
-    
-    pickdir = ('//Users//Daniel//Desktop//farmscripts//Pickels//')
-    indir2 = ('//Users//Daniel//Desktop//farmscripts//')
-    glodir = ('//Users//Daniel//Desktop//farmscripts//glomap data//160509//')
-    day_folder='//Users//Daniel//Desktop//farmscripts//test data//'
-    out_folder='//Users//Daniel//Desktop//farmscripts//'
-    
-elif host == 'SEE-L10840':
-    pickdir = ('C://Users//useradmin//Desktop//Farmscripts//Pickels//')
-    indir2 = ('C://Users//useradmin//Desktop//Farmscripts//')
-    glodir = ('C://Users//useradmin//Desktop//Farmscripts//glomap data//160509//')
-    day_folder='C:\\Users\\useradmin\\Desktop\\Farm\\Formatted Correctly\\'
-    out_folder='C:\\Users\\useradmin\\Desktop\\Farmscripts\\'
-    
 
+pickdir = farmdirs['pickels']
+indir2=farmdirs['home']
+glodir = farmdirs['glodir']
+day_folder='W:\\'
+out_folder =farmdirs['home']
+
+# =============================================================================
+# if host == 'see4-234':
+#     pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
+#     indir2 = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\'
+#     glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\')
+#     day_folder ='W:\\'
+#     out_folder =indir2
+# =============================================================================
+    
 
 keyword='Data' 
 #==============================================================================
@@ -212,14 +205,14 @@ df3['T']=df3['T'].astype(float)
 df3.to_csv(out_folder+"INPs.csv")
 ax1=df3.plot.scatter(x='T', y='INP', logy=True)
 fig = ax1.get_figure()
-fig.savefig(out_folder+keyword+'Binned INP')
+fig.savefig(farmdirs['figures']+keyword+'Binned INP')
 
 df4=(df3.iloc[:,[3,4]]).dropna(how='any')
 df4.to_csv(out_folder+keyword+'.csv')
 df5=df4.pivot(index=None, columns='T', values='INP')
 ax2=df5.plot.box(logy=True)
 fig = ax2.get_figure()
-fig.savefig(out_folder+keyword+'boxplots')
+fig.savefig(farmdirs['figures']+keyword+'boxplots')
 
 for i in range(len(df3)):
     df3['Date'][i] = datetime.datetime.strptime(df3['Date'][i][0:6],'%y%m%d')

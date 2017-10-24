@@ -23,32 +23,20 @@ import os as os
 import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
 import socket
+
+from directories import farmdirs
 host = socket.gethostname()
 highruns_unheated_df =pd.DataFrame(columns = ['T', 'INPs_perL', 'F', 'K', 'INPs_perdrop', 
                              'INPerr_pos', 'INPerr_neg', 'delta_INP_pos',
                              'delta_INP_neg'])
 
 ##############################################################################
-'''Changes to required directory'''
-if host == 'see4-234':
-    #pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
-    indir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
-    picdir='C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
-    glodir = ('C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\')
-elif host == 'Daniels-Air.home':
-    pickdir = ('//Users//Daniel//Desktop//farmscripts//Pickels//')
-    indir = ('//Users//Daniel//Desktop//farmscripts//')
-    
-elif host == 'SEE-L10840':
-    indir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\')
-    glodir = ('C:\\Users//useradmin//Desktop//Farmscripts//glomap data//')    
-    picdir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\Pickels\\')
-    #glodir = ('//Users//Daniel//Desktop//farmscripts//glomap data//160509//')
 
-elif host =='Feynman':
-    indir = ('C:\\Users\\Danny\\Desktop\\farmscripts\\')
-    glodir = ('C:\\Users\\Danny\\Desktop\\farmscripts\\glomap data\\')
-    picdir = ('C:\\Users\\Danny\\Desktop\\farmscripts\\Pickels\\')
+
+indir =farmdirs['home']
+picdir= farmdirs['pickels']
+glodir = farmdirs['glodir1']
+
     
 percent = [0.2, 0.5, 0.8]
 
@@ -74,7 +62,7 @@ pdownINP=pettersdown[:,1]
 pdownINP= pdownINP[np.logical_not(np.isnan(pupINP))]'''
 
 
-indata= np.genfromtxt('all_data.csv', delimiter = ',', skip_header=1)[:,1:]
+indata= np.genfromtxt(picdir+'INPs_trim_witherrs.csv', delimiter = ',', skip_header=1)[:,1:]
 indata = np.delete(indata, 1, 0)
 inx= indata[:,0]*-1
 iny=indata[:,1]
@@ -120,7 +108,7 @@ zero_day = datetime.date(2001,1,1)
 start_day = datetime.date(2001, 9, 15)
 end_day = datetime.date(2001, 10,31)
 
-data_key2=pd.read_csv (indir+'all_heated_data.csv', delimiter =',')
+data_key2=pd.read_csv (picdir+'heat_INPs_trim_witherrs.csv', delimiter =',')
 felds=pd.read_csv(glodir+'INP_spectra_danny_feldspar.csv', delimiter =',', index_col='Temp')/1000
 
 #felds.drop(labels ='date', axis=1, inplace =True)

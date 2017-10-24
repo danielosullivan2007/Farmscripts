@@ -14,7 +14,7 @@ import decimal
 import matplotlib.cm as cm
 topfolder='W:\\'
 key_terms= ["Data"]
-
+from directories import farmdirs
 
 
 a= float(0.0000594)
@@ -25,17 +25,21 @@ import seaborn as sns
 
 sns.set_context("paper", rc={"font.size":12,"axes.titlesize":12,"axes.labelsize":12}) 
 degree_sign= u'\N{DEGREE SIGN}'
-import socket
-host = socket.gethostname()
-if host == "Daniels-Air.home":
-    indir ="//Users//Daniel//Desktop//farmscripts//pickels//"
-elif host == 'see4-234':
-    indir = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
-    indir2 = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\'
-elif host ==  'SEE-L10840':
-    indir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\Pickels\\')
-    indir2 = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\')
+# =============================================================================
+# import socket
+# host = socket.gethostname()
+# if host == "Daniels-Air.home":
+#     indir ="//Users//Daniel//Desktop//farmscripts//pickels//"
+# elif host == 'see4-234':
+#     indir = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
+#     indir2 = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\'
+# elif host ==  'SEE-L10840':
+#     indir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\Pickels\\')
+#     indir2 = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\')
+# =============================================================================
 
+indir = farmdirs['pickels']
+indir2 = farmdirs['home']
 
 def get_t_diffs(dataset, mask):
 
@@ -395,7 +399,7 @@ data_cat = pd.concat([inp_binned,data], axis =1, join = 'inner').drop([u'INP'], 
 ################################################################################
 #GRAPHING
 fig= ax.get_figure()
-fig.savefig(indir2+'demott_param_compare.png', dpi=100) 
+fig.savefig(farmdirs['figures']+'demott_param_compare.png', dpi=100) 
             
 minus15=pd.read_csv('corr atminus15.csv', index_col='Unnamed: 0')
 minus20=pd.read_csv('corr atminus20.csv', index_col='Unnamed: 0')
@@ -445,7 +449,7 @@ plt.ylabel('Coefficient of determination $\mathregular{R^2}$', fontsize =12)
 #plt.ylabel('Pearson R Coefficient')
 #plt.title('Correlations between particle no. and meteorological variables')
 plt.tight_layout()
-plt.savefig(indir+"\correlations")
+plt.savefig(farmdirs['figures']+"\correlations")
 
 #%%
 #==============================================================================

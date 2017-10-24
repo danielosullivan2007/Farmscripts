@@ -70,7 +70,7 @@ pdownINP=pettersdown[:,1]
 pdownINP= pdownINP[np.logical_not(np.isnan(pupINP))]'''
 
 
-indata= np.genfromtxt('all data_1.csv', delimiter = ',')
+indata= np.genfromtxt(picdir+'all data_1.csv', delimiter = ',')
 inx= indata[:,0]*-1
 iny=indata[:,1]
 inxy=np.stack([inx,iny])
@@ -93,7 +93,7 @@ sum1=np.sum(H)
 H=H/sum1*100
 z=np.transpose(H)
 degree_sign= u'\N{DEGREE SIGN}'
-indata= np.genfromtxt('all data_1.csv', delimiter = ',')
+indata= np.genfromtxt(picdir+'all data_1.csv', delimiter = ',')
 
 
 T=inx
@@ -103,7 +103,7 @@ x,y=np.meshgrid(xedges[0:-1]*-1,yedges[0:-1])
 
 
 
-data2=np.genfromtxt('all data_1.csv',  delimiter=',')
+data2=np.genfromtxt(picdir+'all data_1.csv',  delimiter=',')
 '''#Change Figure size'''
 fig=plt.figure(figsize= (8,4))
 
@@ -115,7 +115,7 @@ zero_day = datetime.date(2001,1,1)
 start_day = datetime.date(2001, 9, 15)
 end_day = datetime.date(2001, 10,31)
 
-data_key2=pd.read_csv (indir+'heatdata.csv', delimiter =',')
+data_key2=pd.read_csv (picdir+'heatdata.csv', delimiter =',')
 felds=pd.read_csv(glodir+'INP_spectra_danny_feldspar.csv', delimiter =',', index_col='Temp')/1000
 
 
