@@ -89,7 +89,7 @@ df = df[df['APS Total']<10000]
 
 df['log_APS'] = df['APS Total'].apply(np.log10)
 #]
-T = -23
+T = -25
 df_T = df[df['Temp']== T].reset_index(drop=True)
 
 #removing high APS points, normalize
@@ -120,7 +120,7 @@ df_normalized['Rain'] = df_normalized['Rainfall Total since 0900']>0
 #==============================================================================
 cols= df_plot.columns.values.tolist()
 x=[i for i in enumerate(cols)]
-choice1= 4
+choice1= 2
 choice2= 9
 
 

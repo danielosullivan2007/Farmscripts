@@ -161,7 +161,7 @@ smps = pd.read_pickle(indir+"SMPS.p")
 
 smps = smps.rename(columns ={'index':'datetime'})
 
-for T in range (-25,-14, 1):
+for T in range (-25,-24, 1):
     len_T=len(range(-25,-14, 1))
     
 
