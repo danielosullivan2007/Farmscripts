@@ -15,18 +15,14 @@ import matplotlib.pyplot as plt
 import os
 import datetime
 import math
+from directories import farmdirs
 
 degree_sign= u'\N{DEGREE SIGN}'
 import socket
 host = socket.gethostname()
 
 
-if host== 'Daniels-Air.home':
-    indir = ('//Users//daniel//Desktop//farmscripts//')
-
-if host == 'see4-234':
-    #pickdir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\')
-    indir = ('C:\\Users\\eardo\\Desktop\\Farmscripts\\')
+indir =farmdirs['pickels']
     
 # =============================================================================
 # if host == '
@@ -144,10 +140,10 @@ south_data = outdata.loc[south_datamask]
 #%%
 fig = plt.figure(figsize=(5, 5))
 ax1 = fig.add_subplot(111)
-line1 = plt.scatter(east_data['T'], east_data['INP'], color = 'purple', label = 'East')
-line2 = plt.scatter(west_data['T'], west_data['INP'], color = 'red', label = 'West')
-line3 = plt.scatter(north_data['T'], north_data['INP'], color = 'blue', label = 'North')
-line3 = plt.scatter(south_data['T'], south_data['INP'], color = 'green', label = 'South')
+line1 = plt.scatter(east_data['T'], east_data['INP'], color = 'purple', label = 'East', edgecolors='k', alpha =0.75)
+line2 = plt.scatter(west_data['T'], west_data['INP'], color = 'red', label = 'West',edgecolors='k',alpha =0.75)
+line3 = plt.scatter(north_data['T'], north_data['INP'], color = 'blue', label = 'North',edgecolors='k',alpha =0.75)
+line3 = plt.scatter(south_data['T'], south_data['INP'], color = 'green', label = 'South',edgecolors='k',alpha =0.75)
 #line4= plt.scatter(south_data['T'], south_data['INP'], color= 'b', label ='South')
 ax1.yaxis.set_label_position("right")
 ax1.yaxis.tick_right()
@@ -162,11 +158,14 @@ xticks[0].label1.set_visible(False)
 #plt.title('[INPs] vs. major origin of back trajectory')
 plt.xlabel('T ('+degree_sign+'C)',fontsize =14)
 plt.ylabel('[INP] $\mathregular{L^{-1}}$', fontsize=14)
+plt.savefig(farmdirs['figures']+ 'Hysplit directions')
 
-unstacked = merged.pivot(columns='avdir')
 frames=[south_data, east_data, west_data, north_data]
 merged =pd.concat(frames).drop(['Datetime', 'end_datetime', 'start_datetime', 'date', 'Unnamed: 0'],
                  axis =1)
+unstacked = merged.pivot(columns='avdir')
+
+
 N = merged[merged['avdir'] == 'N'].drop('avdir', axis =1)
 S = merged[merged['avdir'] == 'S'].drop('avdir', axis =1)
 E = merged[merged['avdir'] == 'E'].drop('avdir', axis =1)
@@ -197,9 +196,9 @@ values_20 = [N_20.values, E_20.values, W_20.values]
 values_25 = [N_25.values, E_25.values, W_25.values]
 values_15 = [N_15.values, E_15.values, W_15.values]
 
-stats.bartlett(*Values_20)
-stats.bartlett(*Values_15)
-stats.bartlett(*Values_25)
+stats.bartlett(*values_20)
+stats.bartlett(*values_15)
+stats.bartlett(*values_25)
 #==============================================================================
 #             continue
 #         
