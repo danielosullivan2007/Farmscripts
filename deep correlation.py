@@ -120,8 +120,8 @@ df_normalized['Rain'] = df_normalized['Rainfall Total since 0900']>0
 #==============================================================================
 cols= df_plot.columns.values.tolist()
 x=[i for i in enumerate(cols)]
-choice1= 2
-choice2= 9
+choice1= 0
+choice2= 4
 
 
 

@@ -44,8 +44,8 @@ out3=np.empty(shape=(1,2))
 out1[:] = np.NAN
 out2[:] = np.NAN
 out3[:] = np.NAN
-'''
-#%%
+
+
 #####################################################################
 #Glob SMPS folders
 n=0
@@ -79,7 +79,9 @@ for dayfolder in range(len(a)):
                     smps_count = smps_count.append(pd.Series('NaN', index=[index]))
                 index+=1
                 
-        
+# =============================================================================
+#         
+# =============================================================================
         s_dates=pd.Series(s_dates)
         s_times=pd.Series(s_times).replace('.csv','NaN').replace('csv','NaN')
         
@@ -103,8 +105,8 @@ for dayfolder in range(len(a)):
         n+=1
 smpsav_df = pd.concat([s_dates, s_times, smps_count], axis =1)
     
-'''
-#%%
+
+
 ######################################################################
 #glob APS folders
 index=0
@@ -169,13 +171,13 @@ for dayfolder in range(len(a)):
         aps_result.columns = ['a_dates', 'a_times', 'a_count']
         aps_result['datetime']=pd.to_datetime(aps_result['a_dates']+" "+aps_result['a_times'], yearfirst =True)
         aps_result.set_index('datetime', inplace = True)
-        aps_result.to_pickle('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\aps.p')
+        #aps_result.to_pickle('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\aps.p')
         
 
 #%%
 #merge smps and aps in all folders    
 ################################################################
-'''
+
 os.chdir(infolder)
 
 a=glob.glob('*\\')
@@ -206,6 +208,3 @@ for dayfolder in range(len(a)):
          
 print ' Data has been merged :)'
 
-#del s_list
-#del s_files
-'''

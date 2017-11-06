@@ -72,6 +72,13 @@ def poisson_CI(INP_per_drop, n_drops):
     err_minus = INP_per_drop + (1.96)**2/(4*n_drops) - 1.96 * (INP_per_drop/ n_drops)**0.5
     return err_plus, err_minus
 
+# =============================================================================
+# def poisson_CI(INP_per_drop, n_drops):
+#     err_plus = INP_per_drop + 1.96**2/(2*n_drops)+((1.96)*(4*INP_per_drop+((1.96**2)/n_drops))**0.5)/(4*n_drops)**0.5
+#     err_minus = INP_per_drop +  1.96**2/(2*n_drops)-((1.96)*(4*INP_per_drop+((1.96**2)/n_drops))**0.5)/(4*n_drops)**0.5
+#     return err_plus, err_minus
+# 
+# =============================================================================
 def INPs(fraction, denom):
     INPs = -np.log(1-(fraction))*(denom)
     return INPs
