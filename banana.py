@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Created on Mon Nov 06 10:54:13 2017
-
 @author: eardo
 """
 
@@ -13,13 +11,21 @@ import matplotlib as mpl
 from matplotlib import mlab
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import datetime
-
+from myfuncs import jd_to_date
+import time
+import math
+from pylab import show
 chi=1.2
 rho0=1
 rho=2.4
 
 label=[]
+
 dt=[]
+dt_label=[]
+hours =[]
+q=[]
+
 smps=pd.read_pickle(farmdirs['pickels']+'SMPS.p')
 aps=pd.read_pickle(farmdirs['pickels']+'APS.p').drop(['Aerodynamic Diameter',
                   'Start Time','Date', '<0.523'], axis =1)
@@ -61,7 +67,10 @@ merged.drop('type', axis =1, inplace =True)
 merged=merged.T
 merged.index = pd.to_datetime(merged.index)
 merged = merged.T.sortlevel(level=1).T
-merged=merged['aps']
+
+merged=daily_aps
+
+#merged=merged['aps']
 cols1=list(merged)
 #%%
 #Plotting section
@@ -73,21 +82,51 @@ cols1=list(merged)
 # delta = datetime.timedelta(hours=1)
 # =============================================================================
 
-time = [merged.index[i].to_julian_date() for i in range(len(merged.index))]
+time1 = [merged.index[i].to_julian_date() for i in range(len(merged.index))]
 
-    
-X= time
+fig1, ax1 =plt.subplots()
+X= time1
 Y=cols1
-Z =merged.as_matrix().T
-levels = np.logspace(0.01,1,1000)
+Z = np.log(merged.as_matrix().T)
+levels = np.linspace(-3,2.5,1000)
 x,y = np.meshgrid(X,Y)
-plt.contourf(x,y,Z, levels=levels)
-plt.yscale('log')
-plt.ylim(0.2,1)
+ax1.contourf(x,y,Z, levels=levels,cmap=plt.cm.jet)
+ax1.set_yscale('log')
+ax1.set_ylim(0.4,1)
+ax1.set_facecolor('black')
+
+plt.draw()
+#%%
+ticks = ax1.get_xticklabels()
+q = [item.get_text() for item in ax1.get_xticklabels()]
+#q= [ticks[i].get_text() for i in range(len(ticks))]
+print q
 
 
-# =============================================================================
-# xedges= np.linspace(min(x), max(x), 162)
-# yedges  = np.logspace(min(y), max(y), 840)
-# H, xedges, yedges = np.histogram2d(x, y, bins=(xedges, yedges))
-# =============================================================================
+xlabel =[]
+for i in range(len(q)):
+    if q[i]=='':
+        xlabel.append('')
+    else:
+        xlabel.append(float(q[i])+2.4576e6)
+
+
+for i in range(len(xlabel)):
+    if xlabel[i]=='':
+        dt.append('')
+    else:
+        dt.append(list(jd_to_date(xlabel[i])))
+
+for i in range(len(dt)):
+    if dt[i]=='':
+        hours.append('')
+    else:
+        hours.append(dt[i][2]%1*24)
+        dt[i].append(int(hours[i]))
+        dt[i][2]=int(math.floor(dt[i][2]))
+        dt[i]=tuple(dt[i])
+        dt[i]=datetime.datetime(*dt[i])
+        dt[i]=datetime.datetime.strftime( dt[i].date(), '%d/%m')
+#dt=['','a','b','c','d','e','f','g','']
+ax1.set_xticklabels(dt)
+#plt.draw()
