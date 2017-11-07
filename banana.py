@@ -13,20 +13,20 @@ import matplotlib as mpl
 from matplotlib import mlab
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import datetime
-import math
+from myfuncs import jd_to_date
 import time
-
-
+import math
+from pylab import show
 chi=1.2
 rho0=1
 rho=2.4
 
 label=[]
-xlabel =[]
+
 dt=[]
 dt_label=[]
 hours =[]
-
+q=[]
 
 smps=pd.read_pickle(farmdirs['pickels']+'SMPS.p')
 aps=pd.read_pickle(farmdirs['pickels']+'APS.p').drop(['Aerodynamic Diameter',
@@ -86,20 +86,26 @@ cols1=list(merged)
 
 time1 = [merged.index[i].to_julian_date() for i in range(len(merged.index))]
 
-fig, ax =plt.subplots()
+fig1, ax1 =plt.subplots()
 X= time1
 Y=cols1
-Z =merged.as_matrix().T
-levels = np.linspace(0.001,10,100)
+Z = np.log(merged.as_matrix().T)
+levels = np.linspace(-3,2.5,1000)
 x,y = np.meshgrid(X,Y)
-plt.contourf(x,y,Z, levels=levels)
-plt.yscale('log')
-plt.ylim(0.4,1)
-#ax.set_facecolor('black')
+ax1.contourf(x,y,Z, levels=levels,cmap=plt.cm.jet)
+ax1.set_yscale('log')
+ax1.set_ylim(0.4,1)
+ax1.set_facecolor('black')
 
-ticks = ax.get_xticklabels()
-q=[ticks[i].get_text() for i in range(len(ticks))]
+plt.draw()
+#%%
+ticks = ax1.get_xticklabels()
+q = [item.get_text() for item in ax1.get_xticklabels()]
+#q= [ticks[i].get_text() for i in range(len(ticks))]
+print q
 
+
+xlabel =[]
 for i in range(len(q)):
     if q[i]=='':
         xlabel.append('')
@@ -123,7 +129,6 @@ for i in range(len(dt)):
         dt[i]=tuple(dt[i])
         dt[i]=datetime.datetime(*dt[i])
         dt[i]=datetime.datetime.strftime( dt[i].date(), '%d/%m')
-
-
-ax.set_xticklabels(dt)
-
+#dt=['','a','b','c','d','e','f','g','']
+ax1.set_xticklabels(dt)
+#plt.draw()
