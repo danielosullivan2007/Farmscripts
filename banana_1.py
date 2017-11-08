@@ -23,11 +23,11 @@ from matplotlib.ticker import LogFormatter, LogLocator, LogFormatterExponent,For
 from matplotlib.colors import LogNorm
 import matplotlib.colors as mplc
 
-
+RH = 100
 import time
 start_time = time.time()
 
-
+timestep = '1H'
 
 chi=1.2
 rho0=1
@@ -62,17 +62,28 @@ smps.columns  = DpSMPS
 
 del i, aps_diameters
 
-#==============================================================================
-#'''TURN ON TO REPICKLE'''
-# daily_aps  = aps.resample(timestep).mean().dropna(axis =0, how ='all')
-# daily_smps  = smps.resample(timestep).mean().dropna(axis =0, how ='all')
-# 
-# daily_aps.to_pickle(farmdirs['pickels']+'daily_aps.p')
-# daily_smps.to_pickle(farmdirs['pickels']+'daily_smps.p')
-#==============================================================================
+
+daily_aps  = aps.resample(timestep).mean().dropna(axis =0, how ='all')
+daily_smps  = smps.resample(timestep).mean().dropna(axis =0, how ='all')
+
+daily_aps.to_pickle(farmdirs['pickels']+'daily_aps.p')
+daily_smps.to_pickle(farmdirs['pickels']+'daily_smps.p')
 
 daily_aps = pd.read_pickle(farmdirs['pickels']+'daily_aps.p')
 daily_smps = pd.read_pickle(farmdirs['pickels']+'daily_smps.p')
+
+
+#FILTERING BY HUMIDITY
+met_filt = pd.read_pickle(farmdirs['pickels']+'met_jd_hourly.p')
+join= pd.concat([daily_aps, met_filt],join = 'outer', axis=1)
+cols = list(join)
+join['Humidity'].fillna(0, inplace =True)
+a =join[join['Humidity']<RH]
+
+aps_filtered = a.iloc[:,0:50].reset_index().rename(columns= {'index':'datetime'})
+
+
+######
 
 
 #%% Adding zeros
@@ -97,33 +108,38 @@ zeros = zeros[mask]
 daily_aps = daily_aps.reset_index()
 cols = list(daily_aps)
 zeros.columns = cols
-to_plot= zeros.append(daily_aps)
-to_plot = to_plot.sort_values(by='datetime')
-to_plot.set_index('datetime', inplace =True)
+aps_toplot= zeros.append(aps_filtered)
+aps_toplot.fillna(0, inplace =True)
+aps_toplot = aps_toplot.sort_values(by='datetime')
+aps_toplot.set_index('datetime', inplace =True)
+aps_toplot.to_pickle(farmdirs['pickels']+'aps_toplot.p')
 
 
-merged=to_plot
 
 #merged=merged['aps']
-cols1=list(to_plot)
+
 
 #%%
 #Plotting section
 
-time1 = [to_plot.index[i].to_julian_date() for i in range(len(to_plot.index))]
+
+
+time1 = [aps_toplot.index[i].to_julian_date() for i in range(len(aps_toplot.index))]
+cols1=list(aps_toplot)
 
 fig1=plt.figure()
-ax1=plt.subplot(311)
+ax1=plt.subplot(411)
 X= time1
 Y=cols1
-p=to_plot.as_matrix().T
-p[p==0]='nan'
+p=aps_toplot.as_matrix().T
+#p[p==0]='nan'
 Z = p
-levels = np.logspace(-2,np.log10(np.nanmax(Z)),1000)
+levels = np.logspace(-2,0.76,1000)
 x,y = np.meshgrid(X,Y)
 
 cmap=plt.cm.jet
 cmap.set_under(color='k')
+cmap.set_over(color='red')
 p1 = ax1.contourf(x,y,Z, levels=levels,cmap=plt.cm.jet,norm=matplotlib.colors.LogNorm(vmin=0.1,
                                                  vmax=np.nanmax(Z)))
 ax1.set_yscale('log')
@@ -182,94 +198,80 @@ print("APS Plotted after --- %s seconds ---" % (time.time() - start_time))
 #
 ##############################################################################
 '''
-#%%
-length, width = daily_smps.shape
-start = daily_smps.index.min()
-end= daily_smps.index.max()
-index1=pd.date_range(start, end, freq = timestep)
-zeros=np.zeros((len(index1), width))
-zeros =pd.DataFrame(zeros, index= index1)
-mask=[]
-for i in range(len(index1)):
-    if (daily_smps.index == index1[i]).any():
-        mask.append(False)
-    else:
-        mask.append(True)
-        
-zeros.reset_index(inplace=True)
-zeros.rename(columns = {'index':'datetimes'}, inplace =True)	
-mask = pd.Series(mask, name ='datetimes')
-zeros = zeros[mask]
-
-daily_smps = daily_smps.reset_index()
-cols = list(daily_smps)
-zeros.columns = cols
-to_plot= zeros.append(daily_smps)
-to_plot = to_plot.sort_values(by='datetimes')
-to_plot.set_index('datetimes', inplace =True)
-
-
-merged=to_plot
-
-
-cols1=list(to_plot)
-
-time1 = [merged.index[i].to_julian_date() for i in range(len(merged.index))]
-label=[]
-xlabel =[]
-cbar_labs=[]
-dt=[]
-dt_label=[]
-hours =[]
-q=[]
-
-#SMPS Section
-ax2=fig1.add_subplot(312, sharex=ax1)
-X= time1
-Y=cols1
-p=merged.as_matrix().T
-p[p==0]='nan'
-Z = p
-levels = np.logspace(-2,np.log10(np.nanmax(Z)),1000)
-x,y = np.meshgrid(X,Y)
-p1 = ax2.contourf(x,y,Z, levels=levels,cmap=plt.cm.jet,norm=matplotlib.colors.LogNorm(vmin=0.1,
-                                                 vmax=np.nanmax(Z)))
-ax2.set_yscale('log')
-#plt.ylabel('Aerodynamic Diameter ($\mu m$)')
-ax2.set_ylim(0.4,3)
-
-#ax1.set_facecolor('black')
-plt.ylim(0.01,1)
-plt.draw()
-plt.xlabel('Date')
-
-("APS Plotted after --- %s seconds ---" % (time.time() - start_time))
-#FORMAT X AND Y TICK LABELS
-ticks = ax2.get_xticklabels()
-#NEXT STEPS CHANGE JULIAN FORMATTING TO DATETIME
-# =============================================================================
-# q = [item.get_text() for item in ax2.get_xticklabels()]
-# [xlabel.append('') if q[i]=='' else xlabel.append(float(q[i])+2.45765e6)for i in range(len(q))]
-# [dt.append('') if q[i]=='' else dt.append(list(jd_to_date(xlabel[i])))for i in range(len(xlabel))]
-# for i in range(len(dt)):
-#     if dt[i]=='':
-#         hours.append('')
+#==============================================================================
+# #%%
+# length, width = daily_smps.shape
+# start = daily_smps.index.min()
+# end= daily_smps.index.max()
+# index1=pd.date_range(start, end, freq = timestep)
+# zeros=np.zeros((len(index1), width))
+# zeros =pd.DataFrame(zeros, index= index1)
+# mask=[]
+# for i in range(len(index1)):
+#     if (daily_smps.index == index1[i]).any():
+#         mask.append(False)
 #     else:
-#         hours.append(dt[i][2]%1*24)
-#         dt[i].append(int(hours[i]))
-#         dt[i][2]=int(math.floor(dt[i][2]))
-#         dt[i]=tuple(dt[i])
-#         dt[i]=datetime.datetime(*dt[i])
-#         dt[i]=datetime.datetime.strftime( dt[i].date(), '%d/%m')
-# ax2.set_xticklabels(dt)
+#         mask.append(True)
+#         
+# zeros.reset_index(inplace=True)
+# zeros.rename(columns = {'index':'datetimes'}, inplace =True)	
+# mask = pd.Series(mask, name ='datetimes')
+# zeros = zeros[mask]
 # 
-# yticks = ax2.get_yticklabels()
-# =============================================================================
-ytick_labels= [item.get_text() for item in ax1.get_yticklabels()]
-#ax2.yaxis.set_minor_formatter(matplotlib.ticker.FormatStrFormatter("%.f"))
-ax2.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter("%.2f"))
+# daily_smps = daily_smps.reset_index()
+# cols = list(daily_smps)
+# zeros.columns = cols
+# to_plot= zeros.append(daily_smps)
+# to_plot = to_plot.sort_values(by='datetimes')
+# to_plot.set_index('datetimes', inplace =True)
+# 
+# 
+# merged=to_plot
+# 
+# 
+# cols1=list(to_plot)
+# 
+# time1 = [merged.index[i].to_julian_date() for i in range(len(merged.index))]
+# label=[]
+# xlabel =[]
+# cbar_labs=[]
+# dt=[]
+# dt_label=[]
+# hours =[]
+# q=[]
+# 
+# #SMPS Section
+# ax2=fig1.add_subplot(412, sharex=ax1)
+# X= time1
+# Y=cols1
+# p=merged.as_matrix().T
+# p[p==0]='nan'
+# Z = p
+# levels = np.logspace(-2,np.log10(np.nanmax(Z)),1000)
+# x,y = np.meshgrid(X,Y)
+# p1 = ax2.contourf(x,y,Z, levels=levels,cmap=plt.cm.jet,norm=matplotlib.colors.LogNorm(vmin=0.1,
+#                                                  vmax=np.nanmax(Z)))
+# ax2.set_yscale('log')
+# #plt.ylabel('Aerodynamic Diameter ($\mu m$)')
+# ax2.set_ylim(0.4,3)
+# 
+# #ax1.set_facecolor('black')
+# plt.ylim(0.01,1)
+# plt.draw()
+# plt.xlabel('Date')
+# 
+# ("APS Plotted after --- %s seconds ---" % (time.time() - start_time))
+# #FORMAT X AND Y TICK LABELS
+# ticks = ax2.get_xticklabels()
+# ytick_labels= [item.get_text() for item in ax1.get_yticklabels()]
+# #ax2.yaxis.set_minor_formatter(matplotlib.ticker.FormatStrFormatter("%.f"))
+# ax2.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter("%.2f"))
+# 
+# 
+#==============================================================================
 
-#Colorbar 
+
+#COLORBAR
 #cbaxes=fig1.add_axes([0.93, 0.2, 0.02, 0.6]) 
 
 # =============================================================================
@@ -288,9 +290,37 @@ ax2.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter("%.2f"))
 # 
 # 
 # =============================================================================
-del cbticks, cols, DpAPS, DpSMPS, cbar_labs, dt
-del dt_label, hours, i, label, levels, p, q, time1, smps_diameters, x,y
-del xlabel, ytick_labels, cols1, rho, rho0
-del chi, farmdirs
 
+'''###########################################################################
+'''
+
+
+
+del cbticks, cols, DpAPS, DpSMPS, cbar_labs, dt
+del dt_label, hours, i, label, levels, p, time1, smps_diameters, x,y
+#==============================================================================
+# del  ytick_labels, cols1, rho, rho0
+# del chi, farmdirs
+#==============================================================================
+met_mask = []
 print("--- %s seconds ---" % (time.time() - start_time))
+from banana_support import INPs_25, INPs_20, met
+ax3=fig1.add_subplot(413, sharex=ax1)
+met =met.resample(timestep).mean()
+
+met_mask = []
+for i in range(len(met.index)):
+    if (met.index[i] == daily_aps.datetime).any():
+        met_mask.append(True)
+    else:
+        met_mask.append(False)
+met = met[met_mask]
+met = met[met['Humidity']<RH]
+met.to_pickle(farmdirs['pickels']+'met_jd_hourly.p')
+ax3.plot(met.jd, met.Humidity, marker = 'o', linewidth = 0, markersize=3)
+plt.ylabel('humidity')
+
+
+
+
+
