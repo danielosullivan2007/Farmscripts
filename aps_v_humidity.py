@@ -9,12 +9,14 @@ import matplotlib.pyplot as plt
 from directories import farmdirs
 import numpy as np
 
-aps_test = pd.read_pickle(farmdirs['pickels']+'aps_toplot.p')
+aps_test = pd.read_pickle(farmdirs['pickels']+'aps_toplot_RH100.p')
 met_jd = pd.read_pickle(farmdirs['pickels']+'met_jd.p')
 aps_test = aps_test.sum(axis=1)
 aps_test = aps_test[aps_test>0]
 aps_test = pd.DataFrame(aps_test).rename(columns = {0:'aps'})
-join= pd.concat([aps_test, met_jd], axis=1)
+join= pd.merge(aps_test, met_jd, left_index=True, right_index=True)
+
+
 join['log_aps']=join['aps'].apply(np.log10)
 join=join[join['Humidity']>90]
 
@@ -33,4 +35,5 @@ import seaborn as sns
 
 sns.jointplot('log_aps', 'Humidity', data = join)
 cols = list(met_jd)
+#plt.ylim(0,100)
 

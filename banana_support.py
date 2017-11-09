@@ -20,6 +20,7 @@ met.drop([cols[0], cols[3],
           cols[16]], axis =1, inplace =True)
 met_jd = [met.index[i].to_julian_date() for i in range(len(met.index))]
 met['jd'] = met_jd
+met.to_pickle(farmdirs['pickels']+'met_jd.p')
 
 
 
