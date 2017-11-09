@@ -7,24 +7,22 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from directories import farmdirs
-import matplotlib as mpl
-from matplotlib import mlab
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 import datetime
 from myfuncs import jd_to_date
 import time
 import math
-from pylab import show
 import matplotlib.ticker
 import matplotlib.cm as cm
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
-from matplotlib.ticker import LogFormatter, NullFormatter, LogLocator, LogFormatterExponent,FormatStrFormatter,LogFormatterMathtext 
+from matplotlib.ticker import LogFormatter, MaxNLocator, LogLocator, LogFormatterExponent,FormatStrFormatter,LogFormatterMathtext 
 from matplotlib.colors import LogNorm
-import matplotlib.colors as mplc
-
-RH = 100
 import time
+
+
+direction = '<'
+RH = 100
+
 start_time = time.time()
 
 timestep = '1H'
@@ -48,8 +46,8 @@ aps=pd.read_pickle(farmdirs['pickels']+'APS.p').drop(['Aerodynamic Diameter',
 
 aps.set_index('datetime',drop =True, inplace =True)
 smps.set_index('datetimes',drop =True, inplace =True)
-
-
+aps=aps[aps.index<'2016-10-31']
+#%%
 aps_diameters = np.array([float(i) for i in list(aps)])
 smps_diameters =np.array([float(i) for i in list(smps)])/1000
 
@@ -78,7 +76,11 @@ met_filt = pd.read_pickle(farmdirs['pickels']+'met_jd.p')
 join= pd.concat([daily_aps, met_filt],join = 'outer', axis=1)
 cols = list(join)
 join['Humidity'].fillna(0, inplace =True)
-b =join[join['Humidity']<RH]
+
+if direction == '<':
+    b =join[join['Humidity']<RH]
+elif direction == '>':
+    b =join[join['Humidity']>RH]
 
 aps_filtered = b.iloc[:,0:50].reset_index().rename(columns= {'index':'datetime'})
 
@@ -91,7 +93,10 @@ met_filt = pd.read_pickle(farmdirs['pickels']+'met_jd.p')
 join= pd.concat([daily_smps, met_filt],join = 'outer', axis=1)
 cols = list(join)
 join['Humidity'].fillna(0, inplace =True)
-a =join[join['Humidity']<RH]
+if direction == '<':
+    a =join[join['Humidity']<RH]
+elif direction == '>':
+    a =join[join['Humidity']>RH]
 
 smps_filtered = a.iloc[:,0:111].reset_index().rename(columns= {'index':'datetime'})
 
@@ -147,7 +152,7 @@ Y=cols1
 p=aps_toplot.as_matrix().T
 #p[p==0]='nan'
 Z = p
-levels = np.logspace(-2,0.76,1000)
+levels = np.logspace(-2,2.5,500)
 x,y = np.meshgrid(X,Y)
 
 cmap=plt.cm.jet
@@ -166,7 +171,7 @@ plt.ylabel('APS \n D$_p (\mu m$)', fontsize =8)
 #plt.ylim(0.4,1)
 plt.draw()
 #plt.xlabel('Date')
-plt.title('Time Series Plots')
+plt.title('Time Series Plots RH {}{}%'.format(direction, RH))
 plt.yticks([])
 ax1.set_ylim(0.4,1.5)
 plt.yscale('log', subsy=[0.5,  0.75])
@@ -185,7 +190,7 @@ ticks = ax1.get_xticklabels()
 plt.draw()
 #NEXT STEPS CHANGE JULIAN FORMATTING TO DATETIME
 q = [item.get_text() for item in ax1.get_xticklabels()]
-[xlabel.append('') if q[i]=='' else xlabel.append(float(q[i])+2.4576e6)for i in range(len(q))]
+[xlabel.append('') if q[i]=='' else xlabel.append(float(q[i])+2.45765e6)for i in range(len(q))]
 [dt.append('') if q[i]=='' else dt.append(list(jd_to_date(xlabel[i])))for i in range(len(xlabel))]
 for i in range(len(dt)):
     if dt[i]=='':
@@ -277,7 +282,7 @@ Y=cols1
 p=merged.as_matrix().T
 p[p==0]='nan'
 Z = p
-levels = np.logspace(-2,np.log10(np.nanmax(Z)),1000)
+levels = np.logspace(-2,np.log10(np.nanmax(Z)),500)
 x,y = np.meshgrid(X,Y)
 p1 = ax2.contourf(x,y,Z, levels=levels,cmap=plt.cm.jet,norm=matplotlib.colors.LogNorm(vmin=0.1,
                                                  vmax=np.nanmax(Z)))
@@ -340,12 +345,14 @@ for i in range(len(met.index)):
     else:
         met_mask.append(False)
 met = met[met_mask]
-met = met[met['Humidity']<RH]
+if direction =='<':
+    met = met[met['Humidity']<RH]
+elif direction =='>':
+    met = met[met['Humidity']>RH]
 
 ax3.plot(met.jd, met.Humidity, marker = 'o', linewidth = 0, markersize=3)
 plt.ylabel('% RH', fontsize =8)
-
-
+ax3.yaxis.set_major_locator(MaxNLocator(4))
 
 
 plt.xlim(2457655, 2457693.1666666665)
