@@ -208,13 +208,14 @@ ax1.tick_params(labelbottom='off')
 
 
 #Colorbar 
-cbaxes=fig1.add_axes([0.93, 0.7, 0.02, 0.2]) 
+cbaxes=fig1.add_axes([0.93, 0.75, 0.02, 0.15]) 
 
 cbar = plt.colorbar(p1, ax=ax1,cax = cbaxes,
-                    ticks = LogLocator(subs=range(10)) ,label='Count L$^{-1}$',
+                    ticks = LogLocator(subs=range(10)) ,
                    extend ='max', format=FormatStrFormatter('%.0e'))
 
 cbar.ax.set_ylabel('Number (L$^{-1}$)', fontsize = 10)
+cbar.ax.minorticks_off()
 cbar.formatter = LogFormatterExponent(base=10) # 10 is the default
 cbar.update_ticks()
 cticks=cbar.ax.get_yticklabels()
@@ -262,7 +263,7 @@ smps_filtered.drop(smps_filtered.columns[1:25], axis =1, inplace =True)
 to_plot= zeros.append(smps_filtered)
 to_plot = to_plot.sort_values(by='datetime')
 to_plot.set_index('datetime', inplace =True)
-
+to_plot.to_csv(farmdirs['pickels']+'smps_RH100.csv')
 
 merged=to_plot
 
@@ -282,16 +283,17 @@ Y=cols1
 p=merged.as_matrix().T
 p[p==0]='nan'
 Z = p
-levels = np.logspace(-2,np.log10(np.nanmax(Z)),500)
+levels = np.logspace(np.log10(0.02),np.log10(np.nanmax(Z)),500)
 x,y = np.meshgrid(X,Y)
-p1 = ax2.contourf(x,y,Z, levels=levels,cmap=plt.cm.jet,norm=matplotlib.colors.LogNorm(vmin=0.1,
+p2 = ax2.contourf(x,y,Z, levels=levels,cmap=plt.cm.jet,
+                  norm=matplotlib.colors.LogNorm(vmin=np.min([Z[Z>0.001]]),
                                                  vmax=np.nanmax(Z)))
 ax2.set_yscale('log')
 plt.ylabel('SMPS \n D$_p (\mu m$)', fontsize =8)
-ax2.set_ylim(0.4,3)
+cmap.set_under(color='k')
 
 #ax1.set_facecolor('black')
-plt.ylim(0.01,1)
+plt.ylim(0.03,0.7)
 plt.draw()
 
 
@@ -299,31 +301,25 @@ plt.draw()
 #FORMAT X AND Y TICK LABELS
 ax2.tick_params(labelbottom='off')
 
-
-
 #COLORBAR
-#cbaxes=fig1.add_axes([0.93, 0.2, 0.02, 0.6]) 
+cbaxes=fig1.add_axes([0.93, 0.55, 0.02, 0.15]) 
 
-# =============================================================================
-# cbar = plt.colorbar(p1, ax=ax2,cax = cbaxes,
-#                     ticks = LogLocator(subs=range(10)) ,label='Count L$^{-1}$',
-#                    extend ='max', format=FormatStrFormatter('%.0e'))
-# 
-# cbar.ax.set_ylabel('Particle Count (L$^{-1}$)', fontsize = 10)
-# cbar.formatter = LogFormatterExponent(base=10) # 10 is the default
-# cbar.update_ticks()
-# cticks=cbar.ax.get_yticklabels()
-# cbticks = [item.get_text() for item in cbar.ax.get_yticklabels()]
-# [cbar_labs.append('') if cbticks[i]=='' else cbar_labs.append("$10^{%s}$"%str(cbticks[i]))
-# for i in range(len(cbticks))]
-# cbar.ax.set_yticklabels(cbar_labs)
-# 
-# 
-# =============================================================================
+cbar = plt.colorbar(p2, ax=ax2,cax = cbaxes,
+                    ticks = LogLocator(subs=range(10)) ,label='Count L$^{-1}$',
+                   extend ='max', format=FormatStrFormatter('%.0e'))
+
+#cbar.ax.set_ylabel('Particle Count (L$^{-1}$)', fontsize = 10)
+cbar.formatter = LogFormatterExponent(base=10) # 10 is the default
+cbar.update_ticks()
+cticks=cbar.ax.get_yticklabels()
+cbticks = [item.get_text() for item in cbar.ax.get_yticklabels()]
+[cbar_labs.append('') if cbticks[i]=='' else cbar_labs.append("$10^{%s}$"%str(cbticks[i]))
+for i in range(len(cbticks))]
+cbar.ax.set_yticklabels(cbar_labs)
+
 
 '''###########################################################################
 '''
-
 
 
 del cbticks, cols, DpAPS, DpSMPS, cbar_labs
@@ -353,9 +349,13 @@ elif direction =='>':
 ax3.plot(met.jd, met.Humidity, marker = 'o', linewidth = 0, markersize=3)
 plt.ylabel('% RH', fontsize =8)
 ax3.yaxis.set_major_locator(MaxNLocator(4))
+ax3.tick_params(labelbottom='off')  
 
 
+
+ax4=fig1.add_subplot(414, sharex=ax1)
+ax4.plot(INPs_20.mid_jd, INPs_20.INP, marker ='o',
+         markersize = 5 , linestyle ='dashed', markerfacecolor='r')
+plt.yscale('log')
+plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
 plt.xlim(2457655, 2457693.1666666665)
-
-
-
