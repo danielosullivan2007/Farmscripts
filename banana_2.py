@@ -322,7 +322,7 @@ cbar.ax.set_yticklabels(cbar_labs)
 '''
 
 
-del cbticks, cols, DpAPS, DpSMPS, cbar_labs
+
 #del hours, i, label, levels, p, time1, smps_diameters, x,y
 #==============================================================================
 # del  ytick_labels, cols1, rho, rho0
@@ -359,3 +359,8 @@ ax4.plot(INPs_20.mid_jd, INPs_20.INP, marker ='o',
 plt.yscale('log')
 plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
 plt.xlim(2457655, 2457693.1666666665)
+
+del cbticks, cols, DpAPS, DpSMPS, cbar_labs, timestep, time1, x, y, zeros
+del rho, rho0,  met_mask, smps_diameters, mask, width, start_time
+del ytick_labels, start, p, INPs_20, INPs_25, X,Y,Z, cola, colb, cols1, direction
+del dt, end, farmdirs, hours, index1, levels, length, i, a, b
