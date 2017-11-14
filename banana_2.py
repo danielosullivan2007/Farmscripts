@@ -20,8 +20,8 @@ from matplotlib.colors import LogNorm
 import time
 
 
-direction = '<'
-RH = 100
+direction = '>'
+RH = 80
 
 start_time = time.time()
 
@@ -330,22 +330,42 @@ cbar.ax.set_yticklabels(cbar_labs)
 #==============================================================================
 met_mask = []
 print("--- %s seconds ---" % (time.time() - start_time))
-from banana_support import INPs_25, INPs_20, met
-ax3=fig1.add_subplot(413, sharex=ax1)
+from banana_support import INPs_25, INPs_20, met 
+
+
+rain_cumul = met['Rainfall Total since 0900']
+
+met['hourly_rain'] = rain_cumul.diff()
+
+for i in range(len(met)):
+    if met.index[i].time() == datetime.time(10, 0):
+        met['hourly_rain'][i] = 0
+        
+        
+        
 met =met.resample(timestep).mean()
 
-met_mask = []
-for i in range(len(met.index)):
-    if (met.index[i] == daily_aps.datetime).any():
-        met_mask.append(True)
-    else:
-        met_mask.append(False)
-met = met[met_mask]
+
+def mask(df):
+    met_mask = []
+    for i in range(len(df.index)):
+        if (df.index[i] == daily_aps.datetime).any():
+            met_mask.append(True)
+        else:
+            met_mask.append(False)
+    df = df[met_mask] 
+    return df
+
+met = mask(met)
+
+
 if direction =='<':
     met = met[met['Humidity']<RH]
 elif direction =='>':
     met = met[met['Humidity']>RH]
+    
 
+ax3=fig1.add_subplot(413, sharex=ax1)
 ax3.plot(met.jd, met.Humidity, marker = 'o', linewidth = 0, markersize=3)
 plt.ylabel('% RH', fontsize =8)
 ax3.yaxis.set_major_locator(MaxNLocator(4))
