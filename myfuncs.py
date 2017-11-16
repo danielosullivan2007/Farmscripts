@@ -13,6 +13,16 @@ num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
            -22:'minus22', -23:'minus23', -24:'minus24',-25: 'minus25'}
 
 
+def mask(continuous, discrete):
+    mask = []
+    for i in range(len(continuous.index)):
+        if (continuous.index[i] == discrete.datetime).any():
+            mask.append(True)
+        else:
+            mask.append(False)
+    masked = continuous[mask] 
+    return masked
+
 def av_between(start_search, end_search, data, data_index):
 
     
@@ -21,12 +31,16 @@ def av_between(start_search, end_search, data, data_index):
     return located
 
 
+
 #EXAMPLE of applying a multiargument function to dataframe 
 #test = df.Datestr.astype(str).apply(datetime.strptime, args=('%y%m%d',))
 def get_dates_in_column(dataframe_column, fmt):
 
     dataframe_column.apply(datetime.datetime.strptime(fmt))
-    
+
+
+
+
 def globber(topfolder, key_terms):
     import os 
     import glob as glob

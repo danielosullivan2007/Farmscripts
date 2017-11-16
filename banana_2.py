@@ -21,7 +21,7 @@ import time
 
 
 direction = '>'
-RH = 80
+RH = 85
 
 start_time = time.time()
 
@@ -39,6 +39,8 @@ dt_label=[]
 hours =[]
 q=[]
 mask=[]
+
+
 
 smps=pd.read_pickle(farmdirs['pickels']+'SMPS.p')
 aps=pd.read_pickle(farmdirs['pickels']+'APS.p').drop(['Aerodynamic Diameter',
@@ -111,11 +113,17 @@ index1=pd.date_range(start, end, freq = timestep)
 zeros=np.zeros((len(index1), width))
 zeros =pd.DataFrame(zeros, index= index1)
 mask=[]
+
+
+
 for i in range(len(index1)):
     if (daily_aps.index == index1[i]).any():
         mask.append(False)
     else:
         mask.append(True)
+        
+        
+        
         
 zeros.reset_index(inplace=True)
 zeros.rename(columns = {'index':'datetime'}, inplace =True)	
@@ -239,13 +247,16 @@ index1=pd.date_range(start, end, freq = timestep)
 zeros=np.zeros((len(index1), width))
 zeros =pd.DataFrame(zeros, index= index1)
 mask=[]
+
+
+
 for i in range(len(index1)):
     if (daily_smps.index == index1[i]).any():
         mask.append(False)
     else:
         mask.append(True)
 
-       
+      
 zeros.reset_index(inplace=True)
 zeros.rename(columns = {'index':'datetimes'}, inplace =True)	
 mask = pd.Series(mask, name ='datetimes')
@@ -328,50 +339,47 @@ cbar.ax.set_yticklabels(cbar_labs)
 # del  ytick_labels, cols1, rho, rho0
 # del chi, farmdirs
 #==============================================================================
-met_mask = []
-print("--- %s seconds ---" % (time.time() - start_time))
-from banana_support import INPs_25, INPs_20, met 
 
+print("--- %s seconds ---" % (time.time() - start_time))
+from banana_support import INPs_25, INPs_20 
+
+met = pd.read_pickle(farmdirs['pickels']+'met_jd.p')
+met = met.resample(timestep).mean()
 
 rain_cumul = met['Rainfall Total since 0900']
-
 met['hourly_rain'] = rain_cumul.diff()
 
 for i in range(len(met)):
     if met.index[i].time() == datetime.time(10, 0):
         met['hourly_rain'][i] = 0
+rain =[]
+for i in range(len(met)):
+    if met['hourly_rain'][i]==0:
+        rain.append('dry')
+    else:
+        rain.append('rain')
         
-        
-        
-met =met.resample(timestep).mean()
+met['rain']=rain              
 
 
-def mask(df):
-    met_mask = []
-    for i in range(len(df.index)):
-        if (df.index[i] == daily_aps.datetime).any():
-            met_mask.append(True)
-        else:
-            met_mask.append(False)
-    df = df[met_mask] 
-    return df
-
-met = mask(met)
-
+from myfuncs import mask
+met = mask(met, daily_aps)
 
 if direction =='<':
     met = met[met['Humidity']<RH]
 elif direction =='>':
     met = met[met['Humidity']>RH]
     
-
 ax3=fig1.add_subplot(413, sharex=ax1)
-ax3.plot(met.jd, met.Humidity, marker = 'o', linewidth = 0, markersize=3)
+dry=met['rain'] == 'dry'
+rain=met['rain'] == 'rain'
+
+ax3.plot(met.jd[dry], met.Humidity[dry], marker = 'o', linewidth = 0, markersize=3)
+ax3.plot(met.jd[rain], met.Humidity[rain], marker = 'o', linewidth = 0, markersize=3, color ='r')
+
 plt.ylabel('% RH', fontsize =8)
 ax3.yaxis.set_major_locator(MaxNLocator(4))
 ax3.tick_params(labelbottom='off')  
-
-
 
 ax4=fig1.add_subplot(414, sharex=ax1)
 ax4.plot(INPs_20.mid_jd, INPs_20.INP, marker ='o',
@@ -381,6 +389,6 @@ plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
 plt.xlim(2457655, 2457693.1666666665)
 
 del cbticks, cols, DpAPS, DpSMPS, cbar_labs, timestep, time1, x, y, zeros
-del rho, rho0,  met_mask, smps_diameters, mask, width, start_time
+del rho, rho0,   smps_diameters, mask, width, start_time
 del ytick_labels, start, p, INPs_20, INPs_25, X,Y,Z, cola, colb, cols1, direction
 del dt, end, farmdirs, hours, index1, levels, length, i, a, b
