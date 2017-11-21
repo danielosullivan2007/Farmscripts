@@ -15,13 +15,25 @@ import matplotlib.cm as cm
 topfolder='W:\\'
 key_terms= ["Data"]
 from directories import farmdirs
+import itertools
+from matplotlib import rc
+
+
+
+    
+    
+
 
 
 a= float(0.0000594)
 b=float(3.33)
 c=float(0.0264)
 d=float(0.0033)
-import seaborn as sns
+
+
+
+
+
 
 sns.set_context("paper", rc={"font.size":12,"axes.titlesize":12,"axes.labelsize":12}) 
 degree_sign= u'\N{DEGREE SIGN}'
@@ -160,10 +172,11 @@ smps = pd.read_pickle(indir+"SMPS.p")
        #u'Start Time'], axis =0)
 
 smps = smps.rename(columns ={'index':'datetime'})
+len_T=len(range(-25,-14, 1))
+colors = iter(cm.jet(np.linspace(0, 1, len_T)))
 
-for T in range (-25,-24, 1):
-    len_T=len(range(-25,-14, 1))
-    
+
+for T in range (-25,-23, 1):
 
     df_INP = INPs.loc[INPs['T'] == T]
     print T
@@ -333,30 +346,35 @@ for T in range (-25,-24, 1):
     data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0',u'start_datetime',
                      u'end_datetime', u'MEAN_WIND_DIR', u'MEAN_WIND_DIR'], axis=1)
     
+############################################################    
+    #DEMOTT Comparison
     
-    
-    colors = iter(cm.jet(np.linspace(0, 1, len_T)))
+    #print colors.next()
     constant = a*T
     T_kelvin = T+273.16
     T_param=273.16-T_kelvin
+    print data[0][i]
     data['demott']=[(a*np.power(T_param,b)*np.power(data[0][i],(c*T_param+d))) for i in range(len(data[0]))]
-    print data['demott']
+    #print data['demott']
     fig =plt.plot()
     ax=plt.gca()
     x=data['INP']
     y=data['demott']
-    ax.scatter(x,y,color=next(colors))
+    color = next(colors)
+    print color
+    ax.scatter(x,y,color=color)
     
     ax.set_xscale('log')
     ax.set_yscale('log')
-    ax.set_xlabel('Observed INP /L')
-    ax.set_ylabel('Predicted INP /L')
-    ax.set_xlim(0.1,100)
-    ax.set_ylim(0.1,100)
+    ax.set_xlabel('Observed INP $\mathregular{L^{-1}}$')
+    ax.set_ylabel('Predicted INP $\mathregular{L^{-1}}$')
+    ax.set_xlim(0.01,100)
+    ax.set_ylim(0.01,100)
+ 
     q=[0.001,100]
     r=[0.001,100]
     ax.plot(q,r)
-
+    
     #del t_stamp_INP_end,t_stamp_INP_start, timediff_end, timediff_start, 
 ###################################################################################################
 #DATA CORRELATION SECTION 
