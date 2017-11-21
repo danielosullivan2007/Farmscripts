@@ -196,24 +196,20 @@ def date_to_jd(year,month,day):
 ########################################
     #Meyers param
     
-a=-0.639
-b=0.1296
+
 
 vp_water=[]
 vp_ice=[]
 T_list=[]
-for i in range(243, 273, 1):
-    T=i
+
+
+def meyers(T):
+    A=-0.639
+    B=0.1296
     p_water = np.exp(54.842763-6763.22/T - 4.21*np.log(T) + 0.000367*T + np.tanh(0.0415*(T - 218.8))*(53.878- 1331.22/T - 9.44523*np.log(T) + 0.014025*T))
     p_ice = np.exp(9.550426 - 5723.265/T + 3.53068*np.log(T) - 0.00728332*T )
-    vp_water.append(p_water)
-    vp_ice.append(p_ice)
-    T_list.append(T)
+    ice_ss = (p_water/p_ice)-1
+    meyers_inp = np.exp(A+100*B*(ice_ss))
     
-data = zip(T_list,vp_water, vp_ice)
-data=pd.DataFrame(data, columns = ['Temp', 'p_water', 'p_ice'])
-data['ice_ss']=(data.p_water/data.p_ice)-1
-data['meyers_INP']=np.exp(a+100*b*(data.ice_ss))
-data['Temp']=data['Temp']-273.15
-data.drop(['p_water', 'p_ice', 'ice_ss'], inplace =True, axis =1)
-meyers = data
+    return meyers_inp
+    

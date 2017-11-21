@@ -19,23 +19,11 @@ import itertools
 from matplotlib import rc
 
 
-
-    
-    
-
-
-
 a= float(0.0000594)
 b=float(3.33)
 c=float(0.0264)
 d=float(0.0033)
 
-
-
-
-
-
-sns.set_context("paper", rc={"font.size":12,"axes.titlesize":12,"axes.labelsize":12}) 
 degree_sign= u'\N{DEGREE SIGN}'
 # =============================================================================
 # import socket
@@ -90,7 +78,16 @@ num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
            -22:'minus22', -23:'minus23', -24:'minus24',-25: 'minus25'}
            
 
-
+def meyers(Tcelcius):
+    A=-0.639
+    B=0.1296
+    T=Tcelcius+273.15
+    p_water = np.exp(54.842763-6763.22/T - 4.21*np.log(T) + 0.000367*T + np.tanh(0.0415*(T - 218.8))*(53.878- 1331.22/T - 9.44523*np.log(T) + 0.014025*T))
+    p_ice = np.exp(9.550426 - 5723.265/T + 3.53068*np.log(T) - 0.00728332*T )
+    ice_ss = (p_water/p_ice)-1
+    meyers_inp = np.exp(A+100*B*(ice_ss))
+    
+    return meyers_inp
 ######################################################################################################
 #==============================================================================
 # indir = ('W:\SMPS')
@@ -174,9 +171,34 @@ smps = pd.read_pickle(indir+"SMPS.p")
 smps = smps.rename(columns ={'index':'datetime'})
 len_T=len(range(-25,-14, 1))
 colors = iter(cm.jet(np.linspace(0, 1, len_T)))
+fig, ax=plt.subplots()
+ax.set_xscale('log')
+ax.set_yscale('log')
+ax.set_xlabel('Observed INPs $\mathregular{L^{-1}}$')
+ax.set_ylabel('Predicted INPs $\mathregular{L^{-1}}$')
+ax.set_xlim(0.05,100)
+ax.set_ylim(0.05,100)
+ 
+q=[0.001,100]
+r=[0.001,100]
+ax.plot(q,r)
+
+fig1, ax1=plt.subplots()
+ax1.set_xscale('log')
+ax1.set_yscale('log')
+ax1.set_xlabel('Observed INPs $\mathregular{L^{-1}}$')
+ax1.set_ylabel('Predicted INPs $\mathregular{L^{-1}}$')
+ax1.set_xlim(0.05,100)
+ax1.set_ylim(0.05,100)
+ 
+q=[0.01,100]
+r=[0.01,100]
+ax1.plot(q,r)
 
 
-for T in range (-25,-23, 1):
+T_list=[]
+meyers_list=[]
+for T in range (-25,-15, 1):
 
     df_INP = INPs.loc[INPs['T'] == T]
     print T
@@ -353,29 +375,26 @@ for T in range (-25,-23, 1):
     constant = a*T
     T_kelvin = T+273.16
     T_param=273.16-T_kelvin
-    print data[0][i]
-    data['demott']=[(a*np.power(T_param,b)*np.power(data[0][i],(c*T_param+d))) for i in range(len(data[0]))]
-    #print data['demott']
-    fig =plt.plot()
-    ax=plt.gca()
+
+    data['demott']=[(a*np.power(T_param,b)*np.power(data.loc[i,'APS Total']/1000,(c*T_param+d))) for i in range(len(data[0]))]
     x=data['INP']
     y=data['demott']
     color = next(colors)
-    print color
     ax.scatter(x,y,color=color)
     
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.set_xlabel('Observed INP $\mathregular{L^{-1}}$')
-    ax.set_ylabel('Predicted INP $\mathregular{L^{-1}}$')
-    ax.set_xlim(0.01,100)
-    ax.set_ylim(0.01,100)
- 
-    q=[0.001,100]
-    r=[0.001,100]
-    ax.plot(q,r)
     
-    #del t_stamp_INP_end,t_stamp_INP_start, timediff_end, timediff_start, 
+
+    
+
+
+    data['meyers']=[meyers(T) for i in range(len(data[0]))]
+    T_list.append(T)
+    meyers_list.append(meyers(T))
+    e=data['INP']
+    f=data['meyers']
+    ax1.scatter(e,f,color=color)
+    
+    
 ###################################################################################################
 #DATA CORRELATION SECTION 
     data['INP']=data['INP'].apply(np.log10)
@@ -443,32 +462,34 @@ y = np.square(minus20.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 z = np.square(minus25.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 
 #%%
-fig, ax = plt.subplots(figsize=(6, 5))
-ax= plt.subplot(111)
-
-
-indata= np.genfromtxt('all data_1.csv', delimiter = ',')
-
-index = minus15.index
-index = index[1:14]
-y_pos = np.arange(len(index))
-ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C', edgecolor='black')
-ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C', edgecolor='black')
-ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C', edgecolor='black')
-plt.xticks(y_pos,index, rotation = 90, fontsize =11)
-plt.yticks(fontsize =11)
-ax.set_ylim(0,1)
-ax.yaxis.grid()
-plt.xlim(-1,14)
-plt.legend()
-#plt.legend(loc=2, fontsize =10)
-plt.ylabel('Coefficient of determination $\mathregular{R^2}$', fontsize =12)
-#plt.xlabel()
-#plt.ylabel('Pearson R Coefficient')
-#plt.title('Correlations between particle no. and meteorological variables')
-plt.tight_layout()
-plt.savefig(farmdirs['figures']+"\correlations")
-
+#==============================================================================
+# fig, ax = plt.subplots(figsize=(6, 5))
+# ax= plt.subplot(111)
+# 
+# 
+# indata= np.genfromtxt('all data_1.csv', delimiter = ',')
+# 
+# index = minus15.index
+# index = index[1:14]
+# y_pos = np.arange(len(index))
+# ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C', edgecolor='black')
+# ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C', edgecolor='black')
+# ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C', edgecolor='black')
+# plt.xticks(y_pos,index, rotation = 90, fontsize =11)
+# plt.yticks(fontsize =11)
+# ax.set_ylim(0,1)
+# ax.yaxis.grid()
+# plt.xlim(-1,14)
+# plt.legend()
+# #plt.legend(loc=2, fontsize =10)
+# plt.ylabel('Coefficient of determination $\mathregular{R^2}$', fontsize =12)
+# #plt.xlabel()
+# #plt.ylabel('Pearson R Coefficient')
+# #plt.title('Correlations between particle no. and meteorological variables')
+# plt.tight_layout()
+# plt.savefig(farmdirs['figures']+"\correlations")
+# 
+#==============================================================================
 #%%
 #==============================================================================
 # 
@@ -512,8 +533,6 @@ plt.savefig(farmdirs['figures']+"\correlations")
 # 
 # 
 #==============================================================================
-
-
 
 
 
