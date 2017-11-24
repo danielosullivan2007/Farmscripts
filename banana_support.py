@@ -36,6 +36,7 @@ INPs['mid_jd'] =INPs_mid_jd
 del INPs_start_jd, INPs_end_jd, INPs_mid_jd ,met_jd
 
 INPs_25 = INPs[INPs['T']==-25]
+INPs_24 = INPs[INPs['T']==-24]
 INPs_20 = INPs[INPs['T']==-20]
 INPs_18 = INPs[INPs['T']==-18]
 

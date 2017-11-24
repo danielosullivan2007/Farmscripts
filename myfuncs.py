@@ -30,7 +30,10 @@ def av_between(start_search, end_search, data, data_index):
     located = data.loc[mask]
     return located
 
-
+def poisson_CI(fraction, n_drops):
+    err_plus = fraction + (1.96)**2/(4*n_drops) + 1.96 * (fraction/ n_drops)**0.5
+    err_minus = fraction + (1.96)**2/(4*n_drops) - 1.96 * (fraction/ n_drops)**0.5
+    return err_plus, err_minus
 
 #EXAMPLE of applying a multiargument function to dataframe 
 #test = df.Datestr.astype(str).apply(datetime.strptime, args=('%y%m%d',))

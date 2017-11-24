@@ -171,7 +171,7 @@ smps = pd.read_pickle(indir+"SMPS.p")
 smps = smps.rename(columns ={'index':'datetime'})
 len_T=len(range(-25,-14, 1))
 colors = iter(cm.jet(np.linspace(0, 1, len_T)))
-fig, ax=plt.subplots()
+fig, ax=plt.subplots(figsize =(5,5))
 ax.set_xscale('log')
 ax.set_yscale('log')
 ax.set_xlabel('Observed INPs $\mathregular{L^{-1}}$')
@@ -183,7 +183,7 @@ q=[0.001,100]
 r=[0.001,100]
 ax.plot(q,r)
 
-fig1, ax1=plt.subplots()
+fig1, ax1=plt.subplots(figsize =(5,5))
 ax1.set_xscale('log')
 ax1.set_yscale('log')
 ax1.set_xlabel('Observed INPs $\mathregular{L^{-1}}$')

@@ -63,7 +63,7 @@ for i in range(len(dt)):
         wind_sampling = wind_sampling.append(wind.loc[mask])
 
 
-
+stats=wind_sampling.describe()
 
 
 

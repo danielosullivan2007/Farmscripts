@@ -21,7 +21,7 @@ import time
 
 
 direction = '>'
-RH = 85
+RH = 0
 
 start_time = time.time()
 
@@ -154,7 +154,7 @@ time1 = [aps_toplot.index[i].to_julian_date() for i in range(len(aps_toplot.inde
 cols1=list(aps_toplot)
 
 fig1=plt.figure()
-ax1=plt.subplot(411)
+ax1=plt.subplot(611)
 X= time1
 Y=cols1
 p=aps_toplot.as_matrix().T
@@ -249,7 +249,6 @@ zeros =pd.DataFrame(zeros, index= index1)
 mask=[]
 
 
-
 for i in range(len(index1)):
     if (daily_smps.index == index1[i]).any():
         mask.append(False)
@@ -288,7 +287,7 @@ cbar_labs=[]
 q=[]
 
 #SMPS Section
-ax2=fig1.add_subplot(412, sharex=ax1)
+ax2=fig1.add_subplot(612, sharex=ax1)
 X= time1
 Y=cols1
 p=merged.as_matrix().T
@@ -341,7 +340,7 @@ cbar.ax.set_yticklabels(cbar_labs)
 #==============================================================================
 
 print("--- %s seconds ---" % (time.time() - start_time))
-from banana_support import INPs_25, INPs_20 
+from banana_support import INPs_25, INPs_20, INPs_18
 
 met = pd.read_pickle(farmdirs['pickels']+'met_jd.p')
 met = met.resample(timestep).mean()
@@ -370,7 +369,7 @@ if direction =='<':
 elif direction =='>':
     met = met[met['Humidity']>RH]
     
-ax3=fig1.add_subplot(413, sharex=ax1)
+ax3=fig1.add_subplot(613, sharex=ax1)
 dry=met['rain'] == 'dry'
 rain=met['rain'] == 'rain'
 
@@ -381,9 +380,27 @@ plt.ylabel('% RH', fontsize =8)
 ax3.yaxis.set_major_locator(MaxNLocator(4))
 ax3.tick_params(labelbottom='off')  
 
-ax4=fig1.add_subplot(414, sharex=ax1)
-ax4.plot(INPs_20.mid_jd, INPs_20.INP, marker ='o',
+
+ax4=fig1.add_subplot(614, sharex=ax1)
+ax4.plot(INPs_24.mid_jd, INPs_24.INP, marker ='o',
          markersize = 5 , linestyle ='dashed', markerfacecolor='r')
+ax4.tick_params(labelbottom='off')
+plt.yscale('log')
+plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
+
+# =============================================================================
+# ax5=fig1.add_subplot(615, sharex=ax1)
+# ax5.plot(INPs_20.mid_jd, INPs_20.INP, marker ='o',
+#          markersize = 5 , linestyle ='dashed', markerfacecolor='r')
+# ax5.tick_params(labelbottom='off')
+# plt.yscale('log')
+# plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
+# =============================================================================
+
+ax6=fig1.add_subplot(616, sharex=ax1)
+ax6.plot(INPs_18.mid_jd, INPs_18.INP, marker ='o',
+         markersize = 5 , linestyle ='dashed', markerfacecolor='r')
+
 plt.yscale('log')
 plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
 plt.xlim(2457655, 2457693.1666666665)

@@ -14,7 +14,9 @@ if host == 'see4-234':
                    'home':'C:\\Users\\eardo\\Desktop\\farmscripts\\',
                    'glodir': 'C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\160509\\',
                    'glodir1': 'C:\\Users\eardo\\Desktop\\Farmscripts\\glomap data\\',
-                   'iced': 'C:\\Users\\eardo\\Desktop\\Farmscripts\\IceD\\'}
+                   'iced': 'C:\\Users\\eardo\\Desktop\\Farmscripts\\IceD\\',
+                   'lit':'C:\\Users\\eardo\\Desktop\\Farmscripts\\Past Data\\'
+                   }
     bardirs = {'source': 'V:\\Data Dump\\', 'Organized':'V:\\Barbados_Data\\',
                'figures' : 'V:\\Figures\\',
                'pickels':'V:\\Pickels\\' }
