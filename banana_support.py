@@ -9,8 +9,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from directories import farmdirs
-
-from myfuncs import jd_to_date
+import datetime
+from myfuncs import jd_to_date, date_to_jd
 
 
 met = pd.read_pickle(farmdirs['pickels']+'met.p')
@@ -40,3 +40,6 @@ INPs_24 = INPs[INPs['T']==-24]
 INPs_20 = INPs[INPs['T']==-20]
 INPs_18 = INPs[INPs['T']==-18]
 
+
+minp = date_to_jd(2016, 9,27)
+maxp = date_to_jd(2016, 10,28)

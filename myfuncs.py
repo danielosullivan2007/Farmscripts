@@ -7,7 +7,7 @@ Created on Mon Sep 04 10:51:43 2017
 
 import pandas as pd
 import numpy as np
-
+import math 
 num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
            -19:'minus19',-20:'minus20',-21:'minus21',
            -22:'minus22', -23:'minus23', -24:'minus24',-25: 'minus25'}
