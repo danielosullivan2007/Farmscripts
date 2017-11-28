@@ -10,6 +10,7 @@ from directories import farmdirs
 import numpy as np
 import datetime
 import matplotlib.dates as mdates
+from matplotlib.ticker import NullFormatter
 
 aps_test = pd.read_pickle(farmdirs['pickels']+'aps_toplot_RH100.p')
 
@@ -39,42 +40,51 @@ aps_test = pd.DataFrame(aps_test).rename(columns = {0:'aps'})
 join= pd.merge(aps_test, met_jd, left_index=True, right_index=True)
 
 
-RH = 0
+RH = 85
 title = 'RH >0%'
 join['log_aps']=join['aps'].apply(np.log10)
 
+#join = join.loc['2016-09-29':'2016-10-03']
+#join = join.loc['2016-10-13':'2016-10-16']
+#join = join.loc['2016-10-20':'2016-10-22']
+join = join.loc['2016-10-17':'2016-10-20']
 
-join = join.loc['2016-09-26':'2016-10-22']
-join=join[join['Humidity']>RH]
+
+join=join[join['Humidity']<RH]
 
 fig, ax1 = plt.subplots()
 join_rain = join[join.hourly_rain>0]
 ax1.plot(join_rain.index, join_rain.hourly_rain, marker = 'o', )
+ax1.set_ylabel('Hourly Rainfall mm')
 ax1.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))
 ax1.xaxis.set_minor_formatter(mdates.DateFormatter("%m-%d"))
-ax1.xaxis.set_minor_locator(mdates.DayLocator())
-
-
+#ax1.xaxis.set_minor_locator(mdates.DayLocator())
+plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=3))
+plt.gca().xaxis.set_minor_locator(mdates.DayLocator(interval=1))
+plt.gca().xaxis.set_minor_formatter(NullFormatter())
+plt.xticks(rotation = 30)
+plt.xlabel('Date')
 
 ax2=ax1.twinx()
 ax2.plot(join.index, join.aps, marker = 'o',color = 'r' )
 ax2.set_yscale('log')
-
-ax1.tick_params(labelbottom='off')
-ax2.tick_params(labelbottom='off')
+plt.xticks(rotation = 30)
+ax2.set_ylabel('APS Total L$^{-1}$')
 #fig1, ax3 =plt.subplots()
 #ax3.scatter( join.Humidity, join.aps)
 
-import seaborn as sns
-
-ax=sns.lmplot( 'hourly_rain', 'log_aps',data = join, hue = 'rain', fit_reg=False)
-cols = list(met_jd)
-#plt.ylim(0,100)
-plt.xlabel('Hourly Rain')
-plt.ylabel('log$_{10}$ APS Count')
-#plt.ylim(0,2.5)
-plt.text(100,2.1,title, color ='r')
-plt.savefig(farmdirs['figures']+ 'humidity_aps')
+#==============================================================================
+# import seaborn as sns
+# 
+# ax=sns.lmplot( 'hourly_rain', 'log_aps',data = join, hue = 'rain', fit_reg=False)
+# cols = list(met_jd)
+# #plt.ylim(0,100)
+# plt.xlabel('Hourly Rain')
+# plt.ylabel('log$_{10}$ APS Count')
+# #plt.ylim(0,2.5)
+# plt.text(100,2.1,title, color ='r')
+# plt.savefig(farmdirs['figures']+ 'humidity_aps')
+#==============================================================================
 ###################################################################
 # =============================================================================
 # smps_test = pd.read_csv(farmdirs['pickels']+'smps_RH100.csv')
