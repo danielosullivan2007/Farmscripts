@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from directories import farmdirs
 import numpy as np
 import datetime
-
+import matplotlib.dates as mdates
 
 aps_test = pd.read_pickle(farmdirs['pickels']+'aps_toplot_RH100.p')
 
@@ -39,34 +39,40 @@ aps_test = pd.DataFrame(aps_test).rename(columns = {0:'aps'})
 join= pd.merge(aps_test, met_jd, left_index=True, right_index=True)
 
 
-
-
-
-
-
-
-RH = 80
+RH = 0
 title = 'RH >0%'
 join['log_aps']=join['aps'].apply(np.log10)
+
+
+join = join.loc['2016-09-26':'2016-10-22']
 join=join[join['Humidity']>RH]
 
 fig, ax1 = plt.subplots()
-ax1.plot(join.index, join.Humidity, marker = 'o', )
+join_rain = join[join.hourly_rain>0]
+ax1.plot(join_rain.index, join_rain.hourly_rain, marker = 'o', )
+ax1.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))
+ax1.xaxis.set_minor_formatter(mdates.DateFormatter("%m-%d"))
+ax1.xaxis.set_minor_locator(mdates.DayLocator())
 
 
 
+ax2=ax1.twinx()
+ax2.plot(join.index, join.aps, marker = 'o',color = 'r' )
+ax2.set_yscale('log')
 
+ax1.tick_params(labelbottom='off')
+ax2.tick_params(labelbottom='off')
 #fig1, ax3 =plt.subplots()
 #ax3.scatter( join.Humidity, join.aps)
 
 import seaborn as sns
 
-ax=sns.lmplot( 'Humidity', 'log_aps',data = join, hue = 'rain', fit_reg=False)
+ax=sns.lmplot( 'hourly_rain', 'log_aps',data = join, hue = 'rain', fit_reg=False)
 cols = list(met_jd)
 #plt.ylim(0,100)
-plt.xlabel('% RH')
+plt.xlabel('Hourly Rain')
 plt.ylabel('log$_{10}$ APS Count')
-plt.ylim(0,2.5)
+#plt.ylim(0,2.5)
 plt.text(100,2.1,title, color ='r')
 plt.savefig(farmdirs['figures']+ 'humidity_aps')
 ###################################################################
