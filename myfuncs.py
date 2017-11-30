@@ -13,6 +13,9 @@ num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
            -22:'minus22', -23:'minus23', -24:'minus24',-25: 'minus25'}
 
 
+degree_sign= u'\N{DEGREE SIGN}'
+
+
 def mask(continuous, discrete):
     mask = []
     for i in range(len(continuous.index)):

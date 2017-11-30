@@ -12,6 +12,15 @@ from directories import farmdirs
 import datetime
 from myfuncs import jd_to_date, date_to_jd
 
+tillage = pd.read_csv(farmdirs['pickels']+'activities.csv')
+tillage.Start = pd.to_datetime(tillage.Start, format='%d/%m/%Y %H:%M')
+tillage.End = pd.to_datetime(tillage.End, format='%d/%m/%Y %H:%M')
+#tillage.drop(3, inplace =True)
+
+
+tillage['Start_jd'] = [tillage.Start[i].to_julian_date() for i in range(len(tillage.Start))]
+tillage['End_jd'] = [tillage.End[i].to_julian_date() for i in range(len(tillage.End))]
+
 
 met = pd.read_pickle(farmdirs['pickels']+'met.p')
 cols = list(met)

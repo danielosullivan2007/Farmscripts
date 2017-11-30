@@ -21,6 +21,13 @@ import time
 import matplotlib.gridspec as gridspec
 from matplotlib.ticker import StrMethodFormatter, NullFormatter
 
+
+
+z = np.random.random(10)
+blue_dot, = plt.plot(z, "ro",markerfacecolor='b' , markersize=3, zorder=20, label ='dry')
+red_dot, = plt.plot(z, "ro",markerfacecolor='r', markersize=3, label ='rain')
+
+
 degree_sign= u'\N{DEGREE SIGN}'
 direction = '>'
 RH = 0
@@ -346,7 +353,7 @@ cbar.ax.set_yticklabels(cbar_labs)
 #==============================================================================
 
 print("--- %s seconds ---" % (time.time() - start_time))
-from banana_support import INPs_25, INPs_20, INPs_18, INPs_24
+from banana_support import INPs_25, INPs_20, INPs_18, INPs_24, tillage
 
 met = pd.read_pickle(farmdirs['pickels']+'met_jd.p')
 met = met.resample(timestep).mean()
@@ -380,10 +387,20 @@ dry=met['rain'] == 'dry'
 rain=met['rain'] == 'rain'
 
 ax3.plot(met.jd[dry], met.Humidity[dry], marker = 'o',
-         linewidth = 0, markersize=3, label ='Dry')
+         linewidth = 0, markersize=3, label ='Dry', zorder=20)
 ax3.plot(met.jd[rain], met.Humidity[rain], marker = 'o',
-         linewidth = 0, markersize=3, color ='r', label ='Rain')
-ax3.legend(bbox_to_anchor=(1.15,0.75), numpoints=1, fontsize =7,
+         linewidth = 0, markersize=3, color ='r', label ='Rain', zorder=20)
+
+plt.axvspan(tillage.Start_jd[1], tillage.End_jd[1], facecolor='gray', alpha = 0.5, ymin = 0.0001, ymax=100)
+plt.axvspan(tillage.Start_jd[2], tillage.End_jd[2], facecolor='gray', alpha=0.5)
+
+
+
+
+gray_patch = mpatches.Patch(color='gray', label='Tillage', alpha=0.7)
+
+
+ax3.legend(handles  = [gray_patch, blue_dot, red_dot], bbox_to_anchor=(1.2,1), numpoints=1, fontsize =7,
            borderpad=0.1, handletextpad  =0.08, frameon=False)
 
 plt.ylabel('% RH', fontsize =8,labelpad=15)
@@ -415,6 +432,10 @@ INP_24_box = INPs_24.INP.reset_index(drop=True)
 ax_INP24.boxplot(INP_24_box, meanprops=meanlineprops,
             whis='range',medianprops=medianprops, whiskerprops =whiskerprops)
 ax_INP24.tick_params(labelbottom='off', labelleft='off')
+ax_INP24.axvspan(tillage.Start_jd[1], tillage.End_jd[1], facecolor='gray', alpha = 0.3)
+
+
+
 # =============================================================================
 # ax5=fig1.add_subplot(615, sharex=ax1)
 # ax5.plot(INPs_20.mid_jd, INPs_20.INP, marker ='o',
@@ -428,7 +449,7 @@ ax6=plt.subplot(gs[1, :2], sharex=ax1)
 ax6.plot(INPs_18.mid_jd, INPs_18.INP, marker ='o',
          markersize = 5 , linestyle =':', markerfacecolor='k', color='k')
 plt.yscale('log')
-
+#plt.axvspan(tillage.Start_jd[1], tillage.End_jd[1], facecolor='gray', alpha = 1, ymin = 0.0001, ymax=100)
 ax6.tick_params(labelbottom='off')
 ax6.text(0.77,0.1,'T = -18 '+degree_sign+'C', transform=ax6.transAxes)
 plt.gca().yaxis.get_major_ticks()[1].label1.set_visible(False)
@@ -457,6 +478,8 @@ ax_INP18.boxplot(INP_18_box, meanprops=meanlineprops,
             whis='range',medianprops=medianprops, whiskerprops =whiskerprops)
 ax_INP18.tick_params(labelbottom='off', labelleft='off')
 
+
+#ax_INP24.axvspan(tillage.Start_jd[2], tillage.End_jd[2], facecolor='gray', alpha = 1, ymin = 0.0001, ymax=100)
 
 
 

@@ -12,11 +12,14 @@ import glob
 import matplotlib.pyplot as plt
 import decimal 
 import matplotlib.cm as cm
-topfolder='W:\\'
-key_terms= ["Data"]
 from directories import farmdirs
 import itertools
 from matplotlib import rc
+from myfuncs import degree_sign, num2words
+import  seaborn as sns
+
+
+key_terms= ["Data"]
 
 
 a= float(0.0000594)
@@ -24,59 +27,25 @@ b=float(3.33)
 c=float(0.0264)
 d=float(0.0033)
 
-degree_sign= u'\N{DEGREE SIGN}'
-# =============================================================================
-# import socket
-# host = socket.gethostname()
-# if host == "Daniels-Air.home":
-#     indir ="//Users//Daniel//Desktop//farmscripts//pickels//"
-# elif host == 'see4-234':
-#     indir = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\'
-#     indir2 = 'C:\\Users\\eardo\\Desktop\\Farmscripts\\'
-# elif host ==  'SEE-L10840':
-#     indir = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\Pickels\\')
-#     indir2 = ('C:\\Users\\useradmin\\Desktop\\Farmscripts\\')
-# =============================================================================
+min_T=-25
+max_T=-15
+
+
+step =1
+
+RH=85   #RH for all plots
 
 indir = farmdirs['pickels']
 indir2 = farmdirs['home']
 
-def get_t_diffs(dataset, mask):
+# Using contourf to provide my colorbar info, then clearing the figure
+Z = [[0,0],[0,0]]
+levels = range(min_T,max_T+step,step)
+CS3 = plt.contourf(Z, levels, cmap= 'jet')
+plt.clf()
 
-                INP_start = df_INPtidy['start_datetime'][i]
-                INP_end = df_INPtidy['end_datetime'][i]
-                
-                first_data = dataset.loc[mask]['datetimes'].iloc[0]
-                last_data = dataset.loc[mask]['datetimes'].iloc[-1]
-                
-                diff_from_start = dataset.loc[mask]['datetimes'].iloc[0] - df_INPtidy['start_datetime'][i]
-                diff_to_end= dataset.loc[mask]['datetimes'].iloc[-1] - df_INPtidy['end_datetime'][i] 
-                
-                return INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start
-
-                
-
-def compile_t_diffs(INP_start, INP_end, last_data, first_Data, diff_to_end, diff_from_start):
-
-    t_stamp_INP_end.set_value(i, INP_end)
-    t_stamp_INP_start.set_value(i, INP_start)
-    
-    dataset_start_t.set_value(i, first_data)
-    dataset_end_t.set_value(i, last_data)
-    
-    timediff_start.set_value(i, diff_from_start)
-    timediff_end.set_value(i, diff_to_end)
-    timediffs = pd.concat([ t_stamp_INP_start, dataset_start_t, timediff_start, t_stamp_INP_end , dataset_end_t, timediff_end ], axis=1)
-    timediffs.columns =['t_stamp_INP_start', 'dataset_start_t', 'timediff_start', 't_stamp_INP_end' , 'dataset_end_t', 'timediff_end' ]
-    return timediffs
-
-
-#timediffs=pd.DataFrame( columns= ['timediff_start', 't_stamp_INP_start', 'timediff_end', 't_stamp_INP_end'])
-
-num2words={-15:'minus15',-16:'minus16',-17:'minus17',-18:'minus18',
-           -19:'minus19',-20:'minus20',-21:'minus21',
-           -22:'minus22', -23:'minus23', -24:'minus24',-25: 'minus25'}
-           
+fig, (ax, ax1) =plt.subplots(1,2, sharey=True, figsize =(5,2.5))
+fig1, (ax2, ax3) =plt.subplots(1,2, figsize =(5,2.5), sharey=True, sharex=True)
 
 def meyers(Tcelcius):
     A=-0.639
@@ -169,27 +138,30 @@ smps = pd.read_pickle(indir+"SMPS.p")
        #u'Start Time'], axis =0)
 
 smps = smps.rename(columns ={'index':'datetime'})
-len_T=len(range(-25,-14, 1))
+range_T=range(min_T,max_T, step)
+len_T=len(range_T)
 colors = iter(cm.jet(np.linspace(0, 1, len_T)))
-fig, ax=plt.subplots(figsize =(5,5))
+
 ax.set_xscale('log')
 ax.set_yscale('log')
 ax.set_xlabel('Observed INPs $\mathregular{L^{-1}}$')
 ax.set_ylabel('Predicted INPs $\mathregular{L^{-1}}$')
-ax.set_xlim(0.05,100)
-ax.set_ylim(0.05,100)
+ax.set_xlim(0.02,100)
+ax.set_ylim(0.02,100)
  
+
+
 q=[0.001,100]
 r=[0.001,100]
 ax.plot(q,r)
 
-fig1, ax1=plt.subplots(figsize =(5,5))
+
 ax1.set_xscale('log')
 ax1.set_yscale('log')
 ax1.set_xlabel('Observed INPs $\mathregular{L^{-1}}$')
-ax1.set_ylabel('Predicted INPs $\mathregular{L^{-1}}$')
-ax1.set_xlim(0.05,100)
-ax1.set_ylim(0.05,100)
+#ax1.set_ylabel('Predicted INPs $\mathregular{L^{-1}}$')
+ax1.set_xlim(0.02,100)
+ax1.set_ylim(0.02,100)
  
 q=[0.01,100]
 r=[0.01,100]
@@ -198,10 +170,9 @@ ax1.plot(q,r)
 
 T_list=[]
 meyers_list=[]
-for T in range (-25,-15, 1):
+for T in range (min_T,max_T, step):
 
     df_INP = INPs.loc[INPs['T'] == T]
-    print T
     #df_INP['timedelta']= df_INP['end_datetime']-df_INP['start_datetime']
 
     
@@ -258,8 +229,10 @@ for T in range (-25,-15, 1):
             
             metavs = metavs.append(met.loc[met_mask].mean(axis=0), ignore_index=True)
             
-            INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(met, met_mask)
-            timediffs_met = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
+# =============================================================================
+#             INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(met, met_mask)
+#             timediffs_met = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
+# =============================================================================
         
         
     metavs.drop([u'index', u'Unnamed: 0',u'level_0'], axis=1)
@@ -283,9 +256,8 @@ for T in range (-25,-15, 1):
         else:
             
             smps_avs=smps_avs.append(smps.loc[smps_mask].mean(axis=0, skipna = True), ignore_index=True)
-            INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(smps, smps_mask)
-            timediffs_smps = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
-        
+            
+            
         smps_total = smps_avs.sum(axis=1)
         smps_total.columns='SMPS_total'
         
@@ -323,8 +295,7 @@ for T in range (-25,-15, 1):
         else:
             
             apsavs=apsavs.append(aps.loc[aps_mask].mean(axis=0), ignore_index=True)
-            INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(aps, aps_mask)
-            timediffs_aps = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
+          
         aps_total= apsavs.sum(axis=1)
         
 #sum accross average down
@@ -360,44 +331,47 @@ for T in range (-25,-15, 1):
         else: 
             
             windavs = windavs.append(wind.loc[wind_mask].mean(axis=0), ignore_index= True)
-            INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start = get_t_diffs(wind, wind_mask)
-            timediffs_wind = compile_t_diffs(INP_start, INP_end, last_data, first_data, diff_to_end, diff_from_start)
+            
             
     windavs=windavs.drop(u'Unnamed: 0', axis=1)
     data=pd.concat([df_INPtidy, windavs, metavs, aps_total, aps_sum_down, smps_total,smps_sum_down, t_stamp_INP_start, t_stamp_INP_end], axis =1)
     data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0',u'start_datetime',
                      u'end_datetime', u'MEAN_WIND_DIR', u'MEAN_WIND_DIR'], axis=1)
     
+
+    
 ############################################################    
     #DEMOTT Comparison
+    data = data[data['Humidity']<RH].reset_index(drop=True)
     
-    #print colors.next()
     constant = a*T
     T_kelvin = T+273.16
     T_param=273.16-T_kelvin
-
-    data['demott']=[(a*np.power(T_param,b)*np.power(data.loc[i,'APS Total']/1000,(c*T_param+d))) for i in range(len(data[0]))]
+    data['demott']=[(a*np.power(T_param,b)*np.power(data.loc[i,'APS Total']/1000,(c*T_param+d))) for i in range(len(data))]
     x=data['INP']
     y=data['demott']
     color = next(colors)
     ax.scatter(x,y,color=color)
-    
-    
-
-    
 
 
-    data['meyers']=[meyers(T) for i in range(len(data[0]))]
+    data['meyers']=[meyers(T) for i in range(len(data))]
     T_list.append(T)
     meyers_list.append(meyers(T))
     e=data['INP']
     f=data['meyers']
     ax1.scatter(e,f,color=color)
     
-    
+    sns.residplot(x,y, ax =ax2, color=color)
+    sns.residplot(e,f, ax =ax3, color=color)
+    ax2.set_xscale('log')
+    ax2.set_xlim(0.02,100)
+    ax3.set_xscale('log')
+
 ###################################################################################################
-#DATA CORRELATION SECTION 
-    data['INP']=data['INP'].apply(np.log10)
+#DATA CORRELATION SECTION ####
+    '''NOTE LOGGING OF INPS HERE!!!!!!!!!!!!!!'''
+    
+    data['INP']=data['INP'].apply(np.log10) 
     data.drop([0L, 1L, 2L], inplace=True, axis =1)
     corr=data.corr()
 #==============================================================================
@@ -424,8 +398,17 @@ for T in range (-25,-15, 1):
     
     
     data.to_csv(indir+"data at "+num2words[T]+".csv")
-    corr.to_csv(indir+"corr at" + num2words[T]+".csv")
+    corr.to_csv(indir+"corr at" + num2words[T]+".csv")    
+    
 
+    print ('finished adding data @ {}').format(str(T))
+
+    
+    
+cbaxes=fig.add_axes([0.95, 0.22, 0.02, 0.6]) 
+cb = fig.colorbar(CS3, cax = cbaxes)
+cb.ax.invert_yaxis()
+cb.ax.set_title('T ('+degree_sign+'C)', fontsize =8)
 
 stats = data.describe()
 bins = [stats.loc['min']['INP'], stats.loc['25%']['INP'],stats.loc['50%']['INP'],stats.loc['75%']['INP'],stats.loc['max']['INP']]
@@ -452,44 +435,40 @@ minus20.drop([' Max Gust Ctime','Max gust direction'], axis =1, inplace =True)
 minus25.drop([' Max Gust Ctime','Max gust direction'], axis =1, inplace =True)
 
 minus15.drop([' Max Gust Ctime', 'Max gust direction'], axis =0, inplace =True)
-
 minus20.drop([' Max Gust Ctime','Max gust direction'], axis =0, inplace =True)
-
 minus25.drop([' Max Gust Ctime','Max gust direction'], axis =0, inplace =True)
 
 x = np.square(minus15.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 y = np.square(minus20.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 z = np.square(minus25.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 
-#%%
-#==============================================================================
-# fig, ax = plt.subplots(figsize=(6, 5))
-# ax= plt.subplot(111)
+
+fig2, ax2 = plt.subplots(figsize=(6, 5))
+ax2= plt.subplot(111)
 # 
 # 
-# indata= np.genfromtxt('all data_1.csv', delimiter = ',')
-# 
-# index = minus15.index
-# index = index[1:14]
-# y_pos = np.arange(len(index))
-# ax.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C', edgecolor='black')
-# ax.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C', edgecolor='black')
-# ax.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C', edgecolor='black')
-# plt.xticks(y_pos,index, rotation = 90, fontsize =11)
-# plt.yticks(fontsize =11)
-# ax.set_ylim(0,1)
-# ax.yaxis.grid()
-# plt.xlim(-1,14)
-# plt.legend()
-# #plt.legend(loc=2, fontsize =10)
-# plt.ylabel('Coefficient of determination $\mathregular{R^2}$', fontsize =12)
-# #plt.xlabel()
-# #plt.ylabel('Pearson R Coefficient')
-# #plt.title('Correlations between particle no. and meteorological variables')
-# plt.tight_layout()
-# plt.savefig(farmdirs['figures']+"\correlations")
-# 
-#==============================================================================
+indata= np.genfromtxt('all data_1.csv', delimiter = ',')
+
+index = minus15.index
+index = index[1:14]
+y_pos = np.arange(len(index))
+ax2.bar(y_pos-0.2, x, align = 'center', width=0.2, color = 'b', label ='-15 '+degree_sign+'C', edgecolor='black')
+ax2.bar(y_pos, y, align = 'center',width=0.2, color = 'r', label ='-20 '+degree_sign+'C', edgecolor='black')
+ax2.bar(y_pos+0.2, z, align = 'center',width=0.2, color = 'g', label ='-25 '+degree_sign+'C', edgecolor='black')
+plt.xticks(y_pos,index, rotation = 90, fontsize =11)
+plt.yticks(fontsize =11)
+ax2.set_ylim(0,1)
+ax2.yaxis.grid()
+plt.xlim(-1,14)
+plt.legend()
+#plt.legend(loc=2, fontsize =10)
+plt.ylabel('Coefficient of determination $\mathregular{R^2}$', fontsize =12)
+#plt.xlabel()
+plt.ylabel('Pearson R Coefficient')
+plt.title('Correlations between particle no. and meteorological variables')
+plt.tight_layout()
+plt.savefig(farmdirs['figures']+"\correlations")
+
 #%%
 #==============================================================================
 # 
@@ -508,32 +487,14 @@ z = np.square(minus25.loc['Wind speed':'SMPS Total',['Log10 INPs']].values)
 
 #==============================================================================
 # 
-# INPs.to_csv('C:\\Users\\eardo\\Desktop\\Farmscripts\\alldata_withdates.csv')
-# 
-# from sklearn.model_selection import train_test_split
-# from sklearn.tree import DecisionTreeClassifier
-# import graphviz
-# 
-# target, predictors = data_cat.loc[:,u'INP_cat'], data_cat.loc[:,'MEAN_WIND_SPEED':]
-# predictors.fillna(value =0, inplace =True)
-# X_train, X_test, y_train, y_test = train_test_split(
-# predictors, target,  random_state=42)
-# tree = DecisionTreeClassifier(max_depth =2, random_state=0)
-# tree.fit(X_train, y_train)
-# print("Accuracy on training set: {:.3f}".format(tree.score(X_train, y_train)))
-# print("Accuracy on test set: {:.3f}".format(tree.score(X_test, y_test)))
-# 
-# from sklearn.tree import export_graphviz
-# export_graphviz(tree, out_file="tree.dot", class_names = groups,
-#  feature_names=predictors.columns, impurity=False, filled=True)
-# 
-# with open("tree.dot") as f:
-#  dot_graph = f.read()
-# graphviz.Source(dot_graph)
-# 
-# 
-#==============================================================================
 
+
+# =============================================================================
+# import seaborn as sns
+# 
+# data.index = data[3]
+# sns.jointplot('APS Total', 'INP', data = data)
+# =============================================================================
 
 
 

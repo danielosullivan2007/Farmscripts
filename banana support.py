@@ -14,6 +14,9 @@ from myfuncs import jd_to_date
 
 
 
+
+
+
 met = pd.read_pickle(farmdirs['pickels']+'met.p')
 cols = list(met)
 met.drop([cols[0], cols[3], 

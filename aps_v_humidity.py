@@ -11,7 +11,7 @@ import numpy as np
 import datetime
 import matplotlib.dates as mdates
 from matplotlib.ticker import NullFormatter
-
+from banana_support import INPs_25, INPs_24
 aps_test = pd.read_pickle(farmdirs['pickels']+'aps_toplot_RH100.p')
 
 ####################create met data in julian time, also add hourly rain####
@@ -40,17 +40,17 @@ aps_test = pd.DataFrame(aps_test).rename(columns = {0:'aps'})
 join= pd.merge(aps_test, met_jd, left_index=True, right_index=True)
 
 
-RH = 85
+RH = 0
 title = 'RH >0%'
 join['log_aps']=join['aps'].apply(np.log10)
 
 #join = join.loc['2016-09-29':'2016-10-03']
 #join = join.loc['2016-10-13':'2016-10-16']
 #join = join.loc['2016-10-20':'2016-10-22']
-join = join.loc['2016-10-17':'2016-10-20']
+#join = join.loc['2016-10-17':'2016-10-20']
 
 
-join=join[join['Humidity']<RH]
+join=join[join['Humidity']>RH]
 
 fig, ax1 = plt.subplots()
 join_rain = join[join.hourly_rain>0]
