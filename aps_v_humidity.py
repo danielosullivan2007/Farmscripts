@@ -11,7 +11,7 @@ import numpy as np
 import datetime
 import matplotlib.dates as mdates
 from matplotlib.ticker import NullFormatter
-from banana_support import INPs_25, INPs_24
+from banana_support import INPs_25, INPs_24, INPs_18
 aps_test = pd.read_pickle(farmdirs['pickels']+'aps_toplot_RH100.p')
 
 ####################create met data in julian time, also add hourly rain####

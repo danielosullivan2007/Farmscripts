@@ -1,40 +1,38 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Nov 08 11:00:32 2017
+Created on Mon Dec 04 12:17:55 2017
 
-@author: useradmin
+@author: eardo
 """
 
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 from directories import farmdirs
-
-from myfuncs import jd_to_date
-
+import numpy as np
 
 
-met = pd.read_pickle(farmdirs['pickels']+'met.p')
-cols = list(met)
-met.drop([cols[0], cols[3], 
-          cols[4], cols[11], cols[10], cols[14],
-          cols[16]], axis =1, inplace =True)
-met_jd = [met.index[i].to_julian_date() for i in range(len(met.index))]
-met['jd'] = met_jd
-met.read_pickle(farmdirs['pickels']+'met_jd_hourly.p')
+data = pd.read_csv(farmdirs['pickels']+'all_data_with_met.csv')
+data.reset_index(inplace=True)
+data['INP']= 10**data['INP']
+data['APS Total ']= data['APS Total'].apply(np.log10)
+data_24 = data[data['Temp']==-24]
+data_23 = data[data['Temp']==-23]
+data_22 = data[data['Temp']==-22]
+data_21 = data[data['Temp']==-21]
+data_20 = data[data['Temp']==-20]
+data_19 = data[data['Temp']==-19]
+data_18 = data[data['Temp']==-18]
+data_17 = data[data['Temp']==-17]
+data_16 = data[data['Temp']==-16]
+
+import seaborn as sns
 
 
-INPs = pd.read_pickle(farmdirs['pickels']+'INPs.p').drop('Datetime', axis=1)
-INPs['mid'] = INPs.start_datetime + (INPs.end_datetime-INPs.start_datetime)/2
-INPs_start_jd = [INPs.start_datetime[i].to_julian_date() for i in range(len(INPs.index))]
-INPs_end_jd = [INPs.end_datetime[i].to_julian_date() for i in range(len(INPs.index))]
-INPs_mid_jd = [INPs.mid[i].to_julian_date() for i in range(len(INPs.index))]
+f, ax = plt.subplots(figsize=(7, 7))
+#ax.set(xscale="log", yscale="log")
+sns.jointplot(x='APS Total', y = 'INP',data =data_24)
+#plt.xlim(100,1000000)
+#plt.xscale('log')
+#plt.yscale('log')
 
-INPs['start_jd'] = INPs_start_jd
-INPs['end_jd'] = INPs_end_jd
-INPs['mid_jd'] =INPs_mid_jd
-del INPs_start_jd, INPs_end_jd, INPs_mid_jd ,met_jd
 
-INPs_25 = INPs[INPs['T']==-25]
-INPs_20 = INPs[INPs['T']==-25]
-INPs_18 = INPs[INPs['T']==-25]

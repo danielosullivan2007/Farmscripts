@@ -30,10 +30,10 @@ d=float(0.0033)
 min_T=-25
 max_T=-15
 
-
+outdata=pd.DataFrame()
 step =1
 
-RH=85   #RH for all plots
+RH=100   #RH for all plots
 
 indir = farmdirs['pickels']
 indir2 = farmdirs['home']
@@ -338,6 +338,7 @@ for T in range (min_T,max_T, step):
     data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0',u'start_datetime',
                      u'end_datetime', u'MEAN_WIND_DIR', u'MEAN_WIND_DIR'], axis=1)
     
+    
 
     
 ############################################################    
@@ -398,11 +399,14 @@ for T in range (min_T,max_T, step):
     
     
     data.to_csv(indir+"data at "+num2words[T]+".csv")
-    corr.to_csv(indir+"corr at" + num2words[T]+".csv")    
-    
+    corr.to_csv(indir+"corr at" + num2words[T]+".csv")
+    data_Temp=data
+    data_Temp['Temp']=T    
+    outdata =outdata.append(data_Temp)
 
+    print len(data)
     print ('finished adding data @ {}').format(str(T))
-
+    print 'len is {}'.format(len(outdata))
     
     
 cbaxes=fig.add_axes([0.95, 0.22, 0.02, 0.6]) 
