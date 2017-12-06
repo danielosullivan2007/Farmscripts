@@ -69,6 +69,8 @@ time_run=[]
 INP_Tlist=[]
 start_t=[]
 end_t=[]
+err_plus_list=[]
+err_minus_list=[]
 
 df = pd.DataFrame({'Date':[], 'Start_time':[],'End_time':[], 'INP_T':[]})
 
@@ -88,7 +90,7 @@ for name in glob.glob(day_folder+'/*'):
 paths.sort()    
 number_days=len(paths)
 n=0
-for T in range(-20,-19):
+for T in range(-26,-15):
     
     n+=1
     for i in range(0,number_days):
@@ -105,98 +107,120 @@ for T in range(-20,-19):
             continue
         daily_reading=0
         for i in range(0,number_excels):
-                datain=np.genfromtxt(path+'\\'+excels[i],delimiter=',',skip_header=1,usecols=(0,1),dtype=float)
-                df=pd.DataFrame(datain, columns = ['T', 'INP'])
-                df2=df.drop_duplicates(['T'], keep = 'last')
-                data=df2.as_matrix()
-                #print(len(data))
-                filename=excels[i]          
-                day.append(path[-6:-4]+'/'+path[-4:-2]+'/'+path[-2:])
-                
-                fday.append(path[-6:-4]+path[-4:-2]+path[-2:]+filename[17:21]+filename[22:26])
-                start_t.append(filename[17:21])
-                end_t.append(filename[22:26])
-                Tlist.append(T)
-                #print(filename)
-                
-                try:
-                    filename=int((filename[5:11])+(filename[17:21])+(filename[22:26]))
-                except ValueError:
-                    #print(filename)
-                    filename='nan'
-                    pass
-                time_run.append(filename)
-                try:
-                    
-                    for i in range(0,len(data)):
-                        #print(i)
-                        
-                        #if Ti/T>1 and Ti-1 >T and Ti+1<T
-
-                        #print (data[i,0])
-                        #if data[i,0]/T<=1 and data[i-1,0]>=T and data[i+1,0]<=T:
-                        try:
-                            notequalto = data[i,0]!=data[i+1,0] and data[i,0]!=data[i-1,0]
-                            
-                        except IndexError:
-                            equalto=0
-                            pass
-                        if data[i,0]/T>=1 and data[i-1,0]>T and data[i+1,0]<T and notequalto==True:
-                            #print (data[i,0])
-                            point=data[i-1:i+1]                
-                            m=(point[1,1]-point[0,1])/(point[1,0]-point[0,0])
-                            INP_T=point[0,1]+m*(T-point[0,0])
-                            print('INP concentration for'+str(filename)+ '=' + str(INP_T))
-                            INP_Tlist.append(INP_T)
-                            #print 'added data'+str(INP_T)
-                            pass
-                        if data[i,0]/T>=1 and data[i-1,0]>T and data[i+1,0]<T and notequalto==False:
-                            INP_Tlist.append('triple')
-                            pass
-                    if data[0,0]<=T:
-                        #print(data[0,1])
-                        #print('Freezing starts below specified T')
-                        #print(data[0,0],'This is the first freezing value')
-                        #INP_T=data[0,1]
-                        #INP_Tlist.append(INP_T)
-                        INP_Tlist.append('below')
-                        #print 'added frezbelow'+str(INP_T)
-                        pass
-        
-                    if data[-1,0]>=T:
-                        #print(data[-1,1])
-                        #print('Freezing ends before specified T')
-                        #print(data[-1,0],'This is the last freezing value')
-                        #INP_T=data[-1,1]
-                        #INP_Tlist.append(INP_T)
-                        INP_Tlist.append('before')
-                        #print 'added frezends'+str(INP_T)
-                        pass
-                    
-#                    else:
-#                        INP_Tlist.append('else')
-#                        pass
-                
-
-                except IndexError:
-                    #print("Your csv file is empty for this day")
-                    INP_Tlist.append('nan')
-                    
+                if 'TE' in path+'\\'+excels[i]:
                     continue
-                if INP_Tlist:
-                    x=np.vstack((time_run, start_t))
-                    x=np.vstack((x, end_t))
-                    x=np.vstack((x, INP_Tlist))
-                    x=np.vstack((x, Tlist))
-                    x=np.transpose(x)
-                    #print x
-                    
                 else:
-                    continue
+            
+                    #datain=np.genfromtxt(path+'\\'+excels[i],delimiter=',',skip_header=1,usecols=[0,1,7,8],dtype=float)
+                    df=pd.read_csv(path+'\\'+excels[i], usecols=[0,1,7,8])
+                    df2=df.drop_duplicates(['T'], keep = 'last')
+                    data=df2.as_matrix()
+                    #print(len(data))
+                    filename=excels[i]          
+                    day.append(path[-6:-4]+'/'+path[-4:-2]+'/'+path[-2:])
+                    
+                    fday.append(path[-6:-4]+path[-4:-2]+path[-2:]+filename[17:21]+filename[22:26])
+                    start_t.append(filename[17:21])
+                    end_t.append(filename[22:26])
+                    Tlist.append(T)
+                    #print(filename)
+                    
+                    try:
+                        filename=int((filename[5:11])+(filename[17:21])+(filename[22:26]))
+                    except ValueError:
+                        #print(filename)
+                        filename='nan'
+                        pass
+                    time_run.append(filename)
+                    try:
+                        
+                        for i in range(0,len(data)):
+                            #print(i)
+                            
+                            #if Ti/T>1 and Ti-1 >T and Ti+1<T
+    
+                            #print (data[i,0])
+                            #if data[i,0]/T<=1 and data[i-1,0]>=T and data[i+1,0]<=T:
+                            try:
+                                notequalto = data[i,0]!=data[i+1,0] and data[i,0]!=data[i-1,0]
+                                
+                            except IndexError:
+                                equalto=0
+                                pass
+                            if data[i,0]/T>=1 and data[i-1,0]>T and data[i+1,0]<T and notequalto==True:
+                                #print (data[i,0])
+                                point=data[i-1:i+1]                
+                                m=(point[1,1]-point[0,1])/(point[1,0]-point[0,0])
+                                m_pos = (point[1,2]-point[0,2])/(point[1,0]-point[0,0])
+                                m_neg = (point[1,2]-point[0,2])/(point[1,0]-point[0,0])
+                                
+                                INP_T=point[0,1]+m*(T-point[0,0])
+                                INP_plus= point[0,2]+m*(T-point[0,0])
+                                INP_neg= point[0,3]+m*(T-point[0,0])
+                                
+                                INP_Tlist.append(INP_T)
+                                err_plus_list.append(INP_plus)
+                                err_minus_list.append(INP_neg)
+                                
+                                #print 'added data'+str(INP_T)
+                                pass
+                            if data[i,0]/T>=1 and data[i-1,0]>T and data[i+1,0]<T and notequalto==False:
+                                INP_Tlist.append('triple')
+                                err_plus_list.append('triple')
+                                err_minus_list.append('triple')
+                                pass
+                        if data[0,0]<=T:
+                            #print(data[0,1])
+                            #print('Freezing starts below specified T')
+                            #print(data[0,0],'This is the first freezing value')
+                            #INP_T=data[0,1]
+                            #INP_Tlist.append(INP_T)
+                            INP_Tlist.append('below')
+                            err_plus_list.append('below')
+                            err_minus_list.append('below')
+                            #print 'added frezbelow'+str(INP_T)
+                            pass
+            
+                        if data[-1,0]>=T:
+                            #print(data[-1,1])
+                            #print('Freezing ends before specified T')
+                            #print(data[-1,0],'This is the last freezing value')
+                            #INP_T=data[-1,1]
+                            #INP_Tlist.append(INP_T)
+                            INP_Tlist.append('before')
+                            err_plus_list.append('before')
+                            err_minus_list.append('before')
+                            #print 'added frezends'+str(INP_T)
+                            pass
+                        
+    #                    else:
+    #                        INP_Tlist.append('else')
+    #                        pass
+                    
+    
+                    except IndexError:
+                        #print("Your csv file is empty for this day")
+                        INP_Tlist.append('nan')
+                        err_plus_list.append('nan')
+                        err_minus_list.append('nan')
+                        
+                        continue
+                    if INP_Tlist:
+                        x=np.vstack((time_run, start_t))
+                        x=np.vstack((x, end_t))
+                        x=np.vstack((x, INP_Tlist))
+                        x=np.vstack((x, Tlist))
+                        x=np.vstack((x, err_plus_list))
+                        x=np.vstack((x, err_minus_list))
+                        x=np.transpose(x)
+                        #print x
+                        
+                    else:
+                        continue
 
     #np.savetxt(day_folder+'INP output.csv',INP_Tlist,delimiter=',')
 
-df3=pd.DataFrame(x, columns = ['Date', 'start', 'end', 'INP', 'T'])
+df3=pd.DataFrame(x, columns = ['Date', 'start', 'end', 'INP', 'T', 'INP_plus', 'INP_minus'])
 df3=df3[df3!='before'];df3=df3[df3!='below'];
 df3['INP']=df3['INP'].astype(float)
 df3['T']=df3['T'].astype(float)
@@ -225,6 +249,7 @@ for i in range(len(df3)):
     
 df3.Date
 df3.to_csv(out_folder+"INPs.csv")
+df3.to_pickle(pickdir+'INPs_witherrors_timestamps.p')
 #==============================================================================
 # #==============================================================================
 # minus15=df5[-15.0].dropna().describe()

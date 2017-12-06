@@ -33,7 +33,7 @@ max_T=-15
 outdata=pd.DataFrame()
 step =1
 
-RH=100   #RH for all plots
+RH=85  #RH for all plots
 
 indir = farmdirs['pickels']
 indir2 = farmdirs['home']

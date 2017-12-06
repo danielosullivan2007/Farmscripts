@@ -203,7 +203,7 @@ Nie_data=Nie.loc[Nie_mask]
 
 
 Nie_data=Nie.loc[Nie_mask].T.reset_index()
-Nie_data['T'] = Nie_data['Temp'log]*-1
+Nie_data['T'] = Nie_data['Temp']*-1
 Nie_data=Nie_data.T
 Nie_data.columns=list(Nie_data.loc['T'])
 Nie_data.drop('Temp', inplace = True)
@@ -434,7 +434,7 @@ plt.gca().yaxis.get_major_ticks()[1].label1.set_visible(False)
 
 ax1=plt.subplot(141)
 p1=ax1.contourf(x,y,z, levels = levels, extend = 'max', 
-                cmap ='jet', alpha =1,norm = LogNorm() )
+                cmap ='jet', alpha =1 )
 
 plt.yscale('log'), plt.xlim(-30,-5), plt.ylim(0.01, 300)
 #plt.gca().xaxis.get_major_ticks()[-1].label1.set_visible(False)

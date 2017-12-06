@@ -20,7 +20,7 @@ from matplotlib.colors import LogNorm
 import time
 import matplotlib.gridspec as gridspec
 from matplotlib.ticker import StrMethodFormatter, NullFormatter
-
+from banana_support import INPs_25, INPs_20, INPs_18, INPs_24, tillage
 
 
 z = np.random.random(10)
@@ -353,7 +353,7 @@ cbar.ax.set_yticklabels(cbar_labs)
 #==============================================================================
 
 print("--- %s seconds ---" % (time.time() - start_time))
-from banana_support import INPs_25, INPs_20, INPs_18, INPs_24, tillage
+
 
 met = pd.read_pickle(farmdirs['pickels']+'met_jd.p')
 met = met.resample(timestep).mean()
@@ -429,6 +429,7 @@ whiskerprops =dict(linestyle='-')
 
 ax_INP24=plt.subplot(gs[0, 2],  sharey=ax4)
 INP_24_box = INPs_24.INP.reset_index(drop=True)
+INP_24_box = INP_24_box[np.isfinite(INP_24_box)]
 ax_INP24.boxplot(INP_24_box, meanprops=meanlineprops,
             whis='range',medianprops=medianprops, whiskerprops =whiskerprops)
 ax_INP24.tick_params(labelbottom='off', labelleft='off')
@@ -445,9 +446,12 @@ ax_INP24.axvspan(tillage.Start_jd[1], tillage.End_jd[1], facecolor='gray', alpha
 # plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
 # =============================================================================
 
+INPs_18.dropna(axis=0, how='any', inplace =True)
+yerr=(INPs_18.INP_minus, INPs_18.INP_plus)
 ax6=plt.subplot(gs[1, :2], sharex=ax1)
 ax6.plot(INPs_18.mid_jd, INPs_18.INP, marker ='o',
          markersize = 5 , linestyle =':', markerfacecolor='k', color='k')
+ax6.errorbar(INPs_18.mid_jd, INPs_18.INP, yerr=yerr, markersize =0, color='k', linestyle=':')
 plt.yscale('log')
 #plt.axvspan(tillage.Start_jd[1], tillage.End_jd[1], facecolor='gray', alpha = 1, ymin = 0.0001, ymax=100)
 ax6.tick_params(labelbottom='off')
@@ -456,7 +460,7 @@ plt.gca().yaxis.get_major_ticks()[1].label1.set_visible(False)
 # =============================================================================
 # yticks[-1].label1.set_visible(True)
 # =============================================================================
-
+7
 
 
 #plt.title('Time Series Plots RH {}{}%'.format(direction, RH))
@@ -470,13 +474,14 @@ plt.gca().yaxis.get_major_ticks()[1].label1.set_visible(False)
 from banana_support import maxp, minp
 plt.xlim(minp, maxp)
 
-
 ax_INP18=plt.subplot(gs[1, 2],  sharey=ax6)
 INP_18_box = INPs_18.INP
+INP_18_box = INP_18_box[np.isfinite(INP_18_box)]
 INP_18_box.reset_index(inplace =True, drop=True)
 ax_INP18.boxplot(INP_18_box, meanprops=meanlineprops,
             whis='range',medianprops=medianprops, whiskerprops =whiskerprops)
 ax_INP18.tick_params(labelbottom='off', labelleft='off')
+
 
 
 #ax_INP24.axvspan(tillage.Start_jd[2], tillage.End_jd[2], facecolor='gray', alpha = 1, ymin = 0.0001, ymax=100)
