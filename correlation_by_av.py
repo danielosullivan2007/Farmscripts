@@ -27,8 +27,8 @@ b=float(3.33)
 c=float(0.0264)
 d=float(0.0033)
 
-min_T=-25
-max_T=-15
+min_T=-23
+max_T=-22
 
 outdata=pd.DataFrame()
 step =1
@@ -116,6 +116,14 @@ os.chdir(indir)
 aps=pd.read_pickle(indir+"aps.p")
 
 aps['datetimes']=aps.datetime
+x=list(aps.iloc[:,0:51])
+y = [float(i) for i in x]
+y.sort()
+x= [str(i) for i in y]
+z=list(aps)[51:]
+x.extend(z)
+aps=aps[x]
+
 aps = aps.reset_index(drop = True)
 INPs =pd.read_pickle(indir+"INPs.p")
 met = pd.read_pickle(indir+ "met.p")
@@ -209,7 +217,7 @@ for T in range (min_T,max_T, step):
            u'5.425', u'5.829', u'6.264', u'6.732', u'7.234', u'7.774', u'8.354',
            u'8.977', u'9.647', u'<0.523', u'Aerodynamic Diameter', u'Date',
            u'Start Time', u'datetime'])
-
+    apsavs_1um=pd.DataFrame()
     smps_avs = pd.DataFrame(columns = [u'datetime',    u' 14.1',    u' 14.6',    u' 15.1',    u' 15.7',
               u' 16.3',    u' 16.8',    u' 17.5',    u' 18.1',    u' 18.8',
               u'358.7',    u'371.8',    u'385.4',    u'399.5',    u'414.2',
@@ -295,8 +303,11 @@ for T in range (min_T,max_T, step):
         else:
             
             apsavs=apsavs.append(aps.loc[aps_mask].mean(axis=0), ignore_index=True)
+            apsavs_1um=apsavs_1um.append((aps.loc[aps_mask].iloc[:,9:50]).mean(axis=0), ignore_index=True)
           
         aps_total= apsavs.sum(axis=1)
+        aps_total_1um = apsavs_1um.sum(axis=1)
+        
         
 #sum accross average down
         aps_mask2=  (aps['datetime'] > df_INPtidy['start_datetime'][i]) & (aps['datetime'] <=  df_INPtidy['end_datetime'][i])
@@ -334,10 +345,11 @@ for T in range (min_T,max_T, step):
             
             
     windavs=windavs.drop(u'Unnamed: 0', axis=1)
-    data=pd.concat([df_INPtidy, windavs, metavs, aps_total, aps_sum_down, smps_total,smps_sum_down, t_stamp_INP_start, t_stamp_INP_end], axis =1)
+    data=pd.concat([df_INPtidy, windavs, metavs, aps_total, aps_total_1um, aps_sum_down, smps_total,smps_sum_down, t_stamp_INP_start, t_stamp_INP_end], axis =1)
     data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0',u'start_datetime',
                      u'end_datetime', u'MEAN_WIND_DIR', u'MEAN_WIND_DIR'], axis=1)
-    
+    data['log aps_1um'] = aps_total_1um.apply(np.log10)
+    data['log aps'] = aps_total.apply(np.log10)
     
 
     

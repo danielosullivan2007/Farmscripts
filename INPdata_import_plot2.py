@@ -262,7 +262,10 @@ bulk_elements_starttimes.insert(0, np.nan)
 bulk_elements_endtimes.insert(0, np.nan)
 bulk_dataframe['start']=bulk_elements_starttimes
 bulk_dataframe['end']=bulk_elements_endtimes
-
+newcols = ('T',	'INPs_perL',	'F','K','INPs_perdrop',	'INPerr_pos',	'INPerr_neg'	, 'delta_INP_pos', 'delta_INP_neg')
+oldcols=list(bulk_dataframe)
+names=dict(zip(oldcols, newcols))
+bulk_dataframe.rename(columns=names, inplace =True)
 
 core=pd.DataFrame({'start':bulk_run_start,'locations':bulk_run_loc,'end': bulk_run_end})
 

@@ -20,7 +20,7 @@ from matplotlib.colors import LogNorm
 import time
 import matplotlib.gridspec as gridspec
 from matplotlib.ticker import StrMethodFormatter, NullFormatter
-from banana_support import INPs_25, INPs_20, INPs_18, INPs_24, tillage
+from banana_support import INPs_25, INPs_23, INPs_20, INPs_18, INPs_24, tillage
 
 
 z = np.random.random(10)
@@ -411,7 +411,7 @@ ax3.tick_params(labelbottom='off')
 '''INP PLOTTING'''
 
 ax4=plt.subplot(gs[0, :2], sharex=ax1)
-ax4.plot(INPs_24.mid_jd, INPs_24.INP, marker ='o',
+ax4.plot(INPs_23.mid_jd, INPs_23.INP, marker ='o',
          markersize = 5 , linestyle =':',color='k', markerfacecolor='k')
 ax4.tick_params(labelbottom='off')
 ax4.yaxis.set_minor_formatter(NullFormatter())
@@ -427,13 +427,13 @@ medianprops = dict(linestyle='-', linewidth=1, color='blue')
 meanlineprops = dict(linestyle='-', linewidth=1, color='blue')
 whiskerprops =dict(linestyle='-')
 
-ax_INP24=plt.subplot(gs[0, 2],  sharey=ax4)
-INP_24_box = INPs_24.INP.reset_index(drop=True)
-INP_24_box = INP_24_box[np.isfinite(INP_24_box)]
-ax_INP24.boxplot(INP_24_box, meanprops=meanlineprops,
+ax_INP23=plt.subplot(gs[0, 2],  sharey=ax4)
+INP_23_box = INPs_23.INP.reset_index(drop=True)
+INP_23_box = INP_23_box[np.isfinite(INP_23_box)]
+ax_INP23.boxplot(INP_23_box, meanprops=meanlineprops,
             whis='range',medianprops=medianprops, whiskerprops =whiskerprops)
-ax_INP24.tick_params(labelbottom='off', labelleft='off')
-ax_INP24.axvspan(tillage.Start_jd[1], tillage.End_jd[1], facecolor='gray', alpha = 0.3)
+ax_INP23.tick_params(labelbottom='off', labelleft='off')
+ax_INP23.axvspan(tillage.Start_jd[1], tillage.End_jd[1], facecolor='gray', alpha = 0.3)
 
 
 

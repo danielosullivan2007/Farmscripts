@@ -96,5 +96,5 @@ for ax in (ax1, ax2):
 ax2.set_ylabel('')
 plt.tight_layout(w_pad =0)
 
-
+r, p = stats.pearsonr(x, y)
 
