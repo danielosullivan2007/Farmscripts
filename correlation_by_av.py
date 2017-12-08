@@ -27,13 +27,13 @@ b=float(3.33)
 c=float(0.0264)
 d=float(0.0033)
 
-min_T=-23
-max_T=-22
+min_T=-20
+max_T=-19
 
 outdata=pd.DataFrame()
 step =1
 
-RH=85  #RH for all plots
+RH=100  #RH for all plots
 
 indir = farmdirs['pickels']
 indir2 = farmdirs['home']
@@ -302,8 +302,8 @@ for T in range (min_T,max_T, step):
         
         else:
             
-            apsavs=apsavs.append(aps.loc[aps_mask].mean(axis=0), ignore_index=True)
-            apsavs_1um=apsavs_1um.append((aps.loc[aps_mask].iloc[:,9:50]).mean(axis=0), ignore_index=True)
+            apsavs=apsavs.append(aps.loc[aps_mask].sum(axis=0), ignore_index=True)
+            apsavs_1um=apsavs_1um.append((aps.loc[aps_mask].iloc[:,23:33]).sum(axis=0), ignore_index=True)
           
         aps_total= apsavs.sum(axis=1)
         aps_total_1um = apsavs_1um.sum(axis=1)
@@ -513,7 +513,9 @@ plt.savefig(farmdirs['figures']+"\correlations")
 # =============================================================================
 
 
-
+fig3=plt.figure()
+#plt.plot(data['INP'], data['log aps'], marker ='o',lw=0)
+sns.jointplot( 'log aps_1um','INP', data =data)
 
 
 

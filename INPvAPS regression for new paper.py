@@ -22,10 +22,10 @@ data_85RH.reset_index(inplace=True)
 
 
 
-data = data[data['APS Total']<30000]
+#data = data[data['APS Total']<30000]
 #data['INP']= 10**data['INP']
 
-data['APS Total']= data['APS Total'].apply(np.log10)
+data['log APS Total']= data['APS Total'].apply(np.log10)
 data_85RH['APS Total']= data_85RH['APS Total'].apply(np.log10)
 
 
@@ -56,12 +56,12 @@ import seaborn as sns
 
 
 T1=-23
-T2=-18
+T2=-22
 
-p1 = data_85RH[data_85RH['Temp']==T1]
-p2 = data_85RH[data_85RH['Temp']==T2]
+p1 = data[data['Temp']==T1]
+p2 = data[data['Temp']==T2]
 
-x=p1['APS Total']
+x=p1['log APS Total']
 y=p1.INP
 fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize =(6,3))
 sns.regplot(x=x, y=y, data = p1, ax =ax1, ci=95)
@@ -97,4 +97,8 @@ ax2.set_ylabel('')
 plt.tight_layout(w_pad =0)
 
 r, p = stats.pearsonr(x, y)
+
+fig3=plt.figure()
+#plt.plot(data['INP'], data['log aps'], marker ='o',lw=0)
+sns.jointplot( 'log APS Total','INP', data =p1)
 
