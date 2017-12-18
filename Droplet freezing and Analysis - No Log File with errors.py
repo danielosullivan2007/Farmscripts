@@ -84,11 +84,11 @@ def INPs(fraction, denom):
     return INPs
 
 def INP_perdrop(fraction):
-    INP_perfrop = -np.log(1-(fraction))
+    INP_perdrop = -np.log(1-(fraction))
     return INP_perdrop
 
 
-folder='X:\\' # CHANGE THIS FOLDER - also see bottom of code to alter analysis for wash-off/drop-on
+folder='W:\\hepa\\' # CHANGE THIS FOLDER - also see bottom of code to alter analysis for wash-off/drop-on
 os.chdir(folder)
 b=glob('*\\')
 b.sort()

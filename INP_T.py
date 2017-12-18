@@ -90,7 +90,7 @@ for name in glob.glob(day_folder+'/*'):
 paths.sort()    
 number_days=len(paths)
 n=0
-for T in range(-26,-15):
+for T in range(-27,-10):
     
     n+=1
     for i in range(0,number_days):

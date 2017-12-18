@@ -409,17 +409,19 @@ ax2.set_xlabel('T ('+degree_sign+'C)')
 ax0.get_yaxis().set_tick_params(which='both', direction='out')
 ax0.get_xaxis().set_tick_params(which='both', direction='out')
 
-np.savetxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\lowruns_heated_data.csv',
-           lowruns_heated_data, delimiter=',')
-
-np.savetxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\highruns_heated_data.csv',
-           highruns_heated_data, delimiter=',')
-
-np.savetxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\lowruns_unheated_data.csv',
-           lowruns_unheated_data, delimiter=',')
-
-np.savetxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\highruns_unheated_data.csv',
-           highruns_unheated_data, delimiter=',')
+# =============================================================================
+# np.savetxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\lowruns_heated_data.csv',
+#            lowruns_heated_data, delimiter=',')
+# 
+# np.savetxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\highruns_heated_data.csv',
+#            highruns_heated_data, delimiter=',')
+# 
+# np.savetxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\lowruns_unheated_data.csv',
+#            lowruns_unheated_data, delimiter=',')
+# 
+# np.savetxt('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\highruns_unheated_data.csv',
+#            highruns_unheated_data, delimiter=',')
+# =============================================================================
 
 
 

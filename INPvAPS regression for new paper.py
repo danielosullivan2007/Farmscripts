@@ -56,12 +56,12 @@ import seaborn as sns
 
 
 T1=-23
-T2=-22
+T2=-18
 
-p1 = data[data['Temp']==T1]
-p2 = data[data['Temp']==T2]
+p1 = data_85RH[data_85RH['Temp']==T1]
+p2 = data_85RH[data_85RH['Temp']==T2]
 
-x=p1['log APS Total']
+x=p1['APS Total']
 y=p1.INP
 fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize =(6,3))
 sns.regplot(x=x, y=y, data = p1, ax =ax1, ci=95)
@@ -76,7 +76,7 @@ ax1.set_ylabel('$\mathregular{log_{10} \/\ [INP]}$')
 
 x=p2['APS Total']
 y=p2.INP
-sns.regplot(x='APS Total', y='INP', data = p2, ax =ax2, 
+sns.regplot(x=x, y=y, data = p2, ax =ax2, 
             line_kws ={'color':'blue'}, scatter_kws={'color':'blue', 'alpha':0.8})
 
 slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
@@ -98,7 +98,6 @@ plt.tight_layout(w_pad =0)
 
 r, p = stats.pearsonr(x, y)
 
-fig3=plt.figure()
-#plt.plot(data['INP'], data['log aps'], marker ='o',lw=0)
-sns.jointplot( 'log APS Total','INP', data =p1)
+
+
 

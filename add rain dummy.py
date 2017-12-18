@@ -46,3 +46,4 @@ fig2, ax3=plt.subplots()
 x=met['hourly_rain']
 y=met['Humidity']
 ax3 = plt.scatter(x, y)
+plt.legend(numpoints=1)
