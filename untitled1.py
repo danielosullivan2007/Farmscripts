@@ -5,7 +5,7 @@ Created on Wed Dec 13 15:54:33 2017
 @author: eardo
 """
 
-from datetime import datetime
+import datetime
 import os, os.path
 from glob import glob
 import numpy as np
@@ -22,14 +22,33 @@ import socket
 from directories import farmdirs
 
 
-keyword='Blan'
-os.chdir('S:\\')
+keyword='MFC'
+os.chdir('P:\\')
 files = glob('*Data*')
+errors=[]
+#run_date=[31:35]
+#run_date=range(5,11)
 
 out=pd.DataFrame()
 
+
 for i in range(len(files)):
-    frame = pd.read_csv(files[i])
-    out=out.append(frame)
+    try:
+        if keyword in files[i]:
+            print 'key found'
+        else:
+            print 'key not in {}'.format(files[i])
+        frame = pd.read_csv(files[i])
+        frame['run_date'] = datetime.datetime.strptime(files[i][30:36],'%y%m%d')
+        frame['sample_date'] = datetime.datetime.strptime(files[i][5:11],'%y%m%d')
+        out=out.append(frame)
     
-out.to_csv(farmdirs['pickels']+'blanks.csv')
+    except ValueError:
+            errors.append(files[i])
+            print 'error in {}'.format(files[i])
+            continue
+                
+    
+    
+out.to_csv(farmdirs['pickels']+'MFC2_MFC3.csv')
+
