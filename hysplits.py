@@ -42,8 +42,9 @@ hysplit['Datetime']=hysplit['Date']+" "+ hysplit['Time']
 hysplit['Datetime']=pd.to_datetime(hysplit['Datetime'])
 # hysplit['Date']=pd.to_datetime(hysplit['Date'])
 #==============================================================================
-alldata=pd.read_csv('alldata_withdates.csv', delimiter =',')
-alldata['start_datetime'] = pd.to_datetime(alldata.start_datetime)
+alldata= pd.read_pickle(farmdirs['pickels']+'INPs_witherrors_timestamps.p')
+alldata.reset_index(drop =True, inplace =True)
+alldata['start_datetime'] = pd.to_datetime(alldata.start)
 
 West=hysplit.loc[ (hysplit['D1'] == 'W')]
 East=hysplit.loc[ (hysplit['D1'] == 'E')]
@@ -161,7 +162,7 @@ plt.ylabel('[INP] $\mathregular{L^{-1}}$', fontsize=14)
 plt.savefig(farmdirs['figures']+ 'Hysplit directions')
 
 frames=[south_data, east_data, west_data, north_data]
-merged =pd.concat(frames).drop(['Datetime', 'end_datetime', 'start_datetime', 'date', 'Unnamed: 0'],
+merged =pd.concat(frames).drop([ 'start_datetime', 'date'],
                  axis =1)
 unstacked = merged.pivot(columns='avdir')
 

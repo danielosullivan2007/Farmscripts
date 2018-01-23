@@ -112,9 +112,16 @@ for T in range(-27,-10):
                 else:
             
                     #datain=np.genfromtxt(path+'\\'+excels[i],delimiter=',',skip_header=1,usecols=[0,1,7,8],dtype=float)
-                    df=pd.read_csv(path+'\\'+excels[i], usecols=[0,1,7,8])
+                    df=pd.read_csv(path+'\\'+excels[i], usecols=[0,1,5,6])
+                    df['neg_mag'] = df.loc[:,'INPerr_neg'].apply(np.float).apply(np.log10)-df.loc[:,'INPs_perL'].apply(np.float).apply(np.log10)
+                    df['neg_mag'] = df.loc[:,'neg_mag'].apply(np.float).apply(np.absolute)
+                    test = df
+                    df = df [df.loc[:,'neg_mag']<1]
+                    df.drop('neg_mag', axis =1, inplace=True)
+                    
                     df2=df.drop_duplicates(['T'], keep = 'last')
                     data=df2.as_matrix()
+                    
                     #print(len(data))
                     filename=excels[i]          
                     day.append(path[-6:-4]+'/'+path[-4:-2]+'/'+path[-2:])
@@ -248,6 +255,13 @@ for i in range(len(df3)):
     df3['end'][i] = datetime.datetime.combine(df3['Date'][i],datetime.datetime.strptime(df3['end'][i][0:6],'%H%M').time())
     
 df3.Date
+
+df3 = df3.dropna(axis =0, subset =['INP'])
+#df3['neg_mag'] = df3.loc[:,'INP_minus'].apply(np.float).apply(np.log10)-df3.loc[:,'INP'].apply(np.float).apply(np.log10)
+
+#df3.drop('neg_mag', axis=1, inplace =True)
+
+
 df3.to_csv(out_folder+"INPs.csv")
 df3.to_pickle(pickdir+'INPs_witherrors_timestamps.p')
 #==============================================================================

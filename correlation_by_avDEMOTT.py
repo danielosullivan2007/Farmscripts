@@ -27,8 +27,8 @@ b=float(3.33)
 c=float(0.0264)
 d=float(0.0033)
 
-min_T=-20
-max_T=-19
+min_T=-23
+max_T=-16
 
 outdata=pd.DataFrame()
 step =1
@@ -346,8 +346,7 @@ for T in range (min_T,max_T, step):
             
     windavs=windavs.drop(u'Unnamed: 0', axis=1)
     data=pd.concat([df_INPtidy, windavs, metavs, aps_total, aps_total_1um, aps_sum_down, smps_total,smps_sum_down, t_stamp_INP_start, t_stamp_INP_end], axis =1)
-    data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0',u'start_datetime',
-                     u'end_datetime', u'MEAN_WIND_DIR', u'MEAN_WIND_DIR'], axis=1)
+    data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0', u'MEAN_WIND_DIR', u'MEAN_WIND_DIR'], axis=1)
     data['log aps_1um'] = aps_total_1um.apply(np.log10)
     data['log aps'] = aps_total.apply(np.log10)
     

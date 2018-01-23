@@ -135,6 +135,7 @@ rain_days['Date']=[rain_days.index[i].date() for i in range(len(rain_days))]
 rain_days = rain_days[~rain_days.Date.duplicated(keep='first')]
 
 INPs = pd.read_pickle(farmdirs['pickels']+ 'INPS_witherrors_timestamps.p')
+INPs.reset_index(drop =True, inplace =True)
 INPs['Date']=[INPs.Date[i].date() for i in range (len(INPs['Date']))]
 INPs=INPs.merge(rain_days, how ='inner', on ='Date')
 INPs=INPs[INPs['INP']>0]

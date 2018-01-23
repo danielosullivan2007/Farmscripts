@@ -71,7 +71,7 @@ exported['neg_mag'] = exported.loc[:,'INPerr_neg'].apply(np.log10)-exported.loc[
 exported['neg_mag'] = exported.loc[:,'neg_mag'].apply(np.absolute)
 trimmed = exported [exported.loc[:,'neg_mag']<1]
 trimmed.drop(['K', 'INPs_perdrop','INPerr_pos', 'INPerr_neg', 'neg_mag'], axis =1, inplace =True)
-trimmed.to_csv(farmdirs['pickels']+'heat_INPs_trim_witherrs.csv')
+trimmed.to_csv(farmdirs['pickels']+'test.csv')
                        
 
 
