@@ -24,6 +24,8 @@ import matplotlib.gridspec as gridspec
 from matplotlib.ticker import StrMethodFormatter, NullFormatter
 import itertools
 
+
+
 label=[]
 xlabel =[]
 cbar_labs=[]
@@ -33,7 +35,7 @@ hours =[]
 q=[]
 mask=[]
 
-inps  = pd.read_pickle(farmdirs['pickels']+'INPs_witherrors_timestamps.p')
+inps  = pd.read_pickle(farmdirs['pickels']+'binned_INPs_witherrors_timestamps.p')
 inps.reset_index(drop=True, inplace=True)
 inps['start']= pd.to_datetime(inps['start'])
 inps['end']= pd.to_datetime(inps['end'])

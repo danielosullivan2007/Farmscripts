@@ -90,7 +90,7 @@ for name in glob.glob(day_folder+'/*'):
 paths.sort()    
 number_days=len(paths)
 n=0
-for T in range(-27,-10):
+for T in range(-27,-6):
     
     n+=1
     for i in range(0,number_days):
@@ -262,8 +262,8 @@ df3 = df3.dropna(axis =0, subset =['INP'])
 #df3.drop('neg_mag', axis=1, inplace =True)
 
 
-df3.to_csv(out_folder+"INPs.csv")
-df3.to_pickle(pickdir+'INPs_witherrors_timestamps.p')
+df3.to_csv(out_folder+"binned_INPs.csv")
+df3.to_pickle(pickdir+'binned_INPs_witherrors_timestamps.p')
 #==============================================================================
 # #==============================================================================
 # minus15=df5[-15.0].dropna().describe()

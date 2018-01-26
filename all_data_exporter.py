@@ -10,6 +10,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from directories import farmdirs
+from datetime import datetime
+
 
 ##for heated files, 
 topfolder = 'W:\\'
@@ -53,6 +55,8 @@ def getdata_on_keyword(folders_list):
                 #print files_in_folder[s]
                 exported_files.append(files_in_folder[s])
                 df = pd.read_csv(files_in_folder[s])
+                df['start'] = datetime.strptime( files_in_folder[s][5:11]+ ' '+ files_in_folder[s][17:21],  '%y%m%d %H%M')
+                df['end'] = datetime.strptime( files_in_folder[s][5:11]+ ' '+ files_in_folder[s][22:26],'%y%m%d %H%M')
                 
                 if 'ff' in df.columns.values:
                     
@@ -71,7 +75,7 @@ exported['neg_mag'] = exported.loc[:,'INPerr_neg'].apply(np.log10)-exported.loc[
 exported['neg_mag'] = exported.loc[:,'neg_mag'].apply(np.absolute)
 trimmed = exported [exported.loc[:,'neg_mag']<1]
 trimmed.drop(['K', 'INPs_perdrop','INPerr_pos', 'INPerr_neg', 'neg_mag'], axis =1, inplace =True)
-trimmed.to_csv(farmdirs['pickels']+'test.csv')
+trimmed.to_csv(farmdirs['pickels']+'INPs_trim_witherrs.csv')
                        
 
 

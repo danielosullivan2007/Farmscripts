@@ -413,9 +413,15 @@ ax3.tick_params(labelbottom='off')
 ax4=plt.subplot(gs[0, :2], sharex=ax1)
 ax4.plot(INPs_23.mid_jd, INPs_23.INP, marker ='o',
          markersize = 5 , linestyle =':',color='k', markerfacecolor='k')
+
+yerr=(INPs_23.INP_minus, INPs_23.INP_plus)
+ax4.errorbar(INPs_23.mid_jd, INPs_23.INP, yerr=yerr, markersize =0,
+             color='k', linestyle=':')
+
+plt.yscale('log')
 ax4.tick_params(labelbottom='off')
 ax4.yaxis.set_minor_formatter(NullFormatter())
-ax4.text(0.77,0.1,'T = -24 '+degree_sign+'C', transform=ax4.transAxes)
+ax4.text(0.77,0.1,'T = -23 '+degree_sign+'C', transform=ax4.transAxes)
 
 plt.yscale('log')
 plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
@@ -482,7 +488,7 @@ ax_INP18.boxplot(INP_18_box, meanprops=meanlineprops,
             whis='range',medianprops=medianprops, whiskerprops =whiskerprops)
 ax_INP18.tick_params(labelbottom='off', labelleft='off')
 
-
+ax4.set_ylim(0.01, 100)
 
 #ax_INP24.axvspan(tillage.Start_jd[2], tillage.End_jd[2], facecolor='gray', alpha = 1, ymin = 0.0001, ymax=100)
 

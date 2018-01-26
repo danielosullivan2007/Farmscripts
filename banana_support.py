@@ -33,9 +33,9 @@ met.to_pickle(farmdirs['pickels']+'met_jd.p')
 
 
 
-INPs = pd.read_pickle(farmdirs['pickels']+'INPs_witherrors_timestamps.p')
+INPs = pd.read_pickle(farmdirs['pickels']+'binned_INPs_witherrors_timestamps.p')
 INPs.drop('Date', axis =1, inplace =True)
-INPs.dropna(how='any', axis =0, inplace =True)
+#INPs.dropna(how='any', axis =0, inplace =True)
 INPs.INP_plus = INPs.INP_plus.astype(float)
 INPs.INP_minus = INPs.INP_minus.astype(float)
 
@@ -58,9 +58,9 @@ INPs.dropna(how='any', axis =0, inplace =True)
 
 
 
-INPs=INPs[(INPs.INP-INPs.INP_minus)>0] #negative error cannot exceed
-INPs=INPs[(((INPs.INP +INPs.INP_plus).apply(np.log10))/INPs.INP.apply(np.log10)) <2]
-INPs=INPs[(INPs.INP/(INPs.INP-INPs.INP_minus)) <10]
+#INPs=INPs[(INPs.INP-INPs.INP_minus)>0] #negative error cannot exceed
+#INPs=INPs[(((INPs.INP +INPs.INP_plus).apply(np.log10))/INPs.INP.apply(np.log10)) <2]
+#INPs=INPs[(INPs.INP/(INPs.INP-INPs.INP_minus)) <10]
 del INPs_start_jd, INPs_end_jd, INPs_mid_jd ,met_jd
 
 INPs_25 = INPs[INPs['T']==-25]

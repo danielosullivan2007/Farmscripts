@@ -42,7 +42,7 @@ hysplit['Datetime']=hysplit['Date']+" "+ hysplit['Time']
 hysplit['Datetime']=pd.to_datetime(hysplit['Datetime'])
 # hysplit['Date']=pd.to_datetime(hysplit['Date'])
 #==============================================================================
-alldata= pd.read_pickle(farmdirs['pickels']+'INPs_witherrors_timestamps.p')
+alldata= pd.read_pickle(farmdirs['pickels']+'binned_INPs_witherrors_timestamps.p')
 alldata.reset_index(drop =True, inplace =True)
 alldata['start_datetime'] = pd.to_datetime(alldata.start)
 
