@@ -49,7 +49,7 @@ ax.errorbar(past_data.Mason_T, past_data.Mason_INP, yerr=yerr,
 ax.set_yscale('log')
 ax.set_yscale('log')
 ax.set_xlabel('T ('+degree_sign+'C)')
-ax.set_ylabel('INPs $\mathregular{L^{-1}}$')
+ax.set_ylabel('INPs ($\mathregular{L^{-1}}$)')
 ax.grid()
 plt.xlim(-30, -4)
 plt.legend(scatterpoints=1,numpoints =1, loc =3, fontsize = 10)

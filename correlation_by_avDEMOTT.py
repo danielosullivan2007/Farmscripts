@@ -152,8 +152,8 @@ colors = iter(cm.jet(np.linspace(0, 1, len_T)))
 
 ax.set_xscale('log')
 ax.set_yscale('log')
-ax.set_xlabel('Observed INPs $\mathregular{L^{-1}}$')
-ax.set_ylabel('Predicted INPs $\mathregular{L^{-1}}$')
+ax.set_xlabel('Observed INPs ($\mathregular{L^{-1}}$)')
+ax.set_ylabel('Predicted INPs ($\mathregular{L^{-1}}$)')
 ax.set_xlim(0.02,100)
 ax.set_ylim(0.02,100)
  
@@ -166,15 +166,33 @@ ax.plot(q,r)
 
 ax1.set_xscale('log')
 ax1.set_yscale('log')
-ax1.set_xlabel('Observed INPs $\mathregular{L^{-1}}$')
+ax1.set_xlabel('Observed INPs ($\mathregular{L^{-1}}$)')
 #ax1.set_ylabel('Predicted INPs $\mathregular{L^{-1}}$')
 ax1.set_xlim(0.02,100)
 ax1.set_ylim(0.02,100)
  
 q=[0.01,100]
 r=[0.01,100]
-ax1.plot(q,r)
 
+q_half=[0.01, 100]
+r_half=[0.02, 200]
+
+q_double=[0.01, 100]
+r_double=[0.005, 50]
+
+
+
+
+
+ax1.plot(q,r)
+ax1.plot(q_half,r_half, color = 'b', linestyle = 'dashed')
+ax1.plot(q_double,r_double, color = 'b', linestyle = 'dashed')
+
+
+
+ax.plot(q,r, color = 'b')
+ax.plot(q_half,r_half, color = 'b', linestyle = 'dashed')
+ax.plot(q_double,r_double, color = 'b', linestyle = 'dashed')
 
 T_list=[]
 meyers_list=[]
@@ -364,7 +382,7 @@ for T in range (min_T,max_T, step):
     y=data['demott']
     color = next(colors)
     ax.scatter(x,y,color=color)
-
+    
 
     data['meyers']=[meyers(T) for i in range(len(data))]
     T_list.append(T)
