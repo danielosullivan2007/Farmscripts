@@ -24,7 +24,7 @@ host=socket.gethostname()
 pickdir = farmdirs['pickels']
 indir2=farmdirs['home']
 glodir = farmdirs['glodir']
-day_folder='W:\\'
+day_folder='Y:\\'
 out_folder =farmdirs['home']
 
 # =============================================================================

@@ -26,7 +26,7 @@ rho0=1
 rho=2.4
 
 
-infolder = 'W:\\'
+infolder = 'Y:\\'
 os.chdir(infolder)
 
 
@@ -68,6 +68,8 @@ for dayfolder in range(len(a)):
                 dW= indata[:,1:]
                 sizes= (indata[:,0])/1000
                 SMPSavnum=np.mean(dW, axis = 1)
+                
+                '''SMPS sizes'''
                 DpSMPS=(1/chi)*sizes
                 smps_cols=(np.ndarray.tolist(sizes))
                 smps_df=pd.DataFrame((np.transpose(dW)))
@@ -145,6 +147,7 @@ for dayfolder in range(len(a)):
         APSdata[APSdata == 0] = np.nan  
         
         APSavnum=np.nanmean(APSdata, axis = 0) 
+        '''APS Section'''
         DpAPS=(((chi*rho0)/rho)**0.5)*APSsize
         z=np.transpose(np.vstack((DpAPS, APSavnum)))
         

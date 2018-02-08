@@ -15,7 +15,7 @@ x=inlet_calc['size_um']
 y = inlet_calc['percent']
 
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize =(4,4))
 ax.plot(x, y, label = 'Splitter efficiency (Calc.)')
 ax.set_ylabel('% Transmission', fontsize = 8)
 ax.set_xlabel('Particle Size  D$\mathregular{_p} (\mu m $)', fontsize =8)
@@ -26,3 +26,4 @@ x=inlet_pm10['Size']
 y = inlet_pm10['Percent']*100
 ax.plot(x,y, label = 'PM10 Head efficiency')
 plt.legend(loc=3, fontsize =8)
+

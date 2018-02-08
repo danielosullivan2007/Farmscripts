@@ -187,12 +187,14 @@ r_double=[0.005, 50]
 ax1.plot(q,r)
 ax1.plot(q_half,r_half, color = 'b', linestyle = 'dashed')
 ax1.plot(q_double,r_double, color = 'b', linestyle = 'dashed')
-
+ax1.text(0.03, 40, '(b) Meyers 1992', fontsize=10)
 
 
 ax.plot(q,r, color = 'b')
 ax.plot(q_half,r_half, color = 'b', linestyle = 'dashed')
 ax.plot(q_double,r_double, color = 'b', linestyle = 'dashed')
+ax.text(0.03, 40, '(a) Demott 2010', fontsize=10)
+
 
 T_list=[]
 meyers_list=[]

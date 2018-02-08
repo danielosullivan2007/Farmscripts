@@ -88,7 +88,7 @@ def INP_perdrop(fraction):
     return INP_perdrop
 
 
-folder='W:\\Moudi\\' # CHANGE THIS FOLDER - also see bottom of code to alter analysis for wash-off/drop-on
+folder='C:\\Users\\eardo\\Desktop\\Runs\\' # CHANGE THIS FOLDER - also see bottom of code to alter analysis for wash-off/drop-on
 os.chdir(folder)
 b=glob('*\\')
 b.sort()
