@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from directories import farmdirs
 from datetime import datetime
-
+import matplotlib.cm as cm
 
 ##for heated files, 
 topfolder = 'Y:\\'
@@ -26,6 +26,18 @@ skip_list = ['Moud', 'heat', 'heated', 'Heat', 'HEAT']
 os.chdir(topfolder)
 a=glob('*\\')
 
+
+fig, ax1 = plt.subplots()
+plt.ylim(0,1)
+plt.ylabel('Fraction Frozen')
+degree_sign= u'\N{DEGREE SIGN}'
+plt.xlabel('T ('+degree_sign+'C)')
+
+color_list = plt.cm.rainbow(np.linspace(0, 0.9, 60))
+
+
+
+colors = iter(color_list)
 
 def getdata_on_keyword(folders_list):
     
@@ -66,7 +78,9 @@ def getdata_on_keyword(folders_list):
                     print files_in_folder[s]
                     exported_data = exported_data.append(df)
 
-                
+                    ax1.scatter(df['T'],df['F'], color = next(colors))
+
+
                 
     return exported_data, all_files, exported_files
             
@@ -77,5 +91,6 @@ trimmed = exported [exported.loc[:,'neg_mag']<1]
 trimmed.drop(['K', 'INPs_perdrop','INPerr_pos', 'INPerr_neg', 'neg_mag'], axis =1, inplace =True)
 trimmed.to_csv(farmdirs['pickels']+'INPs_trim_witherrs.csv')
                        
+
 
 

@@ -495,7 +495,7 @@ ax4.set_ylim(0.01, 100)
 
 
 
-del cbticks, cols, DpAPS, DpSMPS, cbar_labs, timestep, time1, x, y, zeros
+del cbticks, cols, DpAPS, DpSMPS, cbar_labs, timestep, time1, x, y
 del rho, rho0,   smps_diameters, mask, width, start_time
 del ytick_labels, start, p, INPs_20, INPs_25, X,Y,Z, cola, colb, cols1, direction
 del dt, end, farmdirs, hours, index1, levels, length, i, a, b
