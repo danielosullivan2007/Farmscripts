@@ -17,7 +17,7 @@ import itertools
 from matplotlib import rc
 from myfuncs import degree_sign, num2words
 import  seaborn as sns
-import __future__
+
 
 chi=1.2
 rho0=1
@@ -57,10 +57,10 @@ c=float(0.0264)
 d=float(0.0033)
 
 min_T=-25
-max_T=-10
+max_T=-14
 
 outdata=pd.DataFrame()
-step =5
+step =1
 
 RH=100 #RH for all plots
 
@@ -238,13 +238,13 @@ r_double=[0.005, 50]
 ax1.plot(q,r)
 ax1.plot(q_half,r_half, color = 'b', linestyle = 'dashed')
 ax1.plot(q_double,r_double, color = 'b', linestyle = 'dashed')
-ax1.text(0.03, 40, '(b) Meyers 1992', fontsize=10)
+ax1.text(0.025, 40, '(b) Meyers et al. \'92', fontsize=10)
 
 
 ax.plot(q,r, color = 'b')
 ax.plot(q_half,r_half, color = 'b', linestyle = 'dashed')
 ax.plot(q_double,r_double, color = 'b', linestyle = 'dashed')
-ax.text(0.03, 40, '(a) Demott 2010', fontsize=10)
+ax.text(0.025, 40, '(a) DeMott et al. \'10', fontsize=10)
 
 
 T_list=[]
@@ -307,7 +307,7 @@ for T in range (min_T,max_T, step):
 # =============================================================================
         
         
-    metavs.drop([u'index', u'Unnamed: 0',u'level_0'], axis=1)
+    metavs.drop([u'index',u'level_0'], axis=1)
     
 ###############################################################################################################################
 #SMPS AVERAGING'''        
@@ -418,9 +418,9 @@ for T in range (min_T,max_T, step):
             windavs = windavs.append(wind.loc[wind_mask].mean(axis=0), ignore_index= True)
             
             
-    windavs=windavs.drop(u'Unnamed: 0', axis=1)
+    #windavs=windavs.drop(u'Unnamed: 0', axis=1)
     data=pd.concat([df_INPtidy, windavs, metavs, aps_total, aps_total_1um, aps_sum_down, smps_total,smps_sum_down, t_stamp_INP_start, t_stamp_INP_end], axis =1)
-    data=data.drop([u'index', 'Datetime', u'Unnamed: 0', u'level_0', u'MEAN_WIND_DIR', u'MEAN_WIND_DIR'], axis=1)
+    data=data.drop([u'index', 'Datetime', u'level_0', u'MEAN_WIND_DIR', u'MEAN_WIND_DIR'], axis=1)
     data['log aps_1um'] = aps_total_1um.apply(np.log10)
     
     data['log aps'] = aps_total.apply(np.log10)

@@ -94,7 +94,7 @@ ax.set_xticklabels(dt)
 #ax.tick_params(labelbottom='off')
 
 
-plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
+plt.ylabel('[INPs] ($L^{-1}$)', fontsize =8)
 plt.xlabel('Date')
 
 
