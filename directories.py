@@ -27,4 +27,8 @@ elif host == 'SEE-L10840':
                    'glodir': 'C:\\Users\\useradmin\\Desktop\\Farmscripts\\glomap data\\',
                    'glodir1': 'C:\\Users\\useradmin\\Desktop\\Farmscripts\\glomap data\\160509\\',
                    'iced': 'C:\\Users\\useradmin\\Desktop\\Farmscripts\\IceD\\'}
+				   
+elif host == 'DESKTOP-C4IEQH4':
+	farmdirs = {'pickels': 'C:\\Users\\Daniel\\Documents\\farmscripts\\Pickels\\',
+				'figures': 'C:\\Users\\Daniel\\Documents\\farmscripts\\Figures\\'}
 
