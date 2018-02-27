@@ -17,7 +17,7 @@ fig, ax = plt.subplots(figsize = (4,4))
 ax.plot(raw['T'], raw['INPs_perL'], lw=0, marker ='o', alpha = 0.7)
 ax.plot(binned['T'], binned['INP'], lw=0, marker ='o', color = 'r')
 ax.set_xlabel('T ('+degree_sign+'C)',fontsize =12)
-ax.set_ylabel('# INPs ($\mathregular{L^{-1}}$)', fontsize=12)
+ax.set_ylabel(' [INPs] ($\mathregular{L^{-1}}$)', fontsize=12)
 
 ax.set_yscale('log')
 

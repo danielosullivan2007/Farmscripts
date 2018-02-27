@@ -50,6 +50,10 @@ out3[:] = np.NAN
 #Glob SMPS folders
 n=0
 index=0
+
+if 'smps' in locals():
+    del smps
+
 for dayfolder in range(len(a)):                 
     os.chdir(infolder+ a[dayfolder]+'SMPS\\')
     s_files = glob.glob('*.csv')
@@ -102,16 +106,32 @@ for dayfolder in range(len(a)):
         #plt.xscale('log')
         
         #plt.yscale('log')
-        plt.ylabel('dw')
-        plt.xlabel('Dp ($\mu$m)')
+
         n+=1
+        
+        s_size = DpSMPS.T
+        s_counts = SMPSavnum.T
+        
+        smps_run = dict(zip(s_size, s_counts))
+        smps_to_append = (pd.DataFrame(smps_run, index =[0]))
+        
+        if 'smps' not in locals():
+            smps = pd.DataFrame(smps_run, index =[0])
+            print 'Exists'
+        else:
+            smps=pd.concat([smps, smps_to_append])
+            
 smpsav_df = pd.concat([s_dates, s_times, smps_count], axis =1)
-    
+
+
 
 
 ######################################################################
 #glob APS folders
 index=0
+if 'aps' in locals():
+    del aps
+
 for dayfolder in range(len(a)):
     os.chdir(infolder+ a[dayfolder]+'APS\\')
     a_files = glob.glob('*.csv')
@@ -163,17 +183,32 @@ for dayfolder in range(len(a)):
         
 
         
-        plt.xlim(0.01, 20)
-        ax2 = plt.scatter(DpAPS, APSavnum, c = 'red')
-        plt.ylim(0.01,100)
-        plt.xscale('log')
-        plt.yscale('log')
+# =============================================================================
+#         plt.xlim(0.01, 20)
+#         ax2 = plt.scatter(DpAPS, APSavnum, c = 'red', zorder =20)
+#         plt.ylim(0.01,1000)
+#         plt.xscale('log')
+#         plt.yscale('log')
+# =============================================================================
         
         aps_count.reset_index(drop = True, inplace = True)
         aps_result = pd.concat([a_dates, a_times, aps_count], axis =1)
         aps_result.columns = ['a_dates', 'a_times', 'a_count']
         aps_result['datetime']=pd.to_datetime(aps_result['a_dates']+" "+aps_result['a_times'], yearfirst =True)
         aps_result.set_index('datetime', inplace = True)
+        
+        
+        size = DpAPS.T
+        counts = APSavnum.T
+        
+        aps_run = dict(zip(size, counts))
+        aps_to_append = (pd.DataFrame(aps_run, index =[0]))
+        
+        if 'aps' not in locals():
+            aps = pd.DataFrame(aps_run, index =[0])
+            print 'Exists'
+        else:
+            aps=pd.concat([aps, aps_to_append])
         #aps_result.to_pickle('C:\\Users\\eardo\\Desktop\\Farmscripts\\Pickels\\aps.p')
         
 
@@ -182,6 +217,20 @@ for dayfolder in range(len(a)):
 ################################################################
 
 os.chdir(infolder)
+aps = aps.T
+aps['average'] = aps.mean(axis =1)
+fig = plt.figure(figsize =(3,3))
+
+
+plt.scatter(aps.index, aps['average'], c = 'c', zorder =21, linewidth=0.)
+
+smps=smps.T
+smps['average']= smps.mean(axis=1)
+smps = smps.drop([smps.index[0],0.61375])
+plt.scatter(smps.index, smps['average'], c = 'c', zorder =23, linewidth=0.1)
+plt.ylabel('dN (# of particles)')
+plt.xlabel('Volume Equivalent Diameter ($\mu$m)')
+plt.ylim(0.001,1000)
 
 a=glob.glob('*\\')
 for dayfolder in range(len(a)):
@@ -200,10 +249,11 @@ for dayfolder in range(len(a)):
             
             merged = np.vstack((smps_data, aps_data))
             
-            plt.scatter(merged[:,0], merged[:,1])
+            plt.scatter(merged[:,0], merged[:,1], alpha =0.5, linewidth=0)
             plt.xscale('log')
             plt.yscale('log')
-            plt.ylim(0.0001,100)
+            plt.ylim(0.001,1000)
+            plt.xlim(0.01, 20)
             outname = infolder+ a[dayfolder]+'merged.csv'
             np.savetxt(outname, merged, delimiter = ',')
             

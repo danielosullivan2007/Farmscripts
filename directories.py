@@ -30,5 +30,6 @@ elif host == 'SEE-L10840':
 				   
 elif host == 'DESKTOP-C4IEQH4':
 	farmdirs = {'pickels': 'C:\\Users\\Daniel\\Documents\\farmscripts\\Pickels\\',
-				'figures': 'C:\\Users\\Daniel\\Documents\\farmscripts\\Figures\\'}
+				'figures': 'C:\\Users\\Daniel\\Documents\\farmscripts\\Figures\\',
+                'home': 'C:\\Users\\Daniel\\Documents\\farmscripts\\'}
 

@@ -424,7 +424,7 @@ ax4.yaxis.set_minor_formatter(NullFormatter())
 ax4.text(0.77,0.1,'T = -23 '+degree_sign+'C', transform=ax4.transAxes)
 
 plt.yscale('log')
-plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
+plt.ylabel('[INPs] ($L^{-1}$)', fontsize =8)
 
 
 plt.gca().yaxis.get_major_ticks()[1].label1.set_visible(False)
@@ -471,7 +471,7 @@ plt.gca().yaxis.get_major_ticks()[1].label1.set_visible(False)
 
 #plt.title('Time Series Plots RH {}{}%'.format(direction, RH))
 
-plt.ylabel('INPs ($L^{-1}$)', fontsize =8)
+plt.ylabel('[INPs] ($L^{-1}$)', fontsize =8)
 #plt.xlim(2457655, 2457693.1666666665)
 
 
@@ -495,7 +495,7 @@ ax4.set_ylim(0.01, 100)
 
 
 
-del cbticks, cols, DpAPS, DpSMPS, cbar_labs, timestep, time1, x, y, zeros
+del cbticks, cols, DpAPS, DpSMPS, cbar_labs, timestep, time1, x, y
 del rho, rho0,   smps_diameters, mask, width, start_time
 del ytick_labels, start, p, INPs_20, INPs_25, X,Y,Z, cola, colb, cols1, direction
 del dt, end, farmdirs, hours, index1, levels, length, i, a, b

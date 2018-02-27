@@ -62,7 +62,7 @@ pdownINP=pettersdown[:,1]
 pdownINP= pdownINP[np.logical_not(np.isnan(pupINP))]'''
 
 
-indata= np.genfromtxt(picdir+'INPs_trim_witherrs.csv', delimiter = ',', skip_header=1)[:,1:]
+indata= np.genfromtxt(picdir+'INPs_trim_witherrs_reorder.csv', delimiter = ',', skip_header=1)[:,1:]
 indata = np.delete(indata, 1, 0)
 inx= indata[:,0]*-1
 iny=indata[:,1]
@@ -521,5 +521,6 @@ for ax in subplots:
 plt.tight_layout(h_pad=0, w_pad= 0)   
 
 
-
+out = 'C:\\Users\\eardo\\Desktop\\To upload\\'
+plt.savefig(out+'test.png')
 
